@@ -1,0 +1,70 @@
+/* Full page background */
+.login-page {
+  height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: #f4f6f8;
+  font-family: Arial, Helvetica, sans-serif;
+}
+
+/* Login box */
+.login-card {
+  background-color: #ffffff;
+  width: 340px;
+  padding: 25px;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+/* Title */
+.login-title {
+  text-align: center;
+  color: #0b3c5d;
+  margin-bottom: 5px;
+}
+
+/* Subtitle */
+.login-subtitle {
+  text-align: center;
+  font-size: 14px;
+  color: #777;
+  margin-bottom: 20px;
+}
+
+/* Form layout */
+.login-form {
+  display: flex;
+  flex-direction: column;
+}
+
+/* Input & select fields */
+.login-input {
+  padding: 10px;
+  margin-bottom: 12px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  font-size: 14px;
+}
+
+/* Button */
+.login-button {
+  padding: 10px;
+  background-color: #0b3c5d;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  font-size: 15px;
+  cursor: pointer;
+}
+
+.login-button:hover {
+  background-color: #094067;
+}
+
+/* Error message */
+.error-text {
+  color: red;
+  font-size: 12px;
+  margin-bottom: 10px;
+}
