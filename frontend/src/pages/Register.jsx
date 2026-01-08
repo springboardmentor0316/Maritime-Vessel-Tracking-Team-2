@@ -1,24 +1,35 @@
 import "../styles/Register.css";
 import { useState } from "react";
+import { registerUser } from "../api/auth";
+import { useNavigate } from "react-router-dom";
 
 export default function Register() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [role, setRole] = useState("Operator");
+  const navigate = useNavigate();
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
+  const handleSubmit = async (e) => {
+  e.preventDefault();
 
-    if (password !== confirmPassword) {
-      alert("Passwords do not match");
-      return;
-    }
+  try {
+    const payload = {
+      email,
+      password,
+      role: role.toLowerCase(),// "Operator", "Analyst", "Admin"
+    };
 
-    console.log({ email, password, role });
-    alert("Demo Registration Successful");
-  };
+    const res = await registerUser(payload);
+    console.log("REGISTER SUCCESS:", res);
 
+    // optional: redirect to login
+    navigate("/login");
+  } catch (err) {
+    console.error("REGISTER ERROR:", err);
+    alert(err?.detail || "Registration failed");
+  }
+};
   return (
     <div className="register-container">
       <div className="register-overlay" />

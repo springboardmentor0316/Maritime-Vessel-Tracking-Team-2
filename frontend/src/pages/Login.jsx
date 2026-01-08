@@ -1,16 +1,36 @@
 import "../styles/Login.css";
 import { useState } from "react";
+import { loginUser } from "../api/auth";
+import { useNavigate } from "react-router-dom";
 
 export default function Login() {
+  const navigate = useNavigate();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [role, setRole] = useState("Operator - Vessel Tracking");
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log({ email, password, role });
-    alert("Demo Login Successful");
+    try {
+      const res = await loginUser({
+        email,
+        password,
+      });
+
+      console.log("LOGIN SUCCESS:", res);
+
+      localStorage.setItem("access", res.access);
+      localStorage.setItem("refresh", res.refresh);
+
+      navigate("/dashboard");
+    } catch (err) {
+      console.error("LOGIN ERROR:", err);
+      alert(err?.detail || "Login failed");
+    }
   };
+
+   
+  
 
   return (
     <div className="login-container">
