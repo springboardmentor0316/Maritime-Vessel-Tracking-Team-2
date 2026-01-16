@@ -1,50 +1,29 @@
 import "../styles/Login.css";
 import { useState } from "react";
-import { loginUser } from "../api/auth";
-import { useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 
 export default function Login() {
-  const navigate = useNavigate();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [role, setRole] = useState("Operator - Vessel Tracking");
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = (e) => {
     e.preventDefault();
-    try {
-      const res = await loginUser({
-        email,
-        password,
-      });
-
-      console.log("LOGIN SUCCESS:", res);
-
-      localStorage.setItem("access", res.access);
-      localStorage.setItem("refresh", res.refresh);
-
-      navigate("/dashboard");
-    } catch (err) {
-      console.error("LOGIN ERROR:", err);
-      alert(err?.detail || "Login failed");
-    }
+    console.log({ email, password, role });
+    alert("Demo Login Successful");
   };
-
-   
-  
 
   return (
     <div className="login-container">
       <div className="overlay" />
 
       <div className="login-card">
-        <div className="logo">
-          ⚓
-        </div>
+        <div className="logo">⚓</div>
 
         <h1>Maritime Intelligence</h1>
         <p className="subtitle">Vessel Tracking & Port Analytics Platform</p>
 
-        <h2> Sign In</h2>
+        <h2>Sign In</h2>
         <p className="desc">Access your maritime intelligence dashboard</p>
 
         <form onSubmit={handleSubmit}>
@@ -65,6 +44,11 @@ export default function Login() {
             onChange={(e) => setPassword(e.target.value)}
             required
           />
+
+          {/* 🔹 Forgot Password link */}
+          <div className="forgot">
+            <Link to="/forgot-password">Forgot password</Link>
+          </div>
 
           <label>Role</label>
           <select value={role} onChange={(e) => setRole(e.target.value)}>
