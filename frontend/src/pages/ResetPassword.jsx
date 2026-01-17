@@ -1,40 +1,69 @@
 import { useState } from "react";
-import { useParams } from "react-router-dom";
-import "../styles/Login.css";
+import { useNavigate, useSearchParams } from "react-router-dom";
+import { resetPassword } from "../api/auth";
 
 export default function ResetPassword() {
-  const { token } = useParams();
   const [password, setPassword] = useState("");
-  const [done, setDone] = useState(false);
+  const [confirmPassword, setConfirmPassword] = useState("");
+  const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
 
-  const handleReset = (e) => {
+
+  const uid = searchParams.get("uid");
+  const token = searchParams.get("token");
+
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log("Token:", token);
-    console.log("New password:", password);
-    setDone(true);
+
+    if (!uid || !token) {
+      alert("Invalid or expired reset link");
+      return;
+    }
+
+    if (password !== confirmPassword) {
+      alert("Passwords do not match");
+      return;
+    }
+
+    try {
+      await resetPassword({
+        uid,
+        token,
+        new_password: password,
+      });
+
+      alert("Password reset successful");
+      navigate("/login");
+    } catch (err) {
+      console.error(err);
+      alert("Failed to reset password");
+    }
   };
 
   return (
     <div className="login-container">
-      <div className="overlay" />
-
       <div className="login-card">
-        <h2>Reset Password</h2>
+        <h2>Set New Password</h2>
 
-        {!done ? (
-          <form onSubmit={handleReset}>
-            <label>New Password</label>
-            <input
-              type="password"
-              placeholder="Enter new password"
-              onChange={(e) => setPassword(e.target.value)}
-              required
-            />
-            <button type="submit">Reset Password</button>
-          </form>
-        ) : (
-          <p className="success">Password reset successfully </p>
-        )}
+        <form onSubmit={handleSubmit}>
+          <label>New Password</label>
+          <input
+            type="password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            required
+          />
+
+          <label>Confirm Password</label>
+          <input
+            type="password"
+            value={confirmPassword}
+            onChange={(e) => setConfirmPassword(e.target.value)}
+            required
+          />
+
+          <button type="submit">Update Password</button>
+        </form>
       </div>
     </div>
   );

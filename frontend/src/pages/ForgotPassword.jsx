@@ -1,15 +1,32 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { forgotPassword } from "../api/auth";
 import "../styles/Login.css";
 
 export default function ForgotPassword() {
   const [email, setEmail] = useState("");
-  const [sent, setSent] = useState(false);
+  const navigate = useNavigate();
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    console.log("Reset link sent to:", email);
-    setSent(true);
-  };
+  const handleSubmit = async (e) => {
+  e.preventDefault();
+
+  try {
+    const res = await forgotPassword(email);
+
+    const { uid, token } = res;
+
+    if (!uid || !token) {
+      alert("Unable to reset password");
+      return;
+    }
+
+    navigate(`/reset-password?uid=${uid}&token=${token}`);
+  } catch (err) {
+    console.error(err);
+    alert("Something went wrong");
+  }
+};
+
 
   return (
     <div className="login-container">
@@ -19,24 +36,18 @@ export default function ForgotPassword() {
         <h2>Forgot Password</h2>
         <p className="desc">Enter your registered email</p>
 
-        {!sent ? (
-          <form onSubmit={handleSubmit}>
-            <label>Email</label>
-            <input
-              type="email"
-              placeholder="analyst@maritime.com"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              required
-            />
+        <form onSubmit={handleSubmit}>
+          <label>Email</label>
+          <input
+            type="email"
+            placeholder="analyst@maritime.com"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            required
+          />
 
-            <button type="submit">Send Reset Link</button>
-          </form>
-        ) : (
-          <p className="success">
-            Reset link sent to your email ✔
-          </p>
-        )}
+          <button type="submit">Continue</button>
+        </form>
       </div>
     </div>
   );

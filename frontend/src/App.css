@@ -68,3 +68,11 @@
   font-size: 12px;
   margin-bottom: 10px;
 }
+.forgot-password {
+  margin-top: 10px;
+  background: none;
+  border: none;
+  color: #00bcd4;
+  cursor: pointer;
+  text-decoration: underline;
+}
