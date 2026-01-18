@@ -1,36 +1,32 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { forgotPassword } from "../api/auth";
 import "../styles/Login.css";
 
 export default function ForgotPassword() {
   const [email, setEmail] = useState("");
-  const [loading, setLoading] = useState(false);
-  const [message, setMessage] = useState("");
+  const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
-    e.preventDefault();
-    setLoading(true);
-    setMessage("");
+  e.preventDefault();
 
-    try {
-      const res = await fetch("http://localhost:5000/api/forgot-password", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email }),
-      });
+  try {
+    const res = await forgotPassword(email);
 
-      const data = await res.json();
+    const { uid, token } = res;
 
-      if (!res.ok) {
-        setMessage(data.message || "Failed to send reset link");
-      } else {
-        setMessage("Reset link sent to your email ");
-      }
-    } catch (err) {
-      setMessage("Server error. Please try again.");
-    } finally {
-      setLoading(false);
+    if (!uid || !token) {
+      alert("Unable to reset password");
+      return;
     }
-  };
+
+    navigate(`/reset-password?uid=${uid}&token=${token}`);
+  } catch (err) {
+    console.error(err);
+    alert("Something went wrong");
+  }
+};
+
 
   return (
     <div className="login-container">
@@ -50,12 +46,8 @@ export default function ForgotPassword() {
             required
           />
 
-          <button type="submit" disabled={loading}>
-            {loading ? "Sending..." : "Send Reset Link"}
-          </button>
+          <button type="submit">Continue</button>
         </form>
-
-        {message && <p className="success">{message}</p>}
       </div>
     </div>
   );

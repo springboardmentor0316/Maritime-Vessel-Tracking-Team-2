@@ -8,6 +8,9 @@ export default function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [role, setRole] = useState("Operator - Vessel Tracking");
+  const goToForgotPassword = () => {
+  navigate("/forgot-password");
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -65,7 +68,7 @@ export default function Login() {
             onChange={(e) => setPassword(e.target.value)}
             required
           />
-
+          
           <label>Role</label>
           <select value={role} onChange={(e) => setRole(e.target.value)}>
             <option>Operator - Vessel Tracking</option>
@@ -74,6 +77,14 @@ export default function Login() {
           </select>
 
           <button type="submit">Sign In</button>
+          <button
+            type="button"
+            className="forgot-password"
+            onClick={goToForgotPassword}
+          >
+            Forgot Password?
+          </button>
+          
         </form>
 
         <p className="demo">
