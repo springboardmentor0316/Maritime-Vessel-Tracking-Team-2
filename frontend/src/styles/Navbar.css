@@ -1,0 +1,29 @@
+.navbar {
+  height: 60px;
+  background: #111927;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 20px 0 260px;
+  color: white;
+}
+
+.navbar input {
+  background: #1e2a41;
+  border: none;
+  padding: 8px 12px;
+  border-radius: 8px;
+  color: white;
+  width: 250px;
+}
+
+.user-circle {
+  width: 35px;
+  height: 35px;
+  background: #2b63ff;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+}
