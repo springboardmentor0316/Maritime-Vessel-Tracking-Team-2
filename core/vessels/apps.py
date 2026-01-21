@@ -1,5 +1,5 @@
 from django.apps import AppConfig
 
-
 class VesselsConfig(AppConfig):
-    name = "vessels"
+    default_auto_field = 'django.db.models.BigAutoField'
+    name = 'vessels'
