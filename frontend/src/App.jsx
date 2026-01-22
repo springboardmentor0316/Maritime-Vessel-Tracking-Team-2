@@ -5,9 +5,9 @@ import Login from "./pages/Login";
 import Register from "./pages/Register";
 import ForgotPassword from "./pages/ForgotPassword";
 import ResetPassword from "./pages/ResetPassword";
-import AdminDashboard from "./pages/AdminDashboard";
+import AdminDashboard from "./pages/Dashboard";
 import VesselTracking from "./pages/VesselTracking";
-import VoyageReplay from "./pages/VoyageReplay"; // ✅ ADD THIS
+import VoyageReplay from "./pages/VoyageReplay"; 
 
 function App() {
   return (
