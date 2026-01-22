@@ -1,0 +1,19 @@
+.map-container {
+  width: 100%;
+  height: 450px;
+  border-radius: 12px;
+  overflow: hidden;
+  position: relative;
+}
+
+/*  Completely hide attribution (bottom-right text) */
+.maplibregl-ctrl.maplibregl-ctrl-attrib {
+  display: none !important;
+}
+
+/*  Hide MapLibre logo if it appears */
+.maplibregl-ctrl-logo {
+  display: none !important;
+}
+
+

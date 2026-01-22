@@ -6,19 +6,19 @@ from .serializers import EventSerializer
 
 class EventPermission(BasePermission):
     def has_permission(self, request, view):
+        user = request.user
+
         # Everyone logged in can READ
         if request.method in SAFE_METHODS:
-            return request.user.is_authenticated
+            return user and user.is_authenticated
 
         # Admin & Operator can CREATE
         if request.method == "POST":
-            return request.user.groups.filter(
-                name__in=["Admin", "Operator"]
-            ).exists()
+            return user.is_authenticated and user.role in ["admin", "operator"]
 
         # Only Admin can DELETE
         if request.method == "DELETE":
-            return request.user.groups.filter(name="Admin").exists()
+            return user.is_authenticated and user.role == "admin"
 
         return False
 

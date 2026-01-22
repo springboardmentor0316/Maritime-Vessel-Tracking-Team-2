@@ -1,7 +1,7 @@
 from rest_framework import status
 from django.shortcuts import get_object_or_404
 from drf_spectacular.utils import extend_schema
-
+from rest_framework.permissions import BasePermission, SAFE_METHODS
 from rest_framework.viewsets import ModelViewSet
 from rest_framework.permissions import SAFE_METHODS, BasePermission, IsAuthenticated
 from rest_framework.views import APIView
@@ -15,23 +15,23 @@ from .serializers import (
 )
 
 
+
+
 class VesselPermission(BasePermission):
     def has_permission(self, request, view):
-        # Everyone logged in can READ
+        user = request.user
+
         if request.method in SAFE_METHODS:
-            return request.user.is_authenticated
+            return user and user.is_authenticated
 
-        # Admin & Operator can CREATE / UPDATE
-        if request.method in ["POST", "PUT", "PATCH"]:
-            return request.user.groups.filter(
-                name__in=["Admin", "Operator"]
-            ).exists()
+        if request.method == "POST":
+            return user.is_authenticated and user.role in ["admin", "operator"]
 
-        # Only Admin can DELETE
         if request.method == "DELETE":
-            return request.user.groups.filter(name="Admin").exists()
+            return user.is_authenticated and user.role == "admin"
 
         return False
+
 
 
 class VesselViewSet(ModelViewSet):
