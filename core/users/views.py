@@ -1,12 +1,19 @@
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated, AllowAny
-from .serializers import RegisterSerializer, ForgotPasswordSerializer, ResetPasswordSerializer
+from rest_framework import status
+from drf_spectacular.utils import extend_schema
+
+from .serializers import (
+    RegisterSerializer,
+    ForgotPasswordSerializer,
+    ResetPasswordSerializer
+)
+
 from django.contrib.auth import get_user_model
 from django.contrib.auth.tokens import PasswordResetTokenGenerator
 from django.utils.encoding import force_bytes, force_str
 from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
-from rest_framework import status
 
 User = get_user_model()
 token_generator = PasswordResetTokenGenerator()
@@ -24,6 +31,7 @@ class MeView(APIView):
         })
 
 
+@extend_schema(request=RegisterSerializer)
 class RegisterView(APIView):
     permission_classes = [AllowAny]
 
@@ -37,6 +45,7 @@ class RegisterView(APIView):
         )
 
 
+@extend_schema(request=ForgotPasswordSerializer)
 class ForgotPasswordView(APIView):
     permission_classes = [AllowAny]
 
@@ -49,8 +58,9 @@ class ForgotPasswordView(APIView):
         try:
             user = User.objects.get(email=email)
         except User.DoesNotExist:
+            # Don't reveal whether email exists
             return Response(
-                {"message": "If the email exists, a reset link has been sent."},
+                {"message": "If the email exists, a reset token has been generated."},
                 status=status.HTTP_200_OK,
             )
 
@@ -64,6 +74,9 @@ class ForgotPasswordView(APIView):
             },
             status=status.HTTP_200_OK,
         )
+
+
+@extend_schema(request=ResetPasswordSerializer)
 class ResetPasswordView(APIView):
     permission_classes = [AllowAny]
 
