@@ -1,0 +1,240 @@
+/* ================================
+   PAGE LAYOUT
+================================ */
+.voyage-page {
+  display: flex;
+  background: #0d1623;
+  min-height: 100vh;
+  color: white;
+}
+
+/* ================================
+   MAIN CONTENT AREA
+================================ */
+.voyage-main {
+  flex: 1;
+  padding: 25px;
+}
+
+/* HEADER */
+.vr-header h1 {
+  margin: 0;
+  font-size: 26px;
+}
+
+.vr-header p {
+  margin-top: 5px;
+  color: #bcd0e6;
+}
+
+/* ================================
+   FILTERS BAR
+================================ */
+.vr-filters {
+  margin-top: 20px;
+  display: flex;
+  gap: 12px;
+  align-items: center;
+}
+
+.vr-select,
+.vr-input {
+  background: #142030;
+  color: white;
+  border: 1px solid #1f2d40;
+  padding: 10px 12px;
+  border-radius: 8px;
+  width: 200px;
+}
+
+.vr-load-btn {
+  background: #2d6cf6;
+  border: none;
+  padding: 10px 28px;
+  border-radius: 8px;
+  color: white;
+  cursor: pointer;
+  transition: 0.2s;
+}
+
+.vr-load-btn:hover {
+  background: #1f56d6;
+}
+
+/* ================================
+   MAP CARD
+================================ */
+.vr-map-card {
+  background: #0f1b2b;
+  padding: 20px;
+  margin-top: 25px;
+  border-radius: 12px;
+  border: 1px solid rgba(255,255,255,0.08);
+}
+
+.vr-map-title {
+  font-size: 18px;
+  font-weight: 600;
+}
+
+.vr-map-wrapper {
+  margin-top: 15px;
+  height: 520px; /* increased height */
+  border-radius: 12px;
+  overflow: hidden;
+  background: #0b1828;
+}
+
+/* Ensure map fills container */
+.vr-map-wrapper .maplibregl-map,
+.vr-map-wrapper canvas {
+  width: 100%;
+  height: 100%;
+  border-radius: inherit;
+}
+
+/* ================================
+   PLAYBACK CONTROLS
+================================ */
+.vr-controls {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  margin-top: 18px;
+}
+
+.vr-play-btn {
+  background: #2d6cf6;
+  color: white;
+  border: none;
+  padding: 8px 20px;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+.vr-speed select {
+  background: #142030;
+  color: white;
+  border: 1px solid #1f2d40;
+  padding: 6px;
+  border-radius: 6px;
+}
+
+.vr-timestamp {
+  margin-left: auto;
+  color: #bcd0e6;
+}
+
+/* ================================
+   RIGHT PANEL
+================================ */
+.vr-right-panel {
+  width: 420px; /* increased width */
+  background: #0f1b2b;
+  padding: 25px;
+  border-left: 1px solid rgba(255,255,255,0.09);
+}
+
+.vr-imo {
+  color: #bcd0e6;
+  margin-bottom: 18px;
+}
+
+.vr-info-row {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 12px;
+}
+
+.success {
+  color: #4ade80;
+}
+
+/* ================================
+   EVENT TIMELINE
+================================ */
+.vr-timeline {
+  margin-top: 20px;
+  background: #0b1828;
+  padding: 15px;
+  border-radius: 10px;
+  max-height: 300px;
+  overflow-y: auto;
+}
+
+/* Timeline items */
+.tl-item {
+  margin-bottom: 18px;
+}
+
+.tl-item span {
+  font-weight: 600;
+}
+
+.tl-item p {
+  color: #a5b4c7;
+  margin: 6px 0 0 0;
+}
+
+/* ================================
+   DARK SCROLLBAR (NO WHITE BAR!)
+================================ */
+
+/* Chrome / Safari / Edge */
+.vr-timeline::-webkit-scrollbar {
+  width: 6px;
+}
+
+.vr-timeline::-webkit-scrollbar-track {
+  background: #0f1b2b;
+  border-radius: 10px;
+}
+
+.vr-timeline::-webkit-scrollbar-thumb {
+  background: #1e2a3a;
+  border-radius: 10px;
+}
+
+.vr-timeline::-webkit-scrollbar-thumb:hover {
+  background: #334155;
+}
+
+/* Firefox */
+.vr-timeline {
+  scrollbar-width: thin;
+  scrollbar-color: #1e2a3a #0f1b2b;
+}
+/* LEGEND */
+.vr-legend {
+  display: flex;
+  gap: 25px;
+  margin-top: 18px;
+  padding: 10px 5px;
+  color: #bcd0e6;
+  font-size: 14px;
+}
+
+.legend-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.dot {
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  display: inline-block;
+}
+
+.dot.green {
+  background: #22c55e;
+}
+
+.dot.blue {
+  background: #3b82f6;
+}
+
+.dot.red {
+  background: #ef4444;
+}

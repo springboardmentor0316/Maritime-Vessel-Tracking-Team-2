@@ -8,7 +8,7 @@ export default function Login() {
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [role, setRole] = useState("Operator - Vessel Tracking");
+  const [role, setRole] = useState("Operator");
   const [error, setError] = useState("");
 
   const handleSubmit = async (e) => {
@@ -16,27 +16,23 @@ export default function Login() {
     setError("");
 
     try {
-      // CALL BACKEND LOGIN API 
+      // Backend login API call
       const res = await loginUser({
         email,
         password,
-        role,
       });
 
-      console.log("LOGIN SUCCESS:", res);
-
-      // STORE TOKENS FOR AUTH 
+      // Store JWT tokens
       localStorage.setItem("access", res.access);
       localStorage.setItem("refresh", res.refresh);
 
-      // STORE ROLE FOR SIDEBAR 
+      // Store role for Sidebar display
       localStorage.setItem("role", role);
 
-      // REDIRECT TO DASHBOARD 
-      navigate("/dashboard");
+      // Redirect to correct dashboard
+      navigate("/vessel-tracking");
     } catch (err) {
-      console.error("LOGIN ERROR:", err);
-      setError(err?.detail || "Invalid credentials");
+      setError("Invalid email or password");
     }
   };
 
@@ -63,7 +59,7 @@ export default function Login() {
           <label>Email</label>
           <input
             type="email"
-            placeholder="analyst@maritime.com"
+            placeholder="user@maritime.com"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             required
@@ -78,29 +74,24 @@ export default function Login() {
             required
           />
 
-          <div className="forgot-link-wrapper">
-            <button
-              type="button"
-              className="forgot-password"
-              onClick={goToForgotPassword}
-            >
+          {/* Forgot Password Link */}
+          <div className="forgot">
+            <button type="button" className="forgot-password" onClick={goToForgotPassword}>
               Forgot Password?
             </button>
           </div>
 
           <label>Role</label>
           <select value={role} onChange={(e) => setRole(e.target.value)}>
-            <option>Operator - Vessel Tracking</option>
-            <option>Analyst - Port Analytics</option>
-            <option>Admin - System Control</option>
+            <option value="Operator">Operator - Vessel Tracking</option>
+            <option value="Analyst">Analyst - Port Analytics</option>
+            <option value="Admin">Admin - System Control</option>
           </select>
 
-          <button type="submit" className="login-btn">
-            Sign In
-          </button>
+          <button type="submit" className="login-btn">Sign In</button>
         </form>
 
-        <p className="demo">Demo Credentials: Any email/password combination</p>
+        <p className="demo">Demo Credentials: Any email/password works</p>
       </div>
     </div>
   );
