@@ -2,21 +2,24 @@ import "../styles/Login.css";
 import { useState } from "react";
 import { loginUser } from "../api/auth";
 import { useNavigate } from "react-router-dom";
+import { useToast } from "../context/ToastContext";
 
 export default function Login() {
   const navigate = useNavigate();
+  const toast = useToast();
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [role, setRole] = useState("Operator - Vessel Tracking");
   const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError("");
+    setLoading(true);
 
     try {
-      // CALL BACKEND LOGIN API 
       const res = await loginUser({
         email,
         password,
@@ -25,18 +28,31 @@ export default function Login() {
 
       console.log("LOGIN SUCCESS:", res);
 
-      // STORE TOKENS FOR AUTH 
+      // Store tokens
       localStorage.setItem("access", res.access);
       localStorage.setItem("refresh", res.refresh);
-
-      // STORE ROLE FOR SIDEBAR 
+      localStorage.setItem("access_token", res.access);
+      localStorage.setItem("refresh_token", res.refresh);
       localStorage.setItem("role", role);
 
-      // REDIRECT TO DASHBOARD 
-      navigate("/dashboard");
+      if (res.user) {
+        localStorage.setItem("user", JSON.stringify(res.user));
+      }
+
+      toast.success("Login successful!");
+
+      // Force navigation to dashboard
+      setTimeout(() => {
+        navigate("/app/dashboard", { replace: true });
+      }, 100);
+
     } catch (err) {
       console.error("LOGIN ERROR:", err);
-      setError(err?.detail || "Invalid credentials");
+      const errorMessage = err?.detail || "Invalid credentials";
+      setError(errorMessage);
+      toast.error(errorMessage);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -67,6 +83,7 @@ export default function Login() {
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             required
+            disabled={loading}
           />
 
           <label>Password</label>
@@ -76,6 +93,7 @@ export default function Login() {
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             required
+            disabled={loading}
           />
 
           <div className="forgot-link-wrapper">
@@ -83,20 +101,21 @@ export default function Login() {
               type="button"
               className="forgot-password"
               onClick={goToForgotPassword}
+              disabled={loading}
             >
               Forgot Password?
             </button>
           </div>
 
           <label>Role</label>
-          <select value={role} onChange={(e) => setRole(e.target.value)}>
+          <select value={role} onChange={(e) => setRole(e.target.value)} disabled={loading}>
             <option>Operator - Vessel Tracking</option>
             <option>Analyst - Port Analytics</option>
             <option>Admin - System Control</option>
           </select>
 
-          <button type="submit" className="login-btn">
-            Sign In
+          <button type="submit" className="login-btn" disabled={loading}>
+            {loading ? "Signing in..." : "Sign In"}
           </button>
         </form>
 

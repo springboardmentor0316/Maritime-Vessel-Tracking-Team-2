@@ -1,0 +1,41 @@
+.app-layout {
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  background: #0a0e27;
+}
+
+.app-main {
+  flex: 1;
+  display: flex;
+  overflow: hidden;
+}
+
+.app-content {
+  flex: 1;
+  overflow-y: auto;
+  background: #0a0e27;
+}
+
+.app-content.sidebar-closed {
+  margin-left: 0;
+}
+
+/* Scrollbar for main content */
+.app-content::-webkit-scrollbar {
+  width: 8px;
+}
+
+.app-content::-webkit-scrollbar-track {
+  background: #0f1433;
+}
+
+.app-content::-webkit-scrollbar-thumb {
+  background: #2d3458;
+  border-radius: 4px;
+}
+
+.app-content::-webkit-scrollbar-thumb:hover {
+  background: #3b82f6;
+}

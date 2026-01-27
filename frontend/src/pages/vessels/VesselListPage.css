@@ -1,0 +1,140 @@
+.vessel-list-page {
+  padding: 24px;
+  background: #0a0e27;
+  min-height: 100vh;
+}
+
+.page-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 24px;
+}
+
+.page-header h1 {
+  margin: 0;
+  font-size: 28px;
+  font-weight: 600;
+  color: #e2e8f0;
+}
+
+.filters-container {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 24px;
+  flex-wrap: wrap;
+}
+
+.search-input {
+  flex: 1;
+  min-width: 250px;
+  padding: 10px 12px;
+  background: #1a1f4d;
+  border: 1px solid #2d3458;
+  border-radius: 6px;
+  font-size: 14px;
+  color: #e2e8f0;
+}
+
+.search-input::placeholder {
+  color: #64748b;
+}
+
+.search-input:focus {
+  outline: none;
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+.filter-select {
+  padding: 10px 12px;
+  background: #1a1f4d;
+  border: 1px solid #2d3458;
+  border-radius: 6px;
+  font-size: 14px;
+  min-width: 150px;
+  color: #e2e8f0;
+  cursor: pointer;
+}
+
+.filter-select:focus {
+  outline: none;
+  border-color: #3b82f6;
+}
+
+.vessel-name-link {
+  color: #3b82f6;
+  cursor: pointer;
+  font-weight: 500;
+  transition: color 0.2s;
+}
+
+.vessel-name-link:hover {
+  color: #60a5fa;
+  text-decoration: underline;
+}
+
+.action-buttons {
+  display: flex;
+  gap: 8px;
+}
+
+.btn-icon {
+  background: #1a1f4d;
+  border: 1px solid #2d3458;
+  cursor: pointer;
+  font-size: 16px;
+  padding: 6px 10px;
+  border-radius: 6px;
+  transition: all 0.2s;
+}
+
+.btn-icon:hover {
+  background: #2d3458;
+  border-color: #3b82f6;
+  transform: translateY(-1px);
+}
+
+.btn-icon.btn-view:hover {
+  border-color: #3b82f6;
+}
+
+.btn-icon.btn-edit:hover {
+  border-color: #10b981;
+}
+
+.btn-icon.btn-danger:hover {
+  border-color: #ef4444;
+}
+
+.btn {
+  padding: 10px 20px;
+  border: none;
+  border-radius: 6px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.btn-primary {
+  background: #3b82f6;
+  color: white;
+}
+
+.btn-primary:hover {
+  background: #2563eb;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(59, 130, 246, 0.4);
+}
+
+.btn-secondary {
+  background: #1a1f4d;
+  color: #e2e8f0;
+  border: 1px solid #2d3458;
+}
+
+.btn-secondary:hover {
+  background: #2d3458;
+  border-color: #3b82f6;
+}

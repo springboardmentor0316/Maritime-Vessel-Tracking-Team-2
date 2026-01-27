@@ -1,0 +1,16 @@
+.confirm-dialog-message {
+  margin: 0;
+  font-size: 14px;
+  color: #666;
+  line-height: 1.6;
+}
+
+.confirm-dialog-actions {
+  display: flex;
+  gap: 12px;
+  width: 100%;
+}
+
+.confirm-dialog-actions .btn {
+  flex: 1;
+}

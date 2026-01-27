@@ -10,8 +10,8 @@ router = DefaultRouter()
 router.register(r'vessels', VesselViewSet, basename='vessel')
 
 urlpatterns = [
-    # custom endpoints FIRST
-    path("vessels/live/", LiveVesselView.as_view(), name="live-vessels"),
+    # Your existing custom endpoints (preserved)
+    path("vessels/live-all/", LiveVesselView.as_view(), name="live-vessels-all"),  # Renamed to avoid conflict
     path(
         "vessels/update-position/",
         UpdateVesselPositionView.as_view(),
@@ -19,5 +19,5 @@ urlpatterns = [
     ),
 ]
 
-# router endpoints AFTER
+# Router endpoints (includes new AIS endpoints)
 urlpatterns += router.urls
