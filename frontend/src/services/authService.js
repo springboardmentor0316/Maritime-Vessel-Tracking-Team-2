@@ -8,40 +8,43 @@ const authService = {
         password,
       });
 
-      if (response.access) {
-        localStorage.setItem('access_token', response.access);
-        localStorage.setItem('access', response.access);
-      }
-      if (response.refresh) {
-        localStorage.setItem('refresh_token', response.refresh);
-        localStorage.setItem('refresh', response.refresh);
-      }
-      if (response.user) {
-        localStorage.setItem('user', JSON.stringify(response.user));
+      const data = response.data; // 🔑 THIS IS THE FIX
+
+      if (data?.access) {
+        localStorage.setItem('access_token', data.access);
+        localStorage.setItem('access', data.access);
       }
 
-      return response;
+      if (data?.refresh) {
+        localStorage.setItem('refresh_token', data.refresh);
+        localStorage.setItem('refresh', data.refresh);
+      }
+
+      if (data?.user) {
+        localStorage.setItem('user', JSON.stringify(data.user));
+      }
+
+      return data;
     } catch (error) {
       throw error;
     }
   },
 
   logout: () => {
-    localStorage.removeItem('access_token');
-    localStorage.removeItem('refresh_token');
-    localStorage.removeItem('access');
-    localStorage.removeItem('refresh');
-    localStorage.removeItem('user');
-    localStorage.removeItem('role');
+    localStorage.clear();
   },
 
   isAuthenticated: () => {
-    return !!(localStorage.getItem('access_token') || localStorage.getItem('access'));
+    return !!localStorage.getItem('access');
   },
 
   getStoredUser: () => {
-    const userStr = localStorage.getItem('user');
-    return userStr ? JSON.parse(userStr) : null;
+    try {
+      const userStr = localStorage.getItem('user');
+      return userStr ? JSON.parse(userStr) : null;
+    } catch {
+      return null;
+    }
   },
 };
 
