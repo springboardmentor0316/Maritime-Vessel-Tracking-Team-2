@@ -7,7 +7,20 @@ import { useToast } from '../../context/ToastContext';
 import './DashboardPage.css';
 import 'leaflet/dist/leaflet.css';
 
-// Same droplet icon from Live Map
+// React Icons (matching sidebar)
+import {
+  FiActivity,
+  FiAnchor,
+  FiAlertTriangle,
+  FiBarChart2,
+  FiNavigation,
+  FiClock,
+  FiMap,
+  FiFlag,
+  FiCloud
+} from "react-icons/fi";
+
+// Vessel Marker Icon
 const createVesselIcon = (status) => {
   const colors = {
     'underway': '#10b981',
@@ -40,6 +53,7 @@ const createVesselIcon = (status) => {
 const DashboardPage = () => {
   const navigate = useNavigate();
   const toast = useToast();
+
   const [stats, setStats] = useState({
     total_vessels: 0,
     active_1h: 0,
@@ -47,6 +61,7 @@ const DashboardPage = () => {
     by_status: {},
     by_type: {},
   });
+
   const [vessels, setVessels] = useState([]);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
@@ -69,7 +84,6 @@ const DashboardPage = () => {
       setLoading(false);
       setRefreshing(false);
     } catch (error) {
-      console.error('Failed to fetch dashboard data:', error);
       setLoading(false);
       setRefreshing(false);
       toast.error('Failed to refresh dashboard data');
@@ -80,10 +94,6 @@ const DashboardPage = () => {
     setRefreshing(true);
     toast.success('Refreshing dashboard...');
     fetchDashboardData();
-  };
-
-  const handleSettings = () => {
-    setShowSettings(true);
   };
 
   const getStatusCounts = () => {
@@ -112,47 +122,42 @@ const DashboardPage = () => {
 
   return (
     <div className="maritime-dashboard">
+
       {/* Header */}
       <div className="dashboard-header">
         <div>
           <h1>Maritime Command Center</h1>
           <p className="header-subtitle">Real-time global vessel tracking and analytics</p>
         </div>
+
         <div className="header-actions">
-          <button 
-            className={`btn-icon ${refreshing ? 'refreshing' : ''}`}
-            title="Refresh Dashboard" 
-            onClick={handleRefresh}
-            disabled={refreshing}
-          >
-            🔄
+          <button className={`btn-icon ${refreshing ? 'refreshing' : ''}`} onClick={handleRefresh}>
+            <FiActivity />
           </button>
-          <button 
-            className="btn-icon" 
-            title="Settings"
-            onClick={handleSettings}
-          >
-            ⚙️
+
+          <button className="btn-icon" onClick={() => setShowSettings(true)}>
+            <FiAlertTriangle />
           </button>
         </div>
       </div>
 
-      {/* Stats Grid */}
+      {/* Stats */}
       <div className="stats-grid">
+
         <div className="stat-card">
           <div className="stat-icon bg-blue">
-            <span>🚢</span>
+            <FiActivity size={22} />
           </div>
           <div className="stat-content">
             <div className="stat-label">Active Vessels</div>
-            <div className="stat-value">{stats.total_vessels.toLocaleString()}</div>
+            <div className="stat-value">{stats.total_vessels}</div>
             <div className="stat-change positive">+12% from yesterday</div>
           </div>
         </div>
 
         <div className="stat-card">
           <div className="stat-icon bg-cyan">
-            <span>⚓</span>
+            <FiAnchor size={22} />
           </div>
           <div className="stat-content">
             <div className="stat-label">Ports Monitored</div>
@@ -163,18 +168,18 @@ const DashboardPage = () => {
 
         <div className="stat-card">
           <div className="stat-icon bg-orange">
-            <span>⚠️</span>
+            <FiAlertTriangle size={22} />
           </div>
           <div className="stat-content">
             <div className="stat-label">Active Alerts</div>
-            <div className="stat-value">{Math.max(3, Math.floor(stats.total_vessels * 0.01))}</div>
+            <div className="stat-value">3</div>
             <div className="stat-change critical">3 critical</div>
           </div>
         </div>
 
         <div className="stat-card">
           <div className="stat-icon bg-orange">
-            <span>📊</span>
+            <FiBarChart2 size={22} />
           </div>
           <div className="stat-content">
             <div className="stat-label">Avg Congestion</div>
@@ -185,18 +190,18 @@ const DashboardPage = () => {
 
         <div className="stat-card">
           <div className="stat-icon bg-green">
-            <span>🚀</span>
+            <FiNavigation size={22} />
           </div>
           <div className="stat-content">
             <div className="stat-label">Vessels Underway</div>
-            <div className="stat-value">{statusCounts.underway.toLocaleString()}</div>
+            <div className="stat-value">{statusCounts.underway}</div>
             <div className="stat-change positive">Real-time tracking</div>
           </div>
         </div>
 
         <div className="stat-card">
           <div className="stat-icon bg-blue">
-            <span>🕐</span>
+            <FiClock size={22} />
           </div>
           <div className="stat-content">
             <div className="stat-label">Recent Arrivals</div>
@@ -204,21 +209,25 @@ const DashboardPage = () => {
             <div className="stat-change neutral">Last 24h</div>
           </div>
         </div>
+
       </div>
 
-      {/* Main Content Area */}
+      {/* Main Content */}
       <div className="dashboard-content">
-        {/* Global Vessel Tracking Map */}
+        
+        {/* Map Section */}
         <div className="map-section">
+
           <div className="section-header">
             <div className="section-title">
-              <span className="title-icon">🗺️</span>
+              <FiMap className="title-icon" />
               <span>Global Vessel Tracking</span>
             </div>
+
             <div className="section-stats">
-              <span>🚢 {vessels.length} vessels</span>
-              <span>⚓ {statusCounts.anchored} anchored</span>
-              <span>⚠️ 3 alerts</span>
+              <span><FiActivity /> {vessels.length} vessels</span>
+              <span><FiAnchor /> {statusCounts.anchored} anchored</span>
+              <span><FiAlertTriangle /> 3 alerts</span>
             </div>
           </div>
 
@@ -226,193 +235,74 @@ const DashboardPage = () => {
             <MapContainer
               center={[1.3521, 103.8198]}
               zoom={2}
-              style={{ height: '100%', width: '100%' }}
+              style={{ height: "100%", width: "100%" }}
               zoomControl={false}
             >
               <TileLayer
-                attribution='&copy; OpenStreetMap'
+                attribution="&copy; OpenStreetMap"
                 url="https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png"
               />
-              
-              {vesselsWithAlerts.map((vessel) => (
-                vessel.latitude && vessel.longitude && (
-                  <React.Fragment key={vessel.id}>
-                    {vessel.hasAlert && (
-                      <>
-                        <Circle
-                          center={[parseFloat(vessel.latitude), parseFloat(vessel.longitude)]}
-                          radius={80000}
-                          pathOptions={{
-                            color: '#ef4444',
-                            fillColor: '#ef4444',
-                            fillOpacity: 0.08,
-                            weight: 2,
-                            dashArray: '10, 10',
-                          }}
-                        />
-                        <Circle
-                          center={[parseFloat(vessel.latitude), parseFloat(vessel.longitude)]}
-                          radius={15000}
-                          pathOptions={{
-                            color: '#ef4444',
-                            fillColor: '#ef4444',
-                            fillOpacity: 0.9,
-                            weight: 0,
-                          }}
-                        />
-                      </>
-                    )}
-                    <Marker
-                      position={[parseFloat(vessel.latitude), parseFloat(vessel.longitude)]}
-                      icon={createVesselIcon(vessel.hasAlert ? 'alert' : vessel.status)}
-                    />
-                  </React.Fragment>
-                )
-              ))}
-            </MapContainer>
 
-            {/* Legend */}
-            <div className="map-legend">
-              <div className="legend-title">Legend</div>
-              <div className="legend-items">
-                <div className="legend-item">
-                  <span className="legend-dot" style={{ background: '#10b981' }}></span>
-                  <span>Underway</span>
-                </div>
-                <div className="legend-item">
-                  <span className="legend-dot" style={{ background: '#f59e0b' }}></span>
-                  <span>Anchored</span>
-                </div>
-                <div className="legend-item">
-                  <span className="legend-dot" style={{ background: '#3b82f6' }}></span>
-                  <span>Moored</span>
-                </div>
-                <div className="legend-item">
-                  <span className="legend-dot" style={{ background: '#64748b' }}></span>
-                  <span>Port</span>
-                </div>
-                <div className="legend-item">
-                  <span className="legend-dot" style={{ background: '#ef4444' }}></span>
-                  <span>Alert Zone</span>
-                </div>
-              </div>
-            </div>
+              {vesselsWithAlerts.map((v) =>
+                v.latitude && v.longitude ? (
+                  <Marker
+                    key={v.id}
+                    position={[parseFloat(v.latitude), parseFloat(v.longitude)]}
+                    icon={createVesselIcon(v.hasAlert ? "alert" : v.status)}
+                  />
+                ) : null
+              )}
+            </MapContainer>
           </div>
+
         </div>
 
-        {/* Safety Alerts Sidebar */}
+        {/* Alerts Sidebar */}
         <div className="alerts-sidebar">
+
           <div className="alerts-header">
             <h3>Safety Alerts</h3>
             <span className="alerts-count">3 active alerts</span>
           </div>
 
           <div className="alert-card critical">
-            <div className="alert-icon">⚠️</div>
+            <div className="alert-icon"><FiAlertTriangle size={20} /></div>
             <div className="alert-content">
               <div className="alert-title">
                 <span>Tropical Storm Warning</span>
                 <span className="alert-badge high">High</span>
               </div>
-              <p className="alert-description">
-                Tropical storm developing in the Gulf of Mexico. Winds expected to reach 65 knots.
-              </p>
-              <div className="alert-location">📍 Gulf of Mexico</div>
+              <p>Tropical storm developing in the Gulf of Mexico.</p>
+              <div className="alert-location"><FiFlag /> Gulf of Mexico</div>
             </div>
           </div>
 
           <div className="alert-card critical">
-            <div className="alert-icon">🏴‍☠️</div>
+            <div className="alert-icon"><FiFlag size={20} /></div>
             <div className="alert-content">
               <div className="alert-title">
                 <span>High-Risk Piracy Zone</span>
                 <span className="alert-badge critical">Critical</span>
               </div>
-              <p className="alert-description">
-                Multiple piracy incidents reported in the Gulf of Aden. All vessels advised to maintain...
-              </p>
-              <div className="alert-location">📍 Gulf of Aden</div>
+              <p>Multiple piracy incidents reported.</p>
+              <div className="alert-location"><FiFlag /> Gulf of Aden</div>
             </div>
           </div>
 
           <div className="alert-card warning">
-            <div className="alert-icon">🌫️</div>
+            <div className="alert-icon"><FiCloud size={20} /></div>
             <div className="alert-content">
               <div className="alert-title">
                 <span>Heavy Fog Advisory</span>
                 <span className="alert-badge medium">Medium</span>
               </div>
-              <p className="alert-description">
-                Dense fog reducing visibility to under 500m in the English Channel.
-              </p>
-              <div className="alert-location">📍 English Channel</div>
+              <p>Dense fog reducing visibility.</p>
+              <div className="alert-location"><FiCloud /> English Channel</div>
             </div>
           </div>
+
         </div>
       </div>
-
-      {/* Settings Modal */}
-      {showSettings && (
-        <div className="modal-overlay" onClick={() => setShowSettings(false)}>
-          <div className="modal-content-settings" onClick={(e) => e.stopPropagation()}>
-            <div className="modal-header">
-              <h2>Dashboard Settings</h2>
-              <button className="modal-close" onClick={() => setShowSettings(false)}>✕</button>
-            </div>
-            <div className="modal-body">
-              <div className="settings-section">
-                <h3>Display Options</h3>
-                <div className="setting-item">
-                  <label>
-                    <input type="checkbox" defaultChecked />
-                    <span>Auto-refresh every 30 seconds</span>
-                  </label>
-                </div>
-                <div className="setting-item">
-                  <label>
-                    <input type="checkbox" defaultChecked />
-                    <span>Show alert notifications</span>
-                  </label>
-                </div>
-                <div className="setting-item">
-                  <label>
-                    <input type="checkbox" defaultChecked />
-                    <span>Display vessel routes</span>
-                  </label>
-                </div>
-              </div>
-
-              <div className="settings-section">
-                <h3>Map Options</h3>
-                <div className="setting-item">
-                  <label>
-                    <input type="checkbox" defaultChecked />
-                    <span>Show danger zones</span>
-                  </label>
-                </div>
-                <div className="setting-item">
-                  <label>
-                    <input type="checkbox" />
-                    <span>Display port boundaries</span>
-                  </label>
-                </div>
-              </div>
-
-              <div className="settings-actions">
-                <button className="btn-secondary" onClick={() => setShowSettings(false)}>
-                  Cancel
-                </button>
-                <button className="btn-primary" onClick={() => {
-                  setShowSettings(false);
-                  toast.success('Settings saved successfully');
-                }}>
-                  Save Settings
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
     </div>
   );
 };

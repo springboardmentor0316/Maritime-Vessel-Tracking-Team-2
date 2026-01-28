@@ -3,10 +3,12 @@ import { useState } from "react";
 import { loginUser } from "../api/auth";
 import { useNavigate } from "react-router-dom";
 import { useToast } from "../context/ToastContext";
+import { useAuth } from "../context/AuthContext";
 
 export default function Login() {
   const navigate = useNavigate();
   const toast = useToast();
+  const { login: authLogin } = useAuth();
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -28,20 +30,28 @@ export default function Login() {
 
       console.log("LOGIN SUCCESS:", res);
 
-      // Store tokens
+      // Save tokens
       localStorage.setItem("access", res.access);
       localStorage.setItem("refresh", res.refresh);
       localStorage.setItem("access_token", res.access);
       localStorage.setItem("refresh_token", res.refresh);
       localStorage.setItem("role", role);
 
-      if (res.user) {
-        localStorage.setItem("user", JSON.stringify(res.user));
-      }
+      // ⭐ Backend is NOT returning user – so we create user manually
+      const userObject = {
+        email: email,
+        role: role,
+      };
+
+      // Save user info
+      localStorage.setItem("user", JSON.stringify(userObject));
+
+      // Update AuthContext
+      authLogin(userObject);
 
       toast.success("Login successful!");
 
-      // Force navigation to dashboard
+      // Navigate to dashboard
       setTimeout(() => {
         navigate("/app/dashboard", { replace: true });
       }, 100);
@@ -54,10 +64,6 @@ export default function Login() {
     } finally {
       setLoading(false);
     }
-  };
-
-  const goToForgotPassword = () => {
-    navigate("/forgot-password");
   };
 
   return (
@@ -96,19 +102,12 @@ export default function Login() {
             disabled={loading}
           />
 
-          <div className="forgot-link-wrapper">
-            <button
-              type="button"
-              className="forgot-password"
-              onClick={goToForgotPassword}
-              disabled={loading}
-            >
-              Forgot Password?
-            </button>
-          </div>
-
           <label>Role</label>
-          <select value={role} onChange={(e) => setRole(e.target.value)} disabled={loading}>
+          <select 
+            value={role} 
+            onChange={(e) => setRole(e.target.value)} 
+            disabled={loading}
+          >
             <option>Operator - Vessel Tracking</option>
             <option>Analyst - Port Analytics</option>
             <option>Admin - System Control</option>
@@ -119,7 +118,9 @@ export default function Login() {
           </button>
         </form>
 
-        <p className="demo">Demo Credentials: Any email/password combination</p>
+        <p className="demo">
+          Demo Credentials: Any email/password combination
+        </p>
       </div>
     </div>
   );

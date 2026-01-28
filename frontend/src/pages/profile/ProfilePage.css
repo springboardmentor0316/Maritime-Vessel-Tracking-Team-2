@@ -1,66 +1,59 @@
 .profile-page {
-  padding: 24px;
-  max-width: 800px;
-  margin: 0 auto;
-  background: #0a0e27;
-  min-height: 100vh;
-}
-
-.profile-page h1 {
-  margin-bottom: 24px;
-  font-size: 28px;
-  font-weight: 600;
+  padding: 40px;
   color: #e2e8f0;
 }
 
 .profile-card {
-  background: #0f1433;
-  border: 1px solid #1a1f4d;
+  background: rgba(30, 58, 95, 0.4);
+  border: 1px solid #2d4a6f;
   border-radius: 12px;
-  padding: 40px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 32px;
+  padding: 30px;
+  max-width: 500px;
+  margin: auto;
 }
 
 .profile-avatar {
-  width: 120px;
-  height: 120px;
+  width: 90px;
+  height: 90px;
+  margin: 10px auto 25px;
   border-radius: 50%;
-  background: #3b82f6;
-  color: white;
+  background: #1e3a5f;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 48px;
-  font-weight: 600;
-  box-shadow: 0 4px 16px rgba(59, 130, 246, 0.4);
+  border: 2px solid #3b82f6;
 }
 
+.profile-icon {
+  width: 50px;
+  height: 50px;
+}
+
+/* FIX SPACING HERE */
 .profile-info {
-  width: 100%;
-  max-width: 400px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px; /* reduces space between rows */
 }
 
+/* Row */
 .info-row {
   display: flex;
-  justify-content: space-between;
-  padding: 16px 0;
-  border-bottom: 1px solid #1a1f4d;
+  align-items: center;
+  gap: 12px; /* 🔥 reduces the big gap */
 }
 
-.info-row:last-child {
-  border-bottom: none;
-}
-
-.info-row .label {
-  font-weight: 500;
+/* Label */
+.label {
+  width: 90px;              /* fixed width so alignment stays clean */
+  font-weight: 600;
   color: #94a3b8;
+  text-align: left;
 }
 
-.info-row .value {
+/* Value */
+.value {
+  flex: 1;
   color: #e2e8f0;
-  font-weight: 500;
+  font-size: 15px;
 }

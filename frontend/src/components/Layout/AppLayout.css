@@ -1,41 +1,41 @@
+/* MAIN LAYOUT WRAPPER */
 .app-layout {
-  height: 100vh;
   display: flex;
   flex-direction: column;
-  overflow: hidden;
+  height: 100vh;
   background: #0a0e27;
-}
-
-.app-main {
-  flex: 1;
-  display: flex;
   overflow: hidden;
 }
 
+/* ---------------------------------------------------
+   MAIN AREA BELOW NAVBAR
+--------------------------------------------------- */
+.app-main {
+  display: flex;
+  width: 100%;
+  height: calc(100vh - 70px); /* navbar height */
+  margin-top: 70px;           /* ensures content starts below navbar */
+  overflow: hidden;
+}
+
+/* When sidebar is collapsed, content moves left */
+.app-main.collapsed .app-content {
+  margin-left: 70px;
+}
+
+/* ---------------------------------------------------
+   PAGE CONTENT AREA
+--------------------------------------------------- */
 .app-content {
   flex: 1;
   overflow-y: auto;
+  padding: 24px;
+  margin-left: 240px;    /* matches sidebar width */
+  transition: margin-left 0.25s ease-in-out;
   background: #0a0e27;
 }
 
-.app-content.sidebar-closed {
-  margin-left: 0;
-}
-
-/* Scrollbar for main content */
-.app-content::-webkit-scrollbar {
-  width: 8px;
-}
-
-.app-content::-webkit-scrollbar-track {
-  background: #0f1433;
-}
-
-.app-content::-webkit-scrollbar-thumb {
-  background: #2d3458;
-  border-radius: 4px;
-}
-
-.app-content::-webkit-scrollbar-thumb:hover {
-  background: #3b82f6;
+/* Prevent content from going out */
+.app-content > * {
+  max-width: 100%;
 }

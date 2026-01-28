@@ -9,12 +9,21 @@ const AppLayout = () => {
 
   return (
     <div className="app-layout">
+
+      {/* FIXED NAVBAR */}
       <Navbar onToggleSidebar={() => setSidebarOpen(!sidebarOpen)} />
-      <div className="app-main">
+
+      {/* MAIN AREA */}
+      <div className={`app-main ${!sidebarOpen ? 'collapsed' : ''}`}>
+
+        {/* SIDEBAR */}
         <Sidebar isOpen={sidebarOpen} />
-        <main className={`app-content ${!sidebarOpen ? 'sidebar-closed' : ''}`}>
+
+        {/* PAGE CONTENT */}
+        <main className="app-content">
           <Outlet />
         </main>
+
       </div>
     </div>
   );

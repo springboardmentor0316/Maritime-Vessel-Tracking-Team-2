@@ -1,5 +1,4 @@
-import React, { createContext, useState, useContext, useEffect } from 'react';
-import authService from '../services/authService';
+import React, { createContext, useState, useContext, useEffect } from "react";
 
 const AuthContext = createContext(null);
 
@@ -14,57 +13,59 @@ export const AuthProvider = ({ children }) => {
 
   const checkAuth = () => {
     try {
-      const token = localStorage.getItem('access') || localStorage.getItem('access_token');
-      
+      const token = localStorage.getItem("access");
+
       if (token) {
-        const storedUser = authService.getStoredUser();
-        setUser(storedUser || { email: 'user@example.com' });
-        setIsAuthenticated(true);
+        const storedUser = localStorage.getItem("user");
+        if (storedUser) {
+          setUser(JSON.parse(storedUser));
+          setIsAuthenticated(true);
+        }
       } else {
-        setIsAuthenticated(false);
         setUser(null);
+        setIsAuthenticated(false);
       }
     } catch (error) {
-      console.error('Auth check failed:', error);
-      setIsAuthenticated(false);
+      console.error("Auth check failed:", error);
       setUser(null);
+      setIsAuthenticated(false);
     } finally {
       setLoading(false);
     }
   };
 
-  const login = async (email, password) => {
-    try {
-      const response = await authService.login(email, password);
-      setUser(response.user || { email });
-      setIsAuthenticated(true);
-      return response;
-    } catch (error) {
-      throw error;
-    }
+  // FIXED LOGIN FUNCTION
+  const login = (userData, tokens) => {
+    // Save tokens
+    if (tokens?.access) localStorage.setItem("access", tokens.access);
+    if (tokens?.refresh) localStorage.setItem("refresh", tokens.refresh);
+
+    // Save user data (email + role)
+    localStorage.setItem("user", JSON.stringify(userData));
+
+    setUser(userData);
+    setIsAuthenticated(true);
   };
 
   const logout = () => {
-    authService.logout();
+    localStorage.clear();
     setUser(null);
     setIsAuthenticated(false);
   };
 
-  const value = {
-    user,
-    loading,
-    isAuthenticated,
-    login,
-    logout,
-  };
-
-  return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
+  return (
+    <AuthContext.Provider
+      value={{
+        user,
+        loading,
+        isAuthenticated,
+        login,
+        logout,
+      }}
+    >
+      {children}
+    </AuthContext.Provider>
+  );
 };
 
-export const useAuth = () => {
-  const context = useContext(AuthContext);
-  if (!context) {
-    throw new Error('useAuth must be used within an AuthProvider');
-  }
-  return context;
-};
+export const useAuth = () => useContext(AuthContext);

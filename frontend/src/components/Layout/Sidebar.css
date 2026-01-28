@@ -1,90 +1,87 @@
+/* SIDEBAR WRAPPER */
 .sidebar {
-  width: 250px;
-  background: #0f1433;
-  border-right: 1px solid #1a1f4d;
-  transition: width 0.3s ease;
+  position: fixed;
+  top: 70px;                /* ⬅ STARTS BELOW NAVBAR (very important) */
+  left: 0;
+  width: 240px;
+  height: calc(100vh - 70px);  /* ⬅ Fills remaining height below navbar */
+  background: #0c1533;
+  border-right: 1px solid #1e2a53;
   overflow-y: auto;
-  height: 100%;
+  transition: width 0.25s ease-in-out;
+  z-index: 4000;           /* stays under navbar but above content */
+  padding-top: 10px;
 }
 
-.sidebar.closed {
-  width: 0;
+/* COLLAPSED SIDEBAR */
+.sidebar.sidebar-collapsed {
+  width: 70px;
 }
 
+/* NAVIGATION CONTENT */
 .sidebar-nav {
-  padding: 20px 0;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 0 12px;
 }
 
+/* GROUP LABEL (VESSELS / PORTS) */
+.nav-group-label {
+  font-size: 11px;
+  text-transform: uppercase;
+  font-weight: 600;
+  color: #64748b;
+  margin: 14px 0 4px 6px;
+  letter-spacing: 0.5px;
+}
+
+/* NAV ITEM */
 .nav-item {
   display: flex;
   align-items: center;
-  gap: 12px;
-  padding: 12px 20px;
-  color: #94a3b8;
-  text-decoration: none;
-  transition: all 0.2s;
+  gap: 10px;
+  padding: 12px;
+  border-radius: 10px;
+  color: #cbd5e1;
   font-size: 14px;
-  font-weight: 500;
+  text-decoration: none;
+  transition: background 0.2s;
 }
 
 .nav-item:hover {
-  background: #1a1f4d;
-  color: #e2e8f0;
+  background: rgba(255, 255, 255, 0.08);
 }
 
 .nav-item.active {
-  background: linear-gradient(90deg, #1e40af 0%, transparent 100%);
-  color: #3b82f6;
-  border-right: 3px solid #3b82f6;
+  background: linear-gradient(135deg, #1e3a8a, #2563eb);
+  color: #fff;
 }
 
+/* ICONS */
 .nav-icon {
-  font-size: 18px;
-  width: 24px;
-  text-align: center;
-}
-
-.nav-label {
-  font-size: 14px;
-  font-weight: 500;
-}
-
-.nav-group {
-  margin-bottom: 8px;
-}
-
-.nav-group-label {
+  font-size: 16px;
   display: flex;
   align-items: center;
-  gap: 12px;
-  padding: 12px 20px;
-  color: #64748b;
-  font-weight: 600;
-  font-size: 11px;
-  text-transform: uppercase;
-  letter-spacing: 1px;
-  margin-top: 16px;
 }
 
-.nav-group-items .nav-item {
-  padding-left: 56px;
-  font-size: 13px;
+/* COLLAPSED VIEW — hide labels but keep icons */
+.sidebar.sidebar-collapsed .nav-label {
+  display: none;
 }
 
-/* Scrollbar */
+.sidebar.sidebar-collapsed .nav-group-label {
+  display: none;
+}
+
+/* for nice scroll */
 .sidebar::-webkit-scrollbar {
   width: 6px;
 }
-
-.sidebar::-webkit-scrollbar-track {
-  background: #0f1433;
-}
-
 .sidebar::-webkit-scrollbar-thumb {
-  background: #2d3458;
-  border-radius: 3px;
+  background: #1e2a53;
+  border-radius: 5px;
 }
-
 .sidebar::-webkit-scrollbar-thumb:hover {
   background: #3b82f6;
 }

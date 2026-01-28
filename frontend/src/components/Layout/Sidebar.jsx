@@ -5,7 +5,8 @@ import './Sidebar.css';
 
 const Sidebar = ({ isOpen }) => {
   return (
-    <aside className={`sidebar ${!isOpen ? 'closed' : ''}`}>
+    <aside className={`sidebar ${!isOpen ? 'sidebar-collapsed' : ''}`}>
+
       <nav className="sidebar-nav">
         {NAV_ITEMS.map((item) => (
           <div key={item.id}>
