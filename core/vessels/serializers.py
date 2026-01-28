@@ -16,6 +16,8 @@ class VesselSerializer(serializers.ModelSerializer):
     class Meta:
         model = Vessel
         fields = '__all__'
+        # Make these fields read-only after creation
+        read_only_fields = ['mmsi', 'imo_number', 'created_at', 'updated_at']
     
     def get_latest_position(self, obj):
         """Get the most recent position"""
@@ -27,7 +29,6 @@ class VesselSerializer(serializers.ModelSerializer):
     def get_position_count(self, obj):
         """Count of historical positions"""
         return obj.positions.count()
-
 
 class VesselLiveSerializer(serializers.ModelSerializer):
     """Lightweight serializer for live map"""

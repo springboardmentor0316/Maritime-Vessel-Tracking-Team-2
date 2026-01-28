@@ -17,10 +17,11 @@ import ProtectedRoute from "./components/common/ProtectedRoute";
 // New pages
 import VesselListPage from "./pages/vessels/VesselListPage";
 import VesselDetailPage from "./pages/vessels/VesselDetailPage";
-import VesselFormPage from "./pages/vessels/VesselFormPage";
+import VesselEditPage from "./pages/vessels/VesselEditPage";
 import LiveVesselMapPage from "./pages/vessels/LiveVesselMapPage";
 import DashboardPage from "./pages/dashboard/DashboardPage";
 import ProfilePage from "./pages/profile/ProfilePage";
+import AnalyticsPage from './pages/analytics/AnalyticsPage';
 
 function App() {
   return (
@@ -36,7 +37,7 @@ function App() {
             <Route path="/forgot-password" element={<ForgotPassword />} />
             <Route path="/reset-password/:token" element={<ResetPassword />} />
 
-            {/* New Protected Routes with Layout */}
+            {/* Protected Routes with Layout */}
             <Route
               path="/app"
               element={
@@ -52,10 +53,13 @@ function App() {
               <Route path="vessels">
                 <Route index element={<VesselListPage />} />
                 <Route path="live" element={<LiveVesselMapPage />} />
-                <Route path="new" element={<VesselFormPage />} />
+                <Route path="new" element={<VesselEditPage />} />
                 <Route path=":id" element={<VesselDetailPage />} />
-                <Route path=":id/edit" element={<VesselFormPage />} />
+                <Route path=":id/edit" element={<VesselEditPage />} />
               </Route>
+
+              {/* Analytics - FIXED */}
+              <Route path="analytics" element={<AnalyticsPage />} />
 
               {/* Profile */}
               <Route path="profile" element={<ProfilePage />} />
@@ -65,7 +69,6 @@ function App() {
               <Route path="voyages" element={<div className="page-placeholder">Voyages (Coming Soon)</div>} />
               <Route path="events" element={<div className="page-placeholder">Events (Coming Soon)</div>} />
               <Route path="safety" element={<div className="page-placeholder">Safety (Coming Soon)</div>} />
-              <Route path="analytics" element={<div className="page-placeholder">Analytics (Coming Soon)</div>} />
             </Route>
 
             {/* Fallback */}

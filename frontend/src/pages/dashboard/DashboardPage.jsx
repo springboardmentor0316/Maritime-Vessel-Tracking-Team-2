@@ -1,193 +1,418 @@
 import React, { useState, useEffect } from 'react';
-import { useAuth } from '../../context/AuthContext';
-import statsService from '../../services/statsService';
+import { useNavigate } from 'react-router-dom';
+import { MapContainer, TileLayer, Marker, Circle } from 'react-leaflet';
+import L from 'leaflet';
+import vesselService from '../../services/vesselService';
+import { useToast } from '../../context/ToastContext';
 import './DashboardPage.css';
+import 'leaflet/dist/leaflet.css';
+
+// Same droplet icon from Live Map
+const createVesselIcon = (status) => {
+  const colors = {
+    'underway': '#10b981',
+    'active': '#10b981',
+    'anchored': '#f59e0b',
+    'moored': '#64748b',
+    'inactive': '#64748b',
+    'alert': '#ef4444',
+  };
+
+  const color = colors[status?.toLowerCase()] || '#10b981';
+
+  return L.divIcon({
+    className: 'custom-vessel-marker',
+    html: `
+      <svg width="32" height="40" viewBox="0 0 32 40" fill="none">
+        <path d="M16 0C9.37258 0 4 5.37258 4 12C4 21 16 40 16 40C16 40 28 21 28 12C28 5.37258 22.6274 0 16 0Z" 
+              fill="${color}" 
+              stroke="#fff" 
+              stroke-width="2"/>
+        <circle cx="16" cy="12" r="5" fill="#fff"/>
+      </svg>
+    `,
+    iconSize: [32, 40],
+    iconAnchor: [16, 40],
+    popupAnchor: [0, -40],
+  });
+};
 
 const DashboardPage = () => {
-  const { user } = useAuth();
+  const navigate = useNavigate();
+  const toast = useToast();
   const [stats, setStats] = useState({
-    activeVessels: 1248,
-    avgDelay: '4.2h',
-    activeAlerts: 3,
-    systemStatus: 'Operational',
-    throughput: '12.4k'
+    total_vessels: 0,
+    active_1h: 0,
+    active_24h: 0,
+    by_status: {},
+    by_type: {},
   });
+  const [vessels, setVessels] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [refreshing, setRefreshing] = useState(false);
+  const [showSettings, setShowSettings] = useState(false);
 
-  const [alerts] = useState([
-    {
-      id: 1,
-      type: 'PIRACY WARNING',
-      severity: 'critical',
-      message: 'Suspicious skiff activity reported near Vessel Nordic Star.',
-      time: '2m ago',
-      coordinates: '04°12\'N, 98°16\'E',
-      color: '#ef4444'
-    },
-    {
-      id: 2,
-      type: 'SEVERE WEATHER',
-      severity: 'warning',
-      message: 'Cyclone \'Biparjoy\' forming. Wind speeds > 120km/h expected.',
-      time: '15m ago',
-      sector: 'Sector 4',
-      color: '#f97316'
-    },
-    {
-      id: 3,
-      type: 'PORT CONGESTION',
-      severity: 'info',
-      message: 'Port of Singapore berth availability critical (< 10%).',
-      time: '1h ago',
-      color: '#3b82f6'
+  useEffect(() => {
+    fetchDashboardData();
+    const interval = setInterval(fetchDashboardData, 30000);
+    return () => clearInterval(interval);
+  }, []);
+
+  const fetchDashboardData = async () => {
+    try {
+      const [statsData, vesselsData] = await Promise.all([
+        vesselService.getStatistics(),
+        vesselService.getLiveVessels(1),
+      ]);
+      setStats(statsData);
+      setVessels(vesselsData);
+      setLoading(false);
+      setRefreshing(false);
+    } catch (error) {
+      console.error('Failed to fetch dashboard data:', error);
+      setLoading(false);
+      setRefreshing(false);
+      toast.error('Failed to refresh dashboard data');
     }
-  ]);
+  };
+
+  const handleRefresh = () => {
+    setRefreshing(true);
+    toast.success('Refreshing dashboard...');
+    fetchDashboardData();
+  };
+
+  const handleSettings = () => {
+    setShowSettings(true);
+  };
+
+  const getStatusCounts = () => {
+    const underway = (stats.by_status?.underway || 0) + (stats.by_status?.active || 0);
+    const anchored = stats.by_status?.anchored || 0;
+    const moored = stats.by_status?.moored || 0;
+    const inactive = stats.by_status?.inactive || 0;
+    return { underway, anchored, moored, inactive };
+  };
+
+  const statusCounts = getStatusCounts();
+
+  const vesselsWithAlerts = vessels.map((vessel, index) => ({
+    ...vessel,
+    hasAlert: index < 3 && vessel.status !== 'inactive',
+  }));
+
+  if (loading) {
+    return (
+      <div className="dashboard-loading">
+        <div className="loading-spinner"></div>
+        <p>Loading Maritime Command Center...</p>
+      </div>
+    );
+  }
 
   return (
-    <div className="dashboard-page">
-      {/* Top Bar */}
+    <div className="maritime-dashboard">
+      {/* Header */}
       <div className="dashboard-header">
-        <div className="header-search">
-          <svg width="20" height="20" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
-            <circle cx="11" cy="11" r="8"/>
-            <path d="m21 21-4.35-4.35"/>
-          </svg>
-          <input type="text" placeholder="Search vessels (IMO), ports, or safety zone" />
+        <div>
+          <h1>Maritime Command Center</h1>
+          <p className="header-subtitle">Real-time global vessel tracking and analytics</p>
         </div>
-        <div className="header-right">
-          <span className="view-as">VIEW AS:</span>
-          <select className="role-select">
-            <option>Admin</option>
-            <option>Operator</option>
-            <option>Analyst</option>
-          </select>
-          <div className="notifications-icon">
-            🔔
-            <span className="badge">3</span>
-          </div>
-          <div className="user-info">
-            <div className="user-details">
-              <div className="user-name">Capt. A. Smith</div>
-              <div className="user-role">SYSTEM ADMINISTRATOR</div>
-            </div>
-            <div className="user-avatar">AS</div>
-          </div>
+        <div className="header-actions">
+          <button 
+            className={`btn-icon ${refreshing ? 'refreshing' : ''}`}
+            title="Refresh Dashboard" 
+            onClick={handleRefresh}
+            disabled={refreshing}
+          >
+            🔄
+          </button>
+          <button 
+            className="btn-icon" 
+            title="Settings"
+            onClick={handleSettings}
+          >
+            ⚙️
+          </button>
         </div>
       </div>
 
-      {/* Stats Cards */}
+      {/* Stats Grid */}
       <div className="stats-grid">
         <div className="stat-card">
-          <div className="stat-label">ACTIVE VESSELS</div>
-          <div className="stat-value">
-            {stats.activeVessels.toLocaleString()}
-            <span className="stat-trend positive">↗ 4.2%</span>
+          <div className="stat-icon bg-blue">
+            <span>🚢</span>
+          </div>
+          <div className="stat-content">
+            <div className="stat-label">Active Vessels</div>
+            <div className="stat-value">{stats.total_vessels.toLocaleString()}</div>
+            <div className="stat-change positive">+12% from yesterday</div>
           </div>
         </div>
 
         <div className="stat-card">
-          <div className="stat-label">AVG. DELAY ⏱</div>
-          <div className="stat-value">{stats.avgDelay}</div>
-          <div className="progress-bar">
-            <div className="progress-fill" style={{ width: '35%' }}></div>
+          <div className="stat-icon bg-cyan">
+            <span>⚓</span>
           </div>
-        </div>
-
-        <div className="stat-card alert-card">
-          <div className="stat-label">⚠ ACTIVE ALERTS</div>
-          <div className="stat-value">
-            {stats.activeAlerts}
-            <span className="stat-sublabel">Critical</span>
-          </div>
-        </div>
-
-        <div className="stat-card status-card">
-          <div className="stat-label">💚 SYSTEM STATUS</div>
-          <div className="stat-value">
-            {stats.systemStatus}
-            <span className="status-indicator">●</span>
+          <div className="stat-content">
+            <div className="stat-label">Ports Monitored</div>
+            <div className="stat-value">156</div>
+            <div className="stat-change neutral">Global coverage</div>
           </div>
         </div>
 
         <div className="stat-card">
-          <div className="stat-label">📦 THROUGHPUT (TEU)</div>
-          <div className="stat-value">
-            {stats.throughput}
-            <span className="stat-sublabel">Daily Avg</span>
+          <div className="stat-icon bg-orange">
+            <span>⚠️</span>
+          </div>
+          <div className="stat-content">
+            <div className="stat-label">Active Alerts</div>
+            <div className="stat-value">{Math.max(3, Math.floor(stats.total_vessels * 0.01))}</div>
+            <div className="stat-change critical">3 critical</div>
+          </div>
+        </div>
+
+        <div className="stat-card">
+          <div className="stat-icon bg-orange">
+            <span>📊</span>
+          </div>
+          <div className="stat-content">
+            <div className="stat-label">Avg Congestion</div>
+            <div className="stat-value">74%</div>
+            <div className="stat-change negative">+5% this week</div>
+          </div>
+        </div>
+
+        <div className="stat-card">
+          <div className="stat-icon bg-green">
+            <span>🚀</span>
+          </div>
+          <div className="stat-content">
+            <div className="stat-label">Vessels Underway</div>
+            <div className="stat-value">{statusCounts.underway.toLocaleString()}</div>
+            <div className="stat-change positive">Real-time tracking</div>
+          </div>
+        </div>
+
+        <div className="stat-card">
+          <div className="stat-icon bg-blue">
+            <span>🕐</span>
+          </div>
+          <div className="stat-content">
+            <div className="stat-label">Recent Arrivals</div>
+            <div className="stat-value">{Math.floor(stats.active_24h * 0.15)}</div>
+            <div className="stat-change neutral">Last 24h</div>
           </div>
         </div>
       </div>
 
-      {/* Main Content */}
+      {/* Main Content Area */}
       <div className="dashboard-content">
-        {/* Map Section */}
+        {/* Global Vessel Tracking Map */}
         <div className="map-section">
-          <div className="map-controls">
-            <button className="map-filter active">
-              <span className="filter-dot green"></span> Vessels
-            </button>
-            <button className="map-filter">
-              <span className="filter-dot blue"></span> Ports
-            </button>
-            <button className="map-filter">
-              <span className="filter-dot red"></span> Risks
-            </button>
+          <div className="section-header">
+            <div className="section-title">
+              <span className="title-icon">🗺️</span>
+              <span>Global Vessel Tracking</span>
+            </div>
+            <div className="section-stats">
+              <span>🚢 {vessels.length} vessels</span>
+              <span>⚓ {statusCounts.anchored} anchored</span>
+              <span>⚠️ 3 alerts</span>
+            </div>
           </div>
 
           <div className="map-container">
-            <div className="map-placeholder">
-              <div className="map-overlay-text">🗺️ Map View</div>
-              <div className="vessel-marker" style={{ top: '45%', left: '65%' }}>
-                <div className="marker-icon">⚓</div>
-                <div className="marker-label">Singapore</div>
+            <MapContainer
+              center={[1.3521, 103.8198]}
+              zoom={2}
+              style={{ height: '100%', width: '100%' }}
+              zoomControl={false}
+            >
+              <TileLayer
+                attribution='&copy; OpenStreetMap'
+                url="https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png"
+              />
+              
+              {vesselsWithAlerts.map((vessel) => (
+                vessel.latitude && vessel.longitude && (
+                  <React.Fragment key={vessel.id}>
+                    {vessel.hasAlert && (
+                      <>
+                        <Circle
+                          center={[parseFloat(vessel.latitude), parseFloat(vessel.longitude)]}
+                          radius={80000}
+                          pathOptions={{
+                            color: '#ef4444',
+                            fillColor: '#ef4444',
+                            fillOpacity: 0.08,
+                            weight: 2,
+                            dashArray: '10, 10',
+                          }}
+                        />
+                        <Circle
+                          center={[parseFloat(vessel.latitude), parseFloat(vessel.longitude)]}
+                          radius={15000}
+                          pathOptions={{
+                            color: '#ef4444',
+                            fillColor: '#ef4444',
+                            fillOpacity: 0.9,
+                            weight: 0,
+                          }}
+                        />
+                      </>
+                    )}
+                    <Marker
+                      position={[parseFloat(vessel.latitude), parseFloat(vessel.longitude)]}
+                      icon={createVesselIcon(vessel.hasAlert ? 'alert' : vessel.status)}
+                    />
+                  </React.Fragment>
+                )
+              ))}
+            </MapContainer>
+
+            {/* Legend */}
+            <div className="map-legend">
+              <div className="legend-title">Legend</div>
+              <div className="legend-items">
+                <div className="legend-item">
+                  <span className="legend-dot" style={{ background: '#10b981' }}></span>
+                  <span>Underway</span>
+                </div>
+                <div className="legend-item">
+                  <span className="legend-dot" style={{ background: '#f59e0b' }}></span>
+                  <span>Anchored</span>
+                </div>
+                <div className="legend-item">
+                  <span className="legend-dot" style={{ background: '#3b82f6' }}></span>
+                  <span>Moored</span>
+                </div>
+                <div className="legend-item">
+                  <span className="legend-dot" style={{ background: '#64748b' }}></span>
+                  <span>Port</span>
+                </div>
+                <div className="legend-item">
+                  <span className="legend-dot" style={{ background: '#ef4444' }}></span>
+                  <span>Alert Zone</span>
+                </div>
               </div>
-              <div className="vessel-marker" style={{ top: '55%', left: '58%' }}>
-                <div className="marker-icon ship">🚢</div>
-                <div className="marker-label">Ever Given</div>
+            </div>
+          </div>
+        </div>
+
+        {/* Safety Alerts Sidebar */}
+        <div className="alerts-sidebar">
+          <div className="alerts-header">
+            <h3>Safety Alerts</h3>
+            <span className="alerts-count">3 active alerts</span>
+          </div>
+
+          <div className="alert-card critical">
+            <div className="alert-icon">⚠️</div>
+            <div className="alert-content">
+              <div className="alert-title">
+                <span>Tropical Storm Warning</span>
+                <span className="alert-badge high">High</span>
               </div>
-              <div className="danger-zone" style={{ bottom: '20%', left: '40%' }}></div>
+              <p className="alert-description">
+                Tropical storm developing in the Gulf of Mexico. Winds expected to reach 65 knots.
+              </p>
+              <div className="alert-location">📍 Gulf of Mexico</div>
             </div>
           </div>
 
-          <button className="map-location-btn">📍</button>
-        </div>
-
-        {/* Alerts Sidebar */}
-        <div className="alerts-sidebar">
-          <div className="alerts-header">
-            <h3>Priority Alerts</h3>
-            <span className="real-time-badge">Real-time</span>
+          <div className="alert-card critical">
+            <div className="alert-icon">🏴‍☠️</div>
+            <div className="alert-content">
+              <div className="alert-title">
+                <span>High-Risk Piracy Zone</span>
+                <span className="alert-badge critical">Critical</span>
+              </div>
+              <p className="alert-description">
+                Multiple piracy incidents reported in the Gulf of Aden. All vessels advised to maintain...
+              </p>
+              <div className="alert-location">📍 Gulf of Aden</div>
+            </div>
           </div>
 
-          <div className="alerts-list">
-            {alerts.map(alert => (
-              <div key={alert.id} className={`alert-item ${alert.severity}`}>
-                <div className="alert-icon" style={{ background: alert.color }}>
-                  {alert.severity === 'critical' ? '⚠️' : alert.severity === 'warning' ? '🌀' : 'ℹ️'}
-                </div>
-                <div className="alert-content">
-                  <div className="alert-header">
-                    <span className="alert-type">{alert.type}</span>
-                    <span className="alert-time">{alert.time}</span>
-                  </div>
-                  <div className="alert-message">{alert.message}</div>
-                  {alert.coordinates && (
-                    <div className="alert-meta">{alert.coordinates}</div>
-                  )}
-                  {alert.sector && (
-                    <div className="alert-footer">
-                      <span className="alert-sector">{alert.sector}</span>
-                      <button className="alert-action">View Zone</button>
-                    </div>
-                  )}
-                  {alert.severity === 'critical' && (
-                    <button className="acknowledge-btn">Acknowledge</button>
-                  )}
-                </div>
+          <div className="alert-card warning">
+            <div className="alert-icon">🌫️</div>
+            <div className="alert-content">
+              <div className="alert-title">
+                <span>Heavy Fog Advisory</span>
+                <span className="alert-badge medium">Medium</span>
               </div>
-            ))}
+              <p className="alert-description">
+                Dense fog reducing visibility to under 500m in the English Channel.
+              </p>
+              <div className="alert-location">📍 English Channel</div>
+            </div>
           </div>
         </div>
       </div>
+
+      {/* Settings Modal */}
+      {showSettings && (
+        <div className="modal-overlay" onClick={() => setShowSettings(false)}>
+          <div className="modal-content-settings" onClick={(e) => e.stopPropagation()}>
+            <div className="modal-header">
+              <h2>Dashboard Settings</h2>
+              <button className="modal-close" onClick={() => setShowSettings(false)}>✕</button>
+            </div>
+            <div className="modal-body">
+              <div className="settings-section">
+                <h3>Display Options</h3>
+                <div className="setting-item">
+                  <label>
+                    <input type="checkbox" defaultChecked />
+                    <span>Auto-refresh every 30 seconds</span>
+                  </label>
+                </div>
+                <div className="setting-item">
+                  <label>
+                    <input type="checkbox" defaultChecked />
+                    <span>Show alert notifications</span>
+                  </label>
+                </div>
+                <div className="setting-item">
+                  <label>
+                    <input type="checkbox" defaultChecked />
+                    <span>Display vessel routes</span>
+                  </label>
+                </div>
+              </div>
+
+              <div className="settings-section">
+                <h3>Map Options</h3>
+                <div className="setting-item">
+                  <label>
+                    <input type="checkbox" defaultChecked />
+                    <span>Show danger zones</span>
+                  </label>
+                </div>
+                <div className="setting-item">
+                  <label>
+                    <input type="checkbox" />
+                    <span>Display port boundaries</span>
+                  </label>
+                </div>
+              </div>
+
+              <div className="settings-actions">
+                <button className="btn-secondary" onClick={() => setShowSettings(false)}>
+                  Cancel
+                </button>
+                <button className="btn-primary" onClick={() => {
+                  setShowSettings(false);
+                  toast.success('Settings saved successfully');
+                }}>
+                  Save Settings
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

@@ -16,10 +16,10 @@ const vesselService = {
     return await apiClient.post('/api/vessels/', vesselData);
   },
 
-  // Update vessel
-  updateVessel: async (id, vesselData) => {
-    return await apiClient.put(`/api/vessels/${id}/`, vesselData);
-  },
+  // Update vessel (use PATCH for partial updates)
+updateVessel: async (id, vesselData) => {
+  return await apiClient.patch(`/api/vessels/${id}/`, vesselData);
+},
 
   // Delete vessel
   deleteVessel: async (id) => {

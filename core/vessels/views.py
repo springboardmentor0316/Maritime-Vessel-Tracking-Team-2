@@ -32,6 +32,9 @@ class VesselPermission(BasePermission):
         if request.method == "POST":
             return user.is_authenticated and user.role in ["admin", "operator"]
 
+        if request.method in ["PUT", "PATCH"]:  
+            return user.is_authenticated and user.role in ["admin", "operator"]
+
         if request.method == "DELETE":
             return user.is_authenticated and user.role == "admin"
 
@@ -191,7 +194,6 @@ class LiveVesselView(APIView):
     responses={200: dict},
 )
 class UpdateVesselPositionView(APIView):
-    """Your existing manual position update view"""
     permission_classes = [IsAuthenticated]
 
     def post(self, request):
