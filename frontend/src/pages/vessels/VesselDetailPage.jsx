@@ -6,6 +6,9 @@ import Loading from '../../components/common/Loading';
 import Badge from '../../components/common/Badge';
 import './VesselDetailPage.css';
 
+// ⭐ React Icons
+import { FaShip, FaEdit, FaTrash, FaArrowLeft } from "react-icons/fa";
+
 const VesselDetailPage = () => {
   const { id } = useParams();
   const navigate = useNavigate();
@@ -60,7 +63,7 @@ const VesselDetailPage = () => {
         <div className="error-message">
           <h2>Vessel not found</h2>
           <button className="btn btn-primary" onClick={handleBack}>
-            ← Back to Vessels
+            <FaArrowLeft /> Back to Vessels
           </button>
         </div>
       </div>
@@ -82,15 +85,21 @@ const VesselDetailPage = () => {
     <div className="vessel-detail-page">
       <div className="detail-header">
         <button className="btn-back" onClick={handleBack}>
-          ← Back
+          <FaArrowLeft /> Back
         </button>
-        <h1>🚢 {vessel.name || 'Unknown Vessel'}</h1>
+
+        <h1>
+          <FaShip style={{ marginRight: "8px" }} />
+          {vessel.name || 'Unknown Vessel'}
+        </h1>
+
         <div className="header-actions">
           <button className="btn btn-secondary" onClick={handleEdit}>
-            ✏️ Edit
+            <FaEdit style={{ marginRight: "5px" }} /> Edit
           </button>
+
           <button className="btn btn-danger" onClick={handleDelete}>
-            🗑️ Delete
+            <FaTrash style={{ marginRight: "5px" }} /> Delete
           </button>
         </div>
       </div>

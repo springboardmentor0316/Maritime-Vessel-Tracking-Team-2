@@ -5,6 +5,9 @@ import { useToast } from '../../context/ToastContext';
 import Loading from '../../components/common/Loading';
 import './VesselEditPage.css';
 
+// ⭐ React Icons Added
+import { FaArrowLeft, FaPlus, FaEdit } from "react-icons/fa";
+
 const VesselEditPage = () => {
   const { id } = useParams();
   const navigate = useNavigate();
@@ -67,7 +70,6 @@ const VesselEditPage = () => {
     setSaving(true);
 
     try {
-      // Validate required fields
       if (!formData.name) {
         toast.error('Vessel name is required');
         setSaving(false);
@@ -80,7 +82,6 @@ const VesselEditPage = () => {
         return;
       }
 
-      // Prepare data for API
       const vesselData = {
         name: formData.name,
         vessel_type: formData.vessel_type,
@@ -88,13 +89,11 @@ const VesselEditPage = () => {
         status: formData.status,
       };
 
-      // Only include imo_number and mmsi for new vessels
       if (id === 'new') {
         vesselData.mmsi = formData.mmsi;
         vesselData.imo_number = formData.imo_number || `IMO${formData.mmsi}`;
       }
 
-      // Include position data if provided
       if (formData.latitude) vesselData.latitude = parseFloat(formData.latitude);
       if (formData.longitude) vesselData.longitude = parseFloat(formData.longitude);
       if (formData.speed) vesselData.speed = parseFloat(formData.speed);
@@ -132,9 +131,20 @@ const VesselEditPage = () => {
     <div className="vessel-edit-page">
       <div className="edit-header">
         <button className="btn-back" onClick={handleCancel}>
-          ← Back
+          <FaArrowLeft style={{ marginRight: "6px" }} /> Back
         </button>
-        <h1>{id === 'new' ? '➕ Add New Vessel' : '✏️ Edit Vessel'}</h1>
+
+        <h1>
+          {id === 'new' ? (
+            <>
+              <FaPlus style={{ marginRight: "8px" }} /> Add New Vessel
+            </>
+          ) : (
+            <>
+              <FaEdit style={{ marginRight: "8px" }} /> Edit Vessel
+            </>
+          )}
+        </h1>
       </div>
 
       <form className="vessel-form" onSubmit={handleSubmit}>

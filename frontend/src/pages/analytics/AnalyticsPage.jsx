@@ -2,6 +2,18 @@ import React, { useState, useEffect } from 'react';
 import vesselService from '../../services/vesselService';
 import './AnalyticsPage.css';
 
+// React Icons
+import { 
+  FaSearch, 
+  FaBell, 
+  FaGasPump, 
+  FaLeaf, 
+  FaStopwatch, 
+  FaFire, 
+  FaBolt, 
+  FaTools 
+} from "react-icons/fa";
+
 const AnalyticsPage = () => {
   const [stats, setStats] = useState({
     total_vessels: 0,
@@ -32,14 +44,13 @@ const AnalyticsPage = () => {
     return stats.total_vessels > 0 ? Math.round((count / stats.total_vessels) * 100) : 0;
   };
 
-  // DYNAMIC METRICS BASED ON TIME PERIOD
   const getMetricsForPeriod = () => {
     const baseVessels = stats.total_vessels || 1;
     
     if (timePeriod === '30') {
       return {
         fuel: {
-          value: Math.round(baseVessels * 10.3), // 10.3 MT per vessel per month
+          value: Math.round(baseVessels * 10.3),
           change: -4.2,
           width: 65
         },
@@ -61,7 +72,7 @@ const AnalyticsPage = () => {
     } else if (timePeriod === '90') {
       return {
         fuel: {
-          value: Math.round(baseVessels * 28.8), // 3 months
+          value: Math.round(baseVessels * 28.8),
           change: -3.8,
           width: 58
         },
@@ -83,7 +94,7 @@ const AnalyticsPage = () => {
     } else {
       return {
         fuel: {
-          value: Math.round(baseVessels * 118.7), // 12 months
+          value: Math.round(baseVessels * 118.7),
           change: -5.1,
           width: 72
         },
@@ -114,7 +125,7 @@ const AnalyticsPage = () => {
       id: 1,
       vessel: 'EVER GLORY',
       type: 'fuel',
-      icon: '🔥',
+      icon: <FaFire />,
       description: 'Engine Load > 90% for 4 hours',
       value: '+15% Fuel',
     },
@@ -122,7 +133,7 @@ const AnalyticsPage = () => {
       id: 2,
       vessel: 'HMM ALGECIRAS',
       type: 'speed',
-      icon: '⚡',
+      icon: <FaBolt />,
       description: 'Speed anomaly detected in Zone B',
       value: '+8% Fuel',
     },
@@ -130,7 +141,7 @@ const AnalyticsPage = () => {
       id: 3,
       vessel: 'ONE APUS',
       type: 'maintenance',
-      icon: '⚙️',
+      icon: <FaTools />,
       description: 'Auxiliary boiler maintenance due',
       value: 'Maintenance',
     },
@@ -154,7 +165,7 @@ const AnalyticsPage = () => {
         
         <div className="header-center">
           <div className="search-container">
-            <span className="search-icon">🔍</span>
+            <span className="search-icon"><FaSearch /></span>
             <input
               type="text"
               placeholder="Search vessel IMO or Port..."
@@ -169,7 +180,7 @@ const AnalyticsPage = () => {
             <option>View as Analyst</option>
           </select>
           <button className="notification-btn">
-            🔔
+            <FaBell />
             <span className="notification-badge">3</span>
           </button>
         </div>
@@ -206,7 +217,7 @@ const AnalyticsPage = () => {
 
           <div className="metrics-grid">
             <div className="metric-card">
-              <div className="metric-icon fuel">⛽</div>
+              <div className="metric-icon fuel"><FaGasPump /></div>
               <div className="metric-content">
                 <div className="metric-label">FUEL CONSUMPTION</div>
                 <div className="metric-value">
@@ -222,7 +233,7 @@ const AnalyticsPage = () => {
             </div>
 
             <div className="metric-card">
-              <div className="metric-icon efficiency">🌱</div>
+              <div className="metric-icon efficiency"><FaLeaf /></div>
               <div className="metric-content">
                 <div className="metric-label">CO2 EFFICIENCY</div>
                 <div className="metric-value">
@@ -238,7 +249,7 @@ const AnalyticsPage = () => {
             </div>
 
             <div className="metric-card">
-              <div className="metric-icon wait">⏱️</div>
+              <div className="metric-icon wait"><FaStopwatch /></div>
               <div className="metric-content">
                 <div className="metric-label">AVG PORT WAIT</div>
                 <div className="metric-value">
@@ -255,6 +266,7 @@ const AnalyticsPage = () => {
           </div>
         </div>
 
+        {/* Charts Section — unchanged */}
         <div className="charts-section">
           <div className="chart-card">
             <div className="chart-header">
@@ -366,6 +378,7 @@ const AnalyticsPage = () => {
           </div>
         </div>
 
+        {/* Bottom Section — unchanged except icons */}
         <div className="bottom-section">
           <div className="congestion-card">
             <h3>Port Congestion Levels</h3>
@@ -422,7 +435,9 @@ const AnalyticsPage = () => {
             <div className="alerts-list">
               {allAlerts.map(alert => (
                 <div key={alert.id} className="alert-item">
-                  <div className={`alert-icon-circle ${alert.type}-alert`}>{alert.icon}</div>
+                  <div className={`alert-icon-circle ${alert.type}-alert`}>
+                    {alert.icon}
+                  </div>
                   <div className="alert-info">
                     <div className="alert-name">{alert.vessel}</div>
                     <div className="alert-description">{alert.description}</div>

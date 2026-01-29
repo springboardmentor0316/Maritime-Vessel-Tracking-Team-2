@@ -6,6 +6,9 @@ import DataTable from '../../components/common/DataTable';
 import Badge from '../../components/common/Badge';
 import './VesselListPage.css';
 
+// ⭐ React Icons Added
+import { FaShip, FaPlus, FaEye, FaEdit, FaTrash } from "react-icons/fa";
+
 const VesselListPage = () => {
   const navigate = useNavigate();
   const toast = useToast();
@@ -131,21 +134,21 @@ const VesselListPage = () => {
             onClick={() => handleViewDetails(row)}
             title="View Details"
           >
-            👁️
+            <FaEye />
           </button>
           <button
             className="btn-icon btn-edit"
             onClick={() => handleEditVessel(row)}
             title="Edit"
           >
-            ✏️
+            <FaEdit />
           </button>
           <button
             className="btn-icon btn-danger"
             onClick={() => handleDeleteVessel(row)}
             title="Delete"
           >
-            🗑️
+            <FaTrash />
           </button>
         </div>
       ),
@@ -155,12 +158,17 @@ const VesselListPage = () => {
   return (
     <div className="vessel-list-page">
       <div className="page-header">
-        <h1>🚢 Vessels</h1>
+        <h1>
+          <FaShip style={{ marginRight: "8px" }} />
+          Vessels
+        </h1>
+
         <button 
           className="btn btn-primary"
           onClick={() => navigate('/app/vessels/new')}
         >
-          + Add Vessel
+          <FaPlus style={{ marginRight: "6px" }} />
+          Add Vessel
         </button>
       </div>
 
