@@ -1,0 +1,169 @@
+/* ----------------------------------------------------
+   PAGE BACKGROUND (matches Analytics)
+---------------------------------------------------- */
+.events-page {
+  background: #0a0e1a;
+  min-height: 100vh;
+  padding: 24px;
+}
+
+/* ----------------------------------------------------
+   TITLES
+---------------------------------------------------- */
+.events-title {
+  font-size: 26px;
+  font-weight: 700;
+  color: #f9fafb;
+  margin-bottom: 24px;
+}
+
+.section-title {
+  font-size: 20px;
+  font-weight: 600;
+  color: #f9fafb;
+  margin: 28px 0 16px 4px;
+}
+
+/* ----------------------------------------------------
+   RECENT EVENTS – HORIZONTAL CARDS
+---------------------------------------------------- */
+.events-feed-container {
+  display: flex;
+  gap: 20px;
+  overflow-x: auto;
+  padding-bottom: 10px;
+  scrollbar-width: thin;
+}
+
+.events-feed-container::-webkit-scrollbar {
+  height: 8px;
+}
+
+.events-feed-container::-webkit-scrollbar-thumb {
+  background: #1f2937;
+  border-radius: 5px;
+}
+
+/* Individual card */
+.event-feed-item {
+  min-width: 360px;
+  background: linear-gradient(135deg, #1e3a5f 0%, #152844 100%);
+  border: 1px solid #2d4a6f;
+  border-radius: 12px;
+  padding: 20px;
+  color: #f9fafb;
+  flex-shrink: 0;
+  transition: 0.2s ease;
+}
+
+.event-feed-item:hover {
+  background: linear-gradient(135deg, #244a79 0%, #1a3354 100%);
+  transform: translateY(-2px);
+}
+
+/* Header (icon + text + badge) */
+.event-item-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.event-icon {
+  font-size: 20px;
+  color: #f59e0b;
+}
+
+.event-type {
+  font-size: 15px;
+  font-weight: 600;
+}
+
+/* Severity badge */
+.event-severity {
+  margin-left: auto;
+  font-size: 11px;
+  padding: 3px 10px;
+  border-radius: 6px;
+  font-weight: 700;
+}
+
+.event-severity.high {
+  background: rgba(239, 68, 68, 0.15);
+  color: #ef4444;
+}
+
+.event-severity.medium {
+  background: rgba(245, 158, 11, 0.15);
+  color: #f59e0b;
+}
+
+.event-severity.low {
+  background: rgba(16, 185, 129, 0.15);
+  color: #10b981;
+}
+
+/* Vessel & Time */
+.event-vessel {
+  margin-top: 8px;
+  margin-bottom: 2px;
+  color: #d1d5db;
+}
+
+.event-time {
+  font-size: 13px;
+  color: #9ca3af;
+}
+
+/* ----------------------------------------------------
+   FULL TABLE SECTION
+---------------------------------------------------- */
+.events-table-container {
+  margin-top: 24px;
+  overflow-x: auto;
+}
+
+.events-table {
+  width: 100%;
+  border-collapse: collapse;
+  background: #111827;
+  border: 1px solid #1f2937;
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+/* Table Header */
+.events-table thead {
+  background: #152238;
+}
+
+.events-table th {
+  padding: 14px;
+  text-align: left;
+  color: #f3f4f6;
+  font-size: 14px;
+  font-weight: 600;
+  border-bottom: 1px solid #1f2937;
+}
+
+/* Table Rows */
+.events-table tr {
+  border-bottom: 1px solid #1f2937;
+}
+
+.events-table td {
+  padding: 16px;
+  font-size: 14px;
+  color: #d1d5db;
+}
+
+/* Hover effect */
+.events-table tbody tr:hover {
+  background: rgba(30, 58, 95, 0.3);
+}
+
+/* Icons inside table */
+.table-icon {
+  margin-right: 8px;
+  font-size: 14px;
+  color: #60a5fa;
+}

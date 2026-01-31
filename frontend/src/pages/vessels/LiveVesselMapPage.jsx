@@ -6,15 +6,25 @@ import { useToast } from '../../context/ToastContext';
 import 'leaflet/dist/leaflet.css';
 import './LiveVesselMapPage.css';
 
-// Custom droplet/pin vessel icons
+import { 
+  FaSearch, 
+  FaShieldAlt, 
+  FaCloud, 
+  FaEdit, 
+  FaExclamationTriangle
+} from "react-icons/fa";
+
+/* --------------------------------------
+   CUSTOM VESSEL ICON
+--------------------------------------- */
 const createVesselIcon = (status) => {
   const colors = {
-    'underway': '#10b981',
-    'active': '#10b981',
-    'anchored': '#f59e0b',
-    'moored': '#64748b',
-    'inactive': '#64748b',
-    'alert': '#ef4444',
+    underway: '#10b981',
+    active: '#10b981',
+    anchored: '#f59e0b',
+    moored: '#64748b',
+    inactive: '#64748b',
+    alert: '#ef4444',
   };
 
   const color = colors[status?.toLowerCase()] || '#10b981';
@@ -23,9 +33,9 @@ const createVesselIcon = (status) => {
     className: 'custom-vessel-marker',
     html: `
       <svg width="32" height="40" viewBox="0 0 32 40" fill="none">
-        <path d="M16 0C9.37258 0 4 5.37258 4 12C4 21 16 40 16 40C16 40 28 21 28 12C28 5.37258 22.6274 0 16 0Z" 
-              fill="${color}" 
-              stroke="#fff" 
+        <path d="M16 0C9.37258 0 4 5.37258 4 12C4 21 16 40 16 40C16 40 28 21 28 12C28 5.37258 22.6274 0 16 0Z"
+              fill="${color}"
+              stroke="#fff"
               stroke-width="2"/>
         <circle cx="16" cy="12" r="5" fill="#fff"/>
       </svg>
@@ -36,70 +46,72 @@ const createVesselIcon = (status) => {
   });
 };
 
+/* --------------------------------------
+   MAIN COMPONENT
+--------------------------------------- */
 const LiveVesselMapPage = () => {
+
   const toast = useToast();
   const [vessels, setVessels] = useState([]);
-  const [stats, setStats] = useState({ total: 0, underway: 0, anchored: 0 });
   const [loading, setLoading] = useState(true);
-  const [searchTerm, setSearchTerm] = useState('');
-  const [selectedVessel, setSelectedVessel] = useState(null);
-  const [autoRefresh, setAutoRefresh] = useState(true);
-  const intervalRef = useRef(null);
+  const [searchTerm, setSearchTerm] = useState("");
 
+  // MAP REF
+  const mapRef = useRef(null);
+
+  // LIVE ZOOM %
+  const [zoomLevel, setZoomLevel] = useState(6);
+
+  // Correct zoom listener
+  useEffect(() => {
+    const map = mapRef.current;
+    if (!map) return;
+
+    const updateZoom = () => {
+      const currentZoom = map.getZoom();
+      setZoomLevel(currentZoom);
+    };
+
+    map.on("zoomend", updateZoom);
+
+    // Set initial zoom correctly
+    setZoomLevel(map.getZoom());
+
+    return () => map.off("zoomend", updateZoom);
+
+  }, []); // Must be empty array
+
+  /* FETCH VESSELS */
   useEffect(() => {
     fetchVessels();
-    
-    if (autoRefresh) {
-      intervalRef.current = setInterval(fetchVessels, 30000);
-    }
-    
-    return () => {
-      if (intervalRef.current) clearInterval(intervalRef.current);
-    };
-  }, [autoRefresh]);
+  }, []);
 
   const fetchVessels = async () => {
     try {
-      const [vesselsData, statsData] = await Promise.all([
-        vesselService.getLiveVessels(1),
-        vesselService.getStatistics(),
-      ]);
-      
-      setVessels(vesselsData);
-      setStats({
-        total: vesselsData.length,
-        underway: statsData.by_status?.underway || 0,
-        anchored: statsData.by_status?.anchored || 0,
-        moored: statsData.by_status?.moored || 0,
-        alerts: 3,
-      });
+      const data = await vesselService.getLiveVessels(1);
+      setVessels(data);
       setLoading(false);
-    } catch (error) {
-      console.error('Failed to fetch vessels:', error);
-      toast.error('Failed to load vessel data');
+    } catch {
+      toast.error("Failed to load live vessel data");
       setLoading(false);
     }
   };
 
-  const handleUpdatePosition = () => {
-    toast.success('Position update initiated');
-    fetchVessels();
-  };
-
-  const filteredVessels = vessels.filter(vessel => {
+  /* SEARCH FILTER */
+  const filteredVessels = vessels.filter((v) => {
     if (!searchTerm) return true;
-    const search = searchTerm.toLowerCase();
+    const s = searchTerm.toLowerCase();
     return (
-      vessel.name?.toLowerCase().includes(search) ||
-      vessel.mmsi?.toLowerCase().includes(search) ||
-      vessel.imo_number?.toLowerCase().includes(search)
+      v.name?.toLowerCase().includes(s) ||
+      v.mmsi?.toLowerCase().includes(s) ||
+      v.imo_number?.toLowerCase().includes(s)
     );
   });
 
-  // Mark first 3 vessels as alerts for demo
-  const vesselsWithAlerts = filteredVessels.map((vessel, index) => ({
-    ...vessel,
-    hasAlert: index < 3 && vessel.status !== 'inactive',
+  /* TEMP ALERT LOGIC */
+  const vesselsWithAlerts = filteredVessels.map((v, i) => ({
+    ...v,
+    hasAlert: i < 3 && v.status !== 'inactive',
   }));
 
   if (loading) {
@@ -113,129 +125,164 @@ const LiveVesselMapPage = () => {
 
   return (
     <div className="live-map-page">
-      {/* Header */}
+
+      {/* HEADER */}
       <div className="map-header">
         <div className="header-left">
           <h1>Live Map Operations</h1>
         </div>
-        
+
         <div className="header-center">
           <div className="search-container">
-            <span className="search-icon">🔍</span>
+            <span className="search-icon"><FaSearch /></span>
             <input
               type="text"
+              className="map-search"
               placeholder="Search vessel IMO or Port..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="map-search"
             />
           </div>
         </div>
-
-        <div className="header-right">
-          <select className="admin-select">
-            <option>View as Admin</option>
-            <option>View as Operator</option>
-            <option>View as Guest</option>
-          </select>
-          <button className="notification-btn">
-            🔔
-            <span className="notification-badge">3</span>
-          </button>
-        </div>
       </div>
 
-      {/* Action Bar */}
+      {/* ACTION BAR */}
       <div className="action-bar">
         <div className="action-buttons">
-          <button className="action-btn" title="Filter">
-            <span>🛡️</span>
-          </button>
-          <button className="action-btn" title="Layers">
-            <span>☁️</span>
-          </button>
-          <button className="action-btn primary" onClick={handleUpdatePosition}>
-            <span>✏️</span>
+          <button className="action-btn"><FaShieldAlt /></button>
+          <button className="action-btn"><FaCloud /></button>
+
+          <button className="action-btn primary" onClick={fetchVessels}>
+            <FaEdit />
             <span>Update Position</span>
           </button>
         </div>
       </div>
 
-      {/* Map Container */}
+      {/* MAP */}
       <div className="map-wrapper">
+
         <MapContainer
-          center={[1.3521, 103.8198]} // Singapore
+          center={[1.3521, 103.8198]}
           zoom={6}
-          style={{ height: '100%', width: '100%' }}
           zoomControl={false}
+          style={{ height: "100%", width: "100%" }}
+          whenCreated={(map) => {
+            mapRef.current = map;
+            setZoomLevel(map.getZoom());
+          }}
         >
           <TileLayer
-            attribution='&copy; OpenStreetMap'
+            attribution="&copy; OpenStreetMap"
             url="https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png"
           />
 
-          {/* Vessel Markers with Alert Circles */}
-          {vesselsWithAlerts.map((vessel) => (
-            vessel.latitude && vessel.longitude && (
-              <React.Fragment key={vessel.id}>
-                {/* Red Dashed Circle for Alert Vessels */}
-                {vessel.hasAlert && (
+          {/* VESSELS */}
+          {vesselsWithAlerts.map((v) =>
+            v.latitude && v.longitude ? (
+              <React.Fragment key={v.id}>
+
+                {v.hasAlert && (
                   <>
                     <Circle
-                      center={[parseFloat(vessel.latitude), parseFloat(vessel.longitude)]}
+                      center={[+v.latitude, +v.longitude]}
                       radius={80000}
                       pathOptions={{
-                        color: '#ef4444',
-                        fillColor: '#ef4444',
-                        fillOpacity: 0.08,
-                        weight: 2,
-                        dashArray: '10, 10',
+                        color: "#ef4444",
+                        fillOpacity: 0.07,
+                        dashArray: "10, 10",
                       }}
                     />
-                    {/* Center Red Dot */}
                     <Circle
-                      center={[parseFloat(vessel.latitude), parseFloat(vessel.longitude)]}
+                      center={[+v.latitude, +v.longitude]}
                       radius={15000}
                       pathOptions={{
-                        color: '#ef4444',
-                        fillColor: '#ef4444',
+                        color: "#ef4444",
                         fillOpacity: 0.9,
-                        weight: 0,
                       }}
                     />
                   </>
                 )}
 
-                {/* Vessel Marker */}
                 <Marker
-                  position={[parseFloat(vessel.latitude), parseFloat(vessel.longitude)]}
-                  icon={createVesselIcon(vessel.hasAlert ? 'alert' : vessel.status)}
-                  eventHandlers={{
-                    click: () => setSelectedVessel(vessel),
-                  }}
+                  position={[+v.latitude, +v.longitude]}
+                  icon={createVesselIcon(v.hasAlert ? "alert" : v.status)}
                 >
                   <Popup>
                     <div className="vessel-popup-content">
-                      <h4>{vessel.name || 'Unknown'}</h4>
-                      <div className="popup-details">
-                        <p><strong>MMSI:</strong> {vessel.mmsi}</p>
-                        <p><strong>Type:</strong> {vessel.vessel_type || 'Unknown'}</p>
-                        <p><strong>Status:</strong> <span className={`status-${vessel.status}`}>{vessel.status}</span></p>
-                        {vessel.hasAlert && <p><strong>⚠️ ALERT:</strong> <span className="status-alert">Safety Alert Active</span></p>}
-                        <p><strong>Speed:</strong> {vessel.speed ? `${parseFloat(vessel.speed).toFixed(1)} kn` : 'N/A'}</p>
-                        <p><strong>Position:</strong> {parseFloat(vessel.latitude).toFixed(4)}, {parseFloat(vessel.longitude).toFixed(4)}</p>
-                      </div>
+                      <h4>{v.name || "Unknown"}</h4>
+                      <p><strong>MMSI:</strong> {v.mmsi}</p>
+                      <p><strong>Type:</strong> {v.vessel_type}</p>
+                      <p><strong>Status:</strong> {v.status}</p>
+
+                      {v.hasAlert && (
+                        <p>
+                          <FaExclamationTriangle color="#ef4444" /> <strong>ALERT</strong>
+                        </p>
+                      )}
+
+                      <p><strong>Speed:</strong> {v.speed || "N/A"} kn</p>
+                      <p><strong>Position:</strong> {v.latitude}, {v.longitude}</p>
                     </div>
                   </Popup>
                 </Marker>
+
               </React.Fragment>
-            )
-          ))}
+            ) : null
+          )}
+
         </MapContainer>
 
-        {/* Legend */}
+        {/* ⭐ TOP-LEFT ZOOM BAR (FINAL WORKING VERSION) */}
+        <div className="zoom-bar">
+
+          {/* – BUTTON */}
+          <button 
+            className="zoom-btn-small"
+            onClick={() => {
+              if (mapRef.current) {
+                mapRef.current.setZoom(mapRef.current.getZoom() - 1);
+              }
+            }}
+          >
+            −
+          </button>
+
+          {/* + BUTTON */}
+          <button 
+            className="zoom-btn-small"
+            onClick={() => {
+              if (mapRef.current) {
+                mapRef.current.setZoom(mapRef.current.getZoom() + 1);
+              }
+            }}
+          >
+            +
+          </button>
+
+          {/* RESET BUTTON */}
+          <button 
+            className="zoom-reset-small"
+            onClick={() => {
+              if (mapRef.current) {
+                mapRef.current.setZoom(6);
+              }
+            }}
+          >
+            Reset
+          </button>
+
+          {/* LIVE PERCENT */}
+          <span className="zoom-percent-small">
+            {zoomLevel * 25}%
+          </span>
+
+        </div>
+
+        {/* LEGEND */}
         <div className="map-legend-box">
           <div className="legend-title">LIVE STATUS</div>
+
           <div className="legend-items">
             <div className="legend-item">
               <span className="legend-indicator underway"></span>
@@ -254,7 +301,9 @@ const LiveVesselMapPage = () => {
               <span>Moored</span>
             </div>
           </div>
+
         </div>
+
       </div>
     </div>
   );

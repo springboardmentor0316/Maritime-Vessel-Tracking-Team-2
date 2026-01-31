@@ -4,8 +4,6 @@ import './AnalyticsPage.css';
 
 // React Icons
 import { 
-  FaSearch, 
-  FaBell, 
   FaGasPump, 
   FaLeaf, 
   FaStopwatch, 
@@ -46,24 +44,12 @@ const AnalyticsPage = () => {
 
   const getMetricsForPeriod = () => {
     const baseVessels = stats.total_vessels || 1;
-    
+
     if (timePeriod === '30') {
       return {
-        fuel: {
-          value: Math.round(baseVessels * 10.3),
-          change: -4.2,
-          width: 65
-        },
-        co2: {
-          value: 8.2,
-          change: -1.8,
-          width: 78
-        },
-        wait: {
-          value: 18.5,
-          change: 2.1,
-          width: 42
-        },
+        fuel: { value: Math.round(baseVessels * 10.3), change: -4.2, width: 65 },
+        co2: { value: 8.2, change: -1.8, width: 78 },
+        wait: { value: 18.5, change: 2.1, width: 42 },
         chartDates: ['OCT 01', 'OCT 08', 'OCT 15', 'OCT 22', 'OCT 29'],
         actualPoints: '0,150 150,140 300,180 450,160 600,170 750,145 900,150',
         targetPoints: '0,100 150,120 300,90 450,110 600,95 750,105 900,100',
@@ -71,21 +57,9 @@ const AnalyticsPage = () => {
       };
     } else if (timePeriod === '90') {
       return {
-        fuel: {
-          value: Math.round(baseVessels * 28.8),
-          change: -3.8,
-          width: 58
-        },
-        co2: {
-          value: 8.0,
-          change: -2.3,
-          width: 82
-        },
-        wait: {
-          value: 17.2,
-          change: -1.5,
-          width: 38
-        },
+        fuel: { value: Math.round(baseVessels * 28.8), change: -3.8, width: 58 },
+        co2: { value: 8.0, change: -2.3, width: 82 },
+        wait: { value: 17.2, change: -1.5, width: 38 },
         chartDates: ['AUG 01', 'AUG 29', 'SEP 26', 'OCT 24', 'NOV 21'],
         actualPoints: '0,140 150,135 300,160 450,145 600,155 750,140 900,138',
         targetPoints: '0,100 150,115 300,95 450,108 600,100 750,110 900,105',
@@ -93,21 +67,9 @@ const AnalyticsPage = () => {
       };
     } else {
       return {
-        fuel: {
-          value: Math.round(baseVessels * 118.7),
-          change: -5.1,
-          width: 72
-        },
-        co2: {
-          value: 7.9,
-          change: -3.5,
-          width: 85
-        },
-        wait: {
-          value: 16.8,
-          change: -3.2,
-          width: 35
-        },
+        fuel: { value: Math.round(baseVessels * 118.7), change: -5.1, width: 72 },
+        co2: { value: 7.9, change: -3.5, width: 85 },
+        wait: { value: 16.8, change: -3.2, width: 35 },
         chartDates: ['JAN', 'MAR', 'MAY', 'JUL', 'SEP', 'NOV'],
         actualPoints: '0,160 180,145 360,170 540,150 720,165 900,142',
         targetPoints: '0,110 180,120 360,105 540,115 720,108 900,112',
@@ -158,33 +120,16 @@ const AnalyticsPage = () => {
 
   return (
     <div className="analytics-page">
+
+      {/* ---------------- HEADER (Cleaned) ---------------- */}
       <div className="analytics-header">
         <div className="header-left">
           <h1>Operational Analytics</h1>
         </div>
-        
-        <div className="header-center">
-          <div className="search-container">
-            <span className="search-icon"><FaSearch /></span>
-            <input
-              type="text"
-              placeholder="Search vessel IMO or Port..."
-              className="analytics-search"
-            />
-          </div>
-        </div>
 
-        <div className="header-right">
-          <select className="admin-select">
-            <option>View as Admin</option>
-            <option>View as Analyst</option>
-          </select>
-          <button className="notification-btn">
-            <FaBell />
-            <span className="notification-badge">3</span>
-          </button>
-        </div>
+        {/* Search, View as Admin, Notification removed */}
       </div>
+      {/* ------------------------------------------------- */}
 
       <div className="analytics-content">
         <div className="analytics-section">
@@ -193,6 +138,7 @@ const AnalyticsPage = () => {
               <h2>Fleet Operations Analytics</h2>
               <p className="section-subtitle">Operational efficiency and fuel consumption metrics</p>
             </div>
+
             <div className="time-period-toggle">
               <button 
                 className={timePeriod === '30' ? 'active' : ''} 
@@ -266,7 +212,7 @@ const AnalyticsPage = () => {
           </div>
         </div>
 
-        {/* Charts Section — unchanged */}
+        {/* ---------- Charts Section ---------- */}
         <div className="charts-section">
           <div className="chart-card">
             <div className="chart-header">
@@ -282,27 +228,16 @@ const AnalyticsPage = () => {
                 </span>
               </div>
             </div>
+
             <div className="chart-container">
               <div className="chart-tooltip">{metrics.tooltip}</div>
+
               <svg className="emissions-chart" viewBox="0 0 900 300" preserveAspectRatio="none">
-                <polyline
-                  fill="none"
-                  stroke="#64748b"
-                  strokeWidth="2"
-                  strokeDasharray="8,4"
-                  points={metrics.targetPoints}
-                />
-                <polyline
-                  fill="none"
-                  stroke="#4f46e5"
-                  strokeWidth="3"
-                  points={metrics.actualPoints}
-                />
-                <polygon
-                  fill="rgba(79, 70, 229, 0.1)"
-                  points={`${metrics.actualPoints} 900,300 0,300`}
-                />
+                <polyline fill="none" stroke="#64748b" strokeWidth="2" strokeDasharray="8,4" points={metrics.targetPoints} />
+                <polyline fill="none" stroke="#4f46e5" strokeWidth="3" points={metrics.actualPoints} />
+                <polygon fill="rgba(79, 70, 229, 0.1)" points={`${metrics.actualPoints} 900,300 0,300`} />
               </svg>
+
               <div className="chart-x-axis">
                 {metrics.chartDates.map((date, idx) => (
                   <span key={idx}>{date}</span>
@@ -315,59 +250,40 @@ const AnalyticsPage = () => {
             <div className="chart-header">
               <h3>Fleet Status Distribution</h3>
             </div>
+
             <div className="donut-chart-container">
               <div className="donut-chart">
                 <svg viewBox="0 0 200 200">
                   <circle cx="100" cy="100" r="80" fill="none" stroke="#1e293b" strokeWidth="40"/>
-                  <circle 
-                    cx="100" 
-                    cy="100" 
-                    r="80" 
-                    fill="none" 
-                    stroke="#10b981" 
-                    strokeWidth="40"
-                    strokeDasharray={`${underway * 5.03} 503`}
-                    transform="rotate(-90 100 100)"
-                  />
-                  <circle 
-                    cx="100" 
-                    cy="100" 
-                    r="80" 
-                    fill="none" 
-                    stroke="#f59e0b" 
-                    strokeWidth="40"
-                    strokeDasharray="110 503"
-                    strokeDashoffset={`-${underway * 5.03}`}
-                    transform="rotate(-90 100 100)"
-                  />
-                  <circle 
-                    cx="100" 
-                    cy="100" 
-                    r="80" 
-                    fill="none" 
-                    stroke="#64748b" 
-                    strokeWidth="40"
-                    strokeDasharray={`${moored * 5.03} 503`}
-                    strokeDashoffset={`-${(underway * 5.03) + 110}`}
-                    transform="rotate(-90 100 100)"
-                  />
+                  <circle cx="100" cy="100" r="80" fill="none" stroke="#10b981" strokeWidth="40"
+                    strokeDasharray={`${underway * 5.03} 503`} transform="rotate(-90 100 100)" />
+                  <circle cx="100" cy="100" r="80" fill="none" stroke="#f59e0b" strokeWidth="40"
+                    strokeDasharray="110 503" strokeDashoffset={`-${underway * 5.03}`}
+                    transform="rotate(-90 100 100)" />
+                  <circle cx="100" cy="100" r="80" fill="none" stroke="#64748b" strokeWidth="40"
+                    strokeDasharray={`${moored * 5.03} 503`} strokeDashoffset={`-${(underway * 5.03) + 110}`}
+                    transform="rotate(-90 100 100)" />
                 </svg>
+
                 <div className="donut-center">
                   <div className="donut-value">{stats.total_vessels}</div>
                   <div className="donut-label">TOTAL VESSELS</div>
                 </div>
               </div>
+
               <div className="donut-legend">
                 <div className="donut-legend-item">
                   <span className="donut-dot underway"></span>
                   <span>Underway (Efficient)</span>
                   <span className="donut-percent">{underway}%</span>
                 </div>
+
                 <div className="donut-legend-item">
                   <span className="donut-dot reduced"></span>
                   <span>Reduced Speed</span>
                   <span className="donut-percent">22%</span>
                 </div>
+
                 <div className="donut-legend-item">
                   <span className="donut-dot moored"></span>
                   <span>Moored / Idle</span>
@@ -378,11 +294,12 @@ const AnalyticsPage = () => {
           </div>
         </div>
 
-        {/* Bottom Section — unchanged except icons */}
+        {/* ---------- Bottom Section ---------- */}
         <div className="bottom-section">
           <div className="congestion-card">
             <h3>Port Congestion Levels</h3>
             <div className="congestion-list">
+              
               <div className="congestion-item">
                 <div className="congestion-info">
                   <span className="port-name">Singapore (SIN)</span>
@@ -422,6 +339,7 @@ const AnalyticsPage = () => {
                   <div className="congestion-bar moderate" style={{ width: '48%' }}></div>
                 </div>
               </div>
+
             </div>
           </div>
 
@@ -432,6 +350,7 @@ const AnalyticsPage = () => {
                 View All
               </button>
             </div>
+
             <div className="alerts-list">
               {allAlerts.map(alert => (
                 <div key={alert.id} className="alert-item">
@@ -450,6 +369,7 @@ const AnalyticsPage = () => {
             </div>
           </div>
         </div>
+
       </div>
 
       {showAlertModal && (
@@ -457,8 +377,9 @@ const AnalyticsPage = () => {
           <div className="modal-content" onClick={(e) => e.stopPropagation()}>
             <div className="modal-header">
               <h2>All High Consumption Alerts</h2>
-              <button className="modal-close" onClick={() => setShowAlertModal(false)}>✕</button>
+              <button className="modal-close" onClick={() => setShowAlertModal(false)}>Close</button>
             </div>
+
             <div className="modal-body">
               {allAlerts.map(alert => (
                 <div key={alert.id} className="modal-alert-item">
@@ -468,6 +389,7 @@ const AnalyticsPage = () => {
                       <div className="modal-alert-vessel">{alert.vessel}</div>
                     </div>
                   </div>
+
                   <div className="modal-alert-body">
                     <p>{alert.description}</p>
                     <div className="modal-alert-impact">{alert.value}</div>
@@ -475,9 +397,11 @@ const AnalyticsPage = () => {
                 </div>
               ))}
             </div>
+
           </div>
         </div>
       )}
+
     </div>
   );
 };

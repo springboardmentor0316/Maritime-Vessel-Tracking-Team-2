@@ -1,10 +1,13 @@
+/* PAGE BASE */
 .vessel-list-page {
   padding: 24px;
   background: #0a0e27;
   min-height: 100vh;
 }
 
-.page-header {
+/* HEADER */
+.page-header,
+.page-header-top {
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -18,21 +21,75 @@
   color: #e2e8f0;
 }
 
-.filters-container {
+/* TOP-RIGHT BUTTONS (Clear + Add Vessel) */
+.header-actions {
   display: flex;
-  gap: 12px;
-  margin-bottom: 24px;
-  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px;
 }
 
+/* CLEAR BUTTON (Top Right) */
+/* CLEAR BUTTON — NOW BLUE LIKE ADD VESSEL */
+.clear-btn {
+  padding: 6px 12px !important;
+  font-size: 13px;
+  height: 32px;
+  min-width: 100px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: #3b82f6;        /* Blue */
+  color: white;               /* White text */
+  border: none;               /* Clean border */
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.clear-btn:hover {
+  background: #2563eb;        /* Darker blue hover */
+  transform: translateY(-1px);
+  box-shadow: 0 4px 10px rgba(59, 130, 246, 0.4);
+}
+
+
+/* ADD VESSEL BUTTON */
+.add-vessel-btn {
+  padding: 6px 12px !important;
+  font-size: 13px;
+  height: 32px;
+  min-width: 120px;
+  max-width: 140px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 6px;
+}
+
+.add-vessel-btn svg {
+  font-size: 13px;
+}
+
+/* FILTERS ROW */
+.filters-container {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 24px;
+  flex-wrap: nowrap;
+}
+
+/* SEARCH INPUT */
 .search-input {
   flex: 1;
-  min-width: 250px;
-  padding: 10px 12px;
+  min-width: 220px;
+  max-width: 380px;
+  height: 32px;
+  padding: 6px 10px;
   background: #1a1f4d;
   border: 1px solid #2d3458;
   border-radius: 6px;
-  font-size: 14px;
+  font-size: 13px;
   color: #e2e8f0;
 }
 
@@ -46,13 +103,15 @@
   box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
 }
 
+/* FILTER SELECTS */
 .filter-select {
-  padding: 10px 12px;
+  min-width: 120px;
+  height: 32px;
+  padding: 6px 10px;
   background: #1a1f4d;
   border: 1px solid #2d3458;
   border-radius: 6px;
-  font-size: 14px;
-  min-width: 150px;
+  font-size: 13px;
   color: #e2e8f0;
   cursor: pointer;
 }
@@ -62,6 +121,7 @@
   border-color: #3b82f6;
 }
 
+/* VESSEL NAME LINK */
 .vessel-name-link {
   color: #3b82f6;
   cursor: pointer;
@@ -74,6 +134,7 @@
   text-decoration: underline;
 }
 
+/* ACTION BUTTONS */
 .action-buttons {
   display: flex;
   gap: 8px;
@@ -107,6 +168,7 @@
   border-color: #ef4444;
 }
 
+/* BUTTON DEFAULTS */
 .btn {
   padding: 10px 20px;
   border: none;

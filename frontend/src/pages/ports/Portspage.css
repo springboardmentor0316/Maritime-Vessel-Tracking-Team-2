@@ -1,0 +1,131 @@
+/* PAGE BASE */
+.ports-page {
+  background: #0a0e1a;
+  min-height: 100vh;
+  padding: 24px;
+  color: #f1f5f9;
+}
+
+.ports-title {
+  font-size: 28px;
+  font-weight: 700;
+  margin-bottom: 24px;
+}
+
+/* SEARCH BAR */
+.ports-search-box {
+  position: relative;
+  margin-bottom: 24px;
+  max-width: 420px;
+}
+
+.ports-search-box input {
+  width: 100%;
+  padding: 12px 16px 12px 46px;
+  background: #1f2937;
+  border: 1px solid #374151;
+  border-radius: 10px;
+  color: #e5e7eb;
+  font-size: 14px;
+}
+
+.ports-search-box input:focus {
+  outline: none;
+  border-color: #4f46e5;
+}
+
+.ports-search-icon {
+  position: absolute;
+  left: 14px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #6b7280;
+  font-size: 16px;
+}
+
+/* TOP CARDS */
+.ports-cards {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 18px;
+  margin-bottom: 36px;
+}
+
+.ports-card {
+  background: linear-gradient(135deg, #1e3a5f 0%, #152844 100%);
+  border: 1px solid #2d4a6f;
+  padding: 20px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.pc-icon {
+  font-size: 32px;
+}
+
+.pc-icon.blue { color: #3b82f6; }
+.pc-icon.yellow { color: #facc15; }
+.pc-icon.green { color: #10b981; }
+
+/* TABLE SECTION */
+.ports-table-section h2 {
+  margin-bottom: 12px;
+}
+
+/* TABLE */
+.ports-table {
+  width: 100%;
+  border-collapse: collapse;
+  background: #0f172a;
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+.ports-table th {
+  background: #1e293b;
+  padding: 14px 18px;
+  font-size: 14px;
+  font-weight: 600;
+  text-align: left;
+}
+
+.ports-table td {
+  padding: 14px 18px;
+  border-bottom: 1px solid #1e293b;
+  font-size: 14px;
+  color: #e2e8f0;
+}
+
+.ports-table tr:hover {
+  background: #152036;
+}
+
+/* Congestion Colors */
+.cong-tag {
+  padding: 4px 10px;
+  border-radius: 6px;
+  font-weight: 600;
+}
+
+.cong-tag.high {
+  background: rgba(239, 68, 68, 0.15);
+  color: #ef4444;
+}
+
+.cong-tag.medium {
+  background: rgba(245, 158, 11, 0.15);
+  color: #f59e0b;
+}
+
+.cong-tag.low {
+  background: rgba(16, 185, 129, 0.15);
+  color: #10b981;
+}
+
+.loc-icon {
+  font-size: 13px;
+  margin-right: 6px;
+  color: #38bdf8;
+}

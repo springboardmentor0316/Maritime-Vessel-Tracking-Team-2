@@ -1,42 +1,41 @@
-/* SIDEBAR WRAPPER */
+/* MAIN SIDEBAR */
 .sidebar {
   position: fixed;
-  top: 70px;                /* ⬅ STARTS BELOW NAVBAR (very important) */
+  top: 70px;  
   left: 0;
   width: 240px;
-  height: calc(100vh - 70px);  /* ⬅ Fills remaining height below navbar */
+  height: calc(100vh - 70px);
   background: #0c1533;
   border-right: 1px solid #1e2a53;
-  overflow-y: auto;
-  transition: width 0.25s ease-in-out;
-  z-index: 4000;           /* stays under navbar but above content */
+
+  display: flex;               /* KEY */
+  flex-direction: column;      /* KEY */
+  justify-content: space-between; /* PROFILE AT BOTTOM */
+
   padding-top: 10px;
 }
 
-/* COLLAPSED SIDEBAR */
+/* COLLAPSED */
 .sidebar.sidebar-collapsed {
   width: 70px;
 }
 
-/* NAVIGATION CONTENT */
-.sidebar-nav {
+/* TOP MENU SECTION */
+.sidebar-menu {
   display: flex;
   flex-direction: column;
   gap: 6px;
   padding: 0 12px;
+  flex-grow: 1;        /* Fills available space */
 }
 
-/* GROUP LABEL (VESSELS / PORTS) */
-.nav-group-label {
-  font-size: 11px;
-  text-transform: uppercase;
-  font-weight: 600;
-  color: #64748b;
-  margin: 14px 0 4px 6px;
-  letter-spacing: 0.5px;
+/* PROFILE BUTTON AT BOTTOM */
+.sidebar-profile {
+  padding: 12px;
+  margin-bottom: 15px;
 }
 
-/* NAV ITEM */
+/* Navigation Styling */
 .nav-item {
   display: flex;
   align-items: center;
@@ -55,33 +54,32 @@
 
 .nav-item.active {
   background: linear-gradient(135deg, #1e3a8a, #2563eb);
-  color: #fff;
+  color: white;
 }
 
-/* ICONS */
 .nav-icon {
   font-size: 16px;
   display: flex;
   align-items: center;
 }
 
-/* COLLAPSED VIEW — hide labels but keep icons */
 .sidebar.sidebar-collapsed .nav-label {
   display: none;
 }
-
 .sidebar.sidebar-collapsed .nav-group-label {
   display: none;
 }
 
-/* for nice scroll */
-.sidebar::-webkit-scrollbar {
-  width: 6px;
+/* Group Label */
+.nav-group-label {
+  font-size: 11px;
+  text-transform: uppercase;
+  font-weight: 600;
+  color: #64748b;
+  margin: 14px 0 4px 6px;
+  letter-spacing: 0.5px;
 }
-.sidebar::-webkit-scrollbar-thumb {
-  background: #1e2a53;
-  border-radius: 5px;
-}
-.sidebar::-webkit-scrollbar-thumb:hover {
-  background: #3b82f6;
+
+.nav-group-items {
+  padding-left: 30px;
 }

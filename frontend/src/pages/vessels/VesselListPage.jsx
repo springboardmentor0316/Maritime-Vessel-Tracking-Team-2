@@ -157,21 +157,30 @@ const VesselListPage = () => {
 
   return (
     <div className="vessel-list-page">
-      <div className="page-header">
+
+      {/* ⭐ UPDATED HEADER WITH CLEAR + ADD BUTTON */}
+      <div className="page-header page-header-top">
         <h1>
           <FaShip style={{ marginRight: "8px" }} />
           Vessels
         </h1>
 
-        <button 
-          className="btn btn-primary"
-          onClick={() => navigate('/app/vessels/new')}
-        >
-          <FaPlus style={{ marginRight: "6px" }} />
-          Add Vessel
-        </button>
+        <div className="header-actions">
+          <button className="btn btn-secondary clear-btn" onClick={fetchVessels}>
+            Clear
+          </button>
+
+          <button 
+            className="btn btn-primary add-vessel-btn"
+            onClick={() => navigate('/app/vessels/new')}
+          >
+            <FaPlus style={{ marginRight: "6px" }} />
+            Add Vessel
+          </button>
+        </div>
       </div>
 
+      {/* FILTERS ROW (unchanged except Clear removed) */}
       <div className="filters-container">
         <input
           type="text"
@@ -209,10 +218,6 @@ const VesselListPage = () => {
           <option value="Docked">Docked</option>
           <option value="inactive">Inactive</option>
         </select>
-
-        <button className="btn btn-secondary" onClick={fetchVessels}>
-          Clear
-        </button>
       </div>
 
       <DataTable

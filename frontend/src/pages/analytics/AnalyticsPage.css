@@ -103,7 +103,8 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 20px;
+  margin-bottom: 0 !important;
+  padding-bottom: 0 !important;
 }
 
 .section-header-analytics h2 {
@@ -111,6 +112,8 @@
   font-size: 22px;
   font-weight: 600;
   color: #f9fafb;
+  margin-bottom: 0 !important;
+  padding-bottom: 0 !important;
 }
 
 .section-subtitle {
@@ -125,11 +128,13 @@
   background: #1f2937;
   padding: 4px;
   border-radius: 8px;
+  margin-top: -4px !important;  
 }
 
 .time-period-toggle button {
   padding: 8px 20px;
   background: transparent;
+  margin: 0 !important;
   border: none;
   color: #9ca3af;
   font-size: 14px;
@@ -435,6 +440,7 @@
   font-size: 18px;
   font-weight: 600;
   color: #f9fafb;
+
 }
 
 .congestion-list {
@@ -513,19 +519,28 @@
   justify-content: space-between;
   align-items: center;
   margin-bottom: 20px;
+
+  width: 100%;
+}
+.alerts-card-header h3 {
+  white-space: nowrap;
 }
 
+/* Reduce width of "View All" button */
 .view-all-btn {
-  padding: 6px 12px;
-  background: transparent;
-  border: 1px solid #2d4a6f;
-  border-radius: 6px;
-  color: #60a5fa;
-  font-size: 13px;
-  font-weight: 500;
+  padding: 6px 18px;
+  background: #1f6bff;
+  border: none;
+  border-radius: 8px;
+  color: #fff;
+  font-size: 14px;
+  font-weight: 600;
   cursor: pointer;
-  transition: all 0.2s;
+
+  width: auto !important;      /* KEY FIX */
+  display: inline-block !important;   /* KEY FIX */
 }
+
 
 .view-all-btn:hover {
   background: rgba(96, 165, 250, 0.1);
@@ -663,22 +678,32 @@
   align-items: center;
   padding: 24px;
   border-bottom: 1px solid #2d4a6f;
+  flex-wrap: nowrap  !important;
+  gap: 12px;
 }
 
 .modal-header h2 {
-  margin: 0;
-  font-size: 20px;
-  font-weight: 600;
-  color: #f9fafb;
+  white-space: nowrap !important;
 }
 
 .modal-close {
-  background: transparent;
-  border: none;
-  color: #9ca3af;
-  font-size: 24px;
+  width: auto !important;        /* prevents stretching */
+  display: inline-block !important;
+  flex-shrink: 0 !important;     /* prevents flex growth */
+  padding: 4px 10px;             /* smaller size */
+  font-size: 13px;
+  background: #1e293b;
+  border: 1px solid #334155;
+  border-radius: 6px;
+  color: #e5e7eb;
   cursor: pointer;
-  padding: 4px 8px;
+  white-space: nowrap;
+  margin-left: 12px;             /* space from title */
+}
+
+
+.modal-close:hover {
+  background: #334155;
 }
 
 .modal-body {

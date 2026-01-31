@@ -1,14 +1,19 @@
-import React from 'react';
-import { NavLink } from 'react-router-dom';
-import { NAV_ITEMS } from '../../constants';
-import './Sidebar.css';
+import React from "react";
+import { NavLink } from "react-router-dom";
+import { NAV_ITEMS } from "../../constants";
+import "./Sidebar.css";
 
 const Sidebar = ({ isOpen }) => {
-  return (
-    <aside className={`sidebar ${!isOpen ? 'sidebar-collapsed' : ''}`}>
+  // Separate Profile item
+  const profileItem = NAV_ITEMS.find((item) => item.id === "profile");
+  const otherItems = NAV_ITEMS.filter((item) => item.id !== "profile");
 
-      <nav className="sidebar-nav">
-        {NAV_ITEMS.map((item) => (
+  return (
+    <aside className={`sidebar ${!isOpen ? "sidebar-collapsed" : ""}`}>
+      
+      {/* TOP MENU ITEMS */}
+      <div className="sidebar-menu">
+        {otherItems.map((item) => (
           <div key={item.id}>
             {item.children ? (
               <div className="nav-group">
@@ -18,23 +23,25 @@ const Sidebar = ({ isOpen }) => {
                 </div>
                 <div className="nav-group-items">
                   {item.children.map((child) => (
-                    <NavLink
-                      key={child.id}
-                      to={child.path}
-                      className={({ isActive }) =>
-                        `nav-item ${isActive ? 'active' : ''}`
-                      }
-                    >
-                      <span className="nav-label">{child.label}</span>
-                    </NavLink>
-                  ))}
+  <NavLink
+    key={child.id}
+    to={child.path}
+    end={child.id === "vessels-list"}   // EXACT FIX HERE
+    className={({ isActive }) =>
+      `nav-item ${isActive ? 'active' : ''}`
+    }
+  >
+    <span className="nav-label">{child.label}</span>
+  </NavLink>
+))}
+
                 </div>
               </div>
             ) : (
               <NavLink
                 to={item.path}
                 className={({ isActive }) =>
-                  `nav-item ${isActive ? 'active' : ''}`
+                  `nav-item ${isActive ? "active" : ""}`
                 }
               >
                 <span className="nav-icon">{item.icon}</span>
@@ -43,7 +50,21 @@ const Sidebar = ({ isOpen }) => {
             )}
           </div>
         ))}
-      </nav>
+      </div>
+
+      {/* BOTTOM PROFILE */}
+      <div className="sidebar-profile">
+        <NavLink
+          to={profileItem.path}
+          className={({ isActive }) =>
+            `nav-item ${isActive ? "active" : ""}`
+          }
+        >
+          <span className="nav-icon">{profileItem.icon}</span>
+          <span className="nav-label">{profileItem.label}</span>
+        </NavLink>
+      </div>
+
     </aside>
   );
 };
