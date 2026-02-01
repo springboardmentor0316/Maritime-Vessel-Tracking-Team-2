@@ -1,13 +1,10 @@
 from django.urls import path
-from rest_framework.routers import DefaultRouter
-from .views import PortViewSet, PortCongestionView, PortStatusView
-
-router = DefaultRouter()
-router.register(r'ports', PortViewSet, basename='port')
+from .views import PortListView,  DashboardView
 
 urlpatterns = [
-    path("ports/congestion/", PortCongestionView.as_view(), name="port-congestion"),
-    path("ports/status/", PortStatusView.as_view(), name="port-status"),
+
+    path("ports/", PortListView.as_view()),
+
+    path("dashboard/", DashboardView.as_view()),  
 ]
 
-urlpatterns += router.urls

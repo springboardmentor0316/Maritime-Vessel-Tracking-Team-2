@@ -6,6 +6,22 @@ import vesselService from '../../services/vesselService';
 import { useToast } from '../../context/ToastContext';
 import './DashboardPage.css';
 import 'leaflet/dist/leaflet.css';
+import {
+  RefreshCw,
+  Settings,
+  Ship,
+  Anchor,
+  AlertTriangle,
+  BarChart3,
+  Navigation,
+  Clock,
+  Map,
+  Globe,
+  Bell,
+  CloudFog,
+  Skull
+} from "lucide-react";
+
 
 // React Icons (matching sidebar)
 import {

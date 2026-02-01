@@ -34,7 +34,8 @@ const VesselListPage = () => {
       if (filters.status !== 'all') params.status = filters.status;
 
       const data = await vesselService.getAllVessels(params);
-      setVessels(data);
+setVessels(data.results || data);
+
     } catch (error) {
       console.error('Failed to fetch vessels:', error);
       toast.error('Failed to load vessels');

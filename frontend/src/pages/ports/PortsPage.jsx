@@ -1,73 +1,131 @@
-import React, { useState } from "react";
-import { FaSearch, FaShip, FaClock, FaGlobe, FaMapMarkerAlt } from "react-icons/fa";
+import React, { useState, useEffect } from "react";
+import {
+  FaSearch,
+  FaShip,
+  FaClock,
+  FaGlobe,
+  FaMapMarkerAlt,
+} from "react-icons/fa";
+
+import portService from "../../services/portService";
 import "./PortsPage.css";
 
 export default function PortsPage() {
 
+  const [ports, setPorts] = useState([]);
   const [search, setSearch] = useState("");
+  const [loading, setLoading] = useState(true);
 
-  const ports = [
-    {
-      id: 1,
-      name: "Port of Singapore",
-      location: "Singapore",
-      country: "Singapore",
-      congestion_score: 72,
-      avg_wait_time: 14,
-      arrivals: 120,
-      departures: 98,
-      last_update: "2026-01-31 14:30"
-    },
-    {
-      id: 2,
-      name: "Port of Shanghai",
-      location: "Shanghai",
-      country: "China",
-      congestion_score: 58,
-      avg_wait_time: 9,
-      arrivals: 145,
-      departures: 133,
-      last_update: "2026-01-31 13:50"
-    },
-    {
-      id: 3,
-      name: "Port Klang",
-      location: "Klang",
-      country: "Malaysia",
-      congestion_score: 33,
-      avg_wait_time: 5,
-      arrivals: 90,
-      departures: 84,
-      last_update: "2026-01-31 12:10"
+  const [total, setTotal] = useState(0);
+  const [page, setPage] = useState(1);
+
+  const PAGE_SIZE = 100;
+
+
+
+  // =====================
+  // FETCH PORTS
+  // =====================
+  useEffect(() => {
+    fetchPorts();
+  }, [page, search]);
+
+
+  const fetchPorts = async () => {
+    try {
+      setLoading(true);
+
+      const res = await portService.getDashboardPorts(page, search);
+
+      console.log("PORT API DATA:", res);
+
+      // Backend pagination response
+      setPorts(res.results || []);
+      setTotal(res.count || 0);
+
+    } catch (err) {
+      console.error("Failed to load ports:", err);
+    } finally {
+      setLoading(false);
     }
-  ];
+  };
 
-  const filteredPorts = ports.filter(p =>
-    p.name.toLowerCase().includes(search.toLowerCase()) ||
-    p.country.toLowerCase().includes(search.toLowerCase())
+
+
+  // =====================
+  // STATS (FROM BACKEND DATA ONLY)
+  // =====================
+  const countrySet = new Set(
+    ports.map((p) => p.country).filter(Boolean)
   );
+
+
+  const totalPages = Math.ceil(total / PAGE_SIZE);
+
+
+
+  if (loading) {
+    return <div className="ports-loading">Loading ports...</div>;
+  }
+
+
 
   return (
     <div className="ports-page">
+
       <h1 className="ports-title">Global Ports Overview</h1>
 
-      {/* SEARCH BAR */}
+
+      {/* SEARCH */}
       <div className="ports-search-box">
         <FaSearch className="ports-search-icon" />
-        <input 
+
+        <input
           type="text"
           placeholder="Search port name or country..."
           value={search}
-          onChange={(e) => setSearch(e.target.value)}
+
+          onChange={(e) => {
+            setSearch(e.target.value);
+            setPage(1);   // RESET PAGE ON SEARCH
+          }}
         />
       </div>
 
-      {/* TOP CARDS */}
+
+
+      {/* PAGINATION */}
+      <div className="ports-pagination">
+
+        <button
+          disabled={page === 1}
+          onClick={() => setPage(page - 1)}
+        >
+          ◀ Prev
+        </button>
+
+        <span>
+          Page {page} of {totalPages || 1}
+        </span>
+
+        <button
+          disabled={page >= totalPages}
+          onClick={() => setPage(page + 1)}
+        >
+          Next ▶
+        </button>
+
+      </div>
+
+
+
+      {/* CARDS */}
       <div className="ports-cards">
+
         <div className="ports-card">
           <FaShip className="pc-icon blue" />
           <div>
-            <h3>{ports.length}</h3>
+            <h3>{total}</h3>
             <p>Total Ports</p>
           </div>
         </div>
@@ -75,7 +133,7 @@ export default function PortsPage() {
         <div className="ports-card">
           <FaClock className="pc-icon yellow" />
           <div>
-            <h3>9.6 hrs</h3>
+            <h3>—</h3>
             <p>Avg Wait Time</p>
           </div>
         </div>
@@ -83,17 +141,22 @@ export default function PortsPage() {
         <div className="ports-card">
           <FaGlobe className="pc-icon green" />
           <div>
-            <h3>3 Countries</h3>
+            <h3>{countrySet.size}</h3>
             <p>Coverage</p>
           </div>
         </div>
+
       </div>
+
+
 
       {/* TABLE */}
       <div className="ports-table-section">
+
         <h2>Port Statistics</h2>
 
         <table className="ports-table">
+
           <thead>
             <tr>
               <th>Port Name</th>
@@ -107,36 +170,56 @@ export default function PortsPage() {
             </tr>
           </thead>
 
+
           <tbody>
-            {filteredPorts.map(port => (
+
+            {ports.map((port) => (
+
               <tr key={port.id}>
+
                 <td>{port.name}</td>
-                <td>
-                  <FaMapMarkerAlt className="loc-icon" /> {port.location}
-                </td>
-                <td>{port.country}</td>
 
                 <td>
-                  <span className={`cong-tag ${
-                    port.congestion_score > 70 
-                      ? "high" 
-                      : port.congestion_score > 40 
-                      ? "medium" 
-                      : "low"
-                  }`}>
-                    {port.congestion_score}%
+                  <FaMapMarkerAlt className="loc-icon" />
+                  {port.location || "—"}
+                </td>
+
+                <td>{port.country || "—"}</td>
+
+                <td>
+                  <span
+                    className={`cong-tag ${
+                      port.congestion > 70
+                        ? "high"
+                        : port.congestion > 40
+                        ? "medium"
+                        : "low"
+                    }`}
+                  >
+                    {port.congestion}%
                   </span>
                 </td>
 
                 <td>{port.avg_wait_time}</td>
+
                 <td>{port.arrivals}</td>
+
                 <td>{port.departures}</td>
-                <td>{port.last_update}</td>
+
+                <td>
+                  {port.last_update
+                    ? new Date(port.last_update).toLocaleString()
+                    : "—"}
+                </td>
+
               </tr>
+
             ))}
+
           </tbody>
 
         </table>
+
       </div>
 
     </div>

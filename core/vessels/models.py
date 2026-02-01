@@ -69,6 +69,8 @@ class Vessel(models.Model):
     
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
+    country = models.CharField(max_length=100, blank=True, null=True)
+    flag = models.CharField(max_length=10, blank=True, null=True)
 
     class Meta:
         ordering = ['-last_updated']
