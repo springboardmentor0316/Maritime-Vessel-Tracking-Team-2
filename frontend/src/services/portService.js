@@ -1,13 +1,11 @@
 import apiClient from "../config/api";
 
-const portService = {
-
-  getDashboardPorts: (page = 1, search = "") => {
-    return apiClient.get(
-      `/api/dashboard/?page=${page}&search=${search}`
-    );
-  },
-
+const getDashboardPorts = (page = 1, search = "") => {
+  return apiClient.get("/api/ports/dashboard/", {
+    params: { page, search },
+  });
 };
 
-export default portService;
+export default {
+  getDashboardPorts,
+};

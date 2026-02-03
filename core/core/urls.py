@@ -27,7 +27,7 @@ urlpatterns = [
 
     # Domain APIs
     path("api/", include("vessels.urls")),
-    path("api/", include("ports.urls")),
+    path("api/ports/", include("ports.urls")),
     path("api/", include("voyages.urls")),
     path("api/", include("events.urls")),
     path("api/safety/", include("safety.urls")),

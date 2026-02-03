@@ -87,26 +87,66 @@ const LiveVesselMapPage = () => {
   }, []);
 
   const fetchVessels = async () => {
-    try {
-      const data = await vesselService.getLiveVessels(1);
-      setVessels(data);
-      setLoading(false);
-    } catch {
-      toast.error("Failed to load live vessel data");
-      setLoading(false);
-    }
-  };
+  try {
+
+    const res = await vesselService.getLiveVessels(1);
+
+    console.log("RAW VESSEL API:", res);
+
+    // Handle DRF pagination
+    const list = res?.results || res || [];
+
+    const mapped = list
+      .filter(v => v.latitude && v.longitude)
+      .map(v => ({
+
+        id: v.id,
+
+        name: v.name || "Unknown Vessel",
+
+        mmsi: v.mmsi || "",
+        imo_number: v.imo_number || "",
+
+        latitude: Number(v.latitude),
+        longitude: Number(v.longitude),
+
+        status: v.status || "active",
+
+        speed: Number(v.speed) || 0,
+
+        vessel_type: v.vessel_type || "Unknown",
+
+      }));
+
+    console.log("MAPPED VESSELS:", mapped);
+
+    setVessels(mapped);
+
+    setLoading(false);
+
+  } catch (err) {
+
+    console.error("Live vessel fetch error:", err);
+
+    toast.error("Failed to load live vessel data");
+
+    setLoading(false);
+  }
+};
 
   /* SEARCH FILTER */
   const filteredVessels = vessels.filter((v) => {
-    if (!searchTerm) return true;
-    const s = searchTerm.toLowerCase();
-    return (
-      v.name?.toLowerCase().includes(s) ||
-      v.mmsi?.toLowerCase().includes(s) ||
-      v.imo_number?.toLowerCase().includes(s)
-    );
-  });
+  if (!searchTerm) return true;
+
+  const s = searchTerm.toLowerCase();
+
+  return (
+    v.name?.toLowerCase().includes(s) ||
+    String(v.mmsi || "").toLowerCase().includes(s) ||
+    String(v.imo_number || "").toLowerCase().includes(s)
+  );
+});
+
 
   /* TEMP ALERT LOGIC */
   const vesselsWithAlerts = filteredVessels.map((v, i) => ({

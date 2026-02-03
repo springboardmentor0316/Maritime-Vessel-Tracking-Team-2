@@ -1,224 +1,429 @@
 import React, { useState, useEffect } from "react";
-import {
-  FaSearch,
-  FaShip,
-  FaClock,
-  FaGlobe,
-  FaMapMarkerAlt,
-} from "react-icons/fa";
-
-import portService from "../../services/portService";
+import { MapContainer, TileLayer, Marker, Popup, useMap } from "react-leaflet";
+import L from "leaflet";
+import "leaflet/dist/leaflet.css";
 import "./PortsPage.css";
+
+/* ================= HELPERS ================= */
+
+function getCongestionLevel(score) {
+  if (score >= 70) return "HIGH";
+  if (score >= 40) return "MODERATE";
+  return "LOW";
+}
+
+function getMarkerColor(score) {
+  if (score >= 70) return "#e8445a";
+  if (score >= 40) return "#f0a629";
+  return "#3ecf8e";
+}
+
+/* Custom Marker */
+function createMarkerIcon(color) {
+  return L.divIcon({
+    className: "custom-marker",
+    html: `<div class="marker-dot" style="background:${color};box-shadow:0 0 6px ${color}88;"></div>`,
+    iconSize: [14, 14],
+    iconAnchor: [7, 7],
+  });
+}
+
+/* Fit all markers */
+function FitBounds({ ports }) {
+  const map = useMap();
+
+  useEffect(() => {
+    if (!ports.length) return;
+
+    const bounds = L.latLngBounds(
+      ports.map((p) => [p.lat, p.lng])
+    );
+
+    map.fitBounds(bounds, { padding: [40, 40] });
+
+  }, [ports, map]);
+
+  return null;
+}
+
+/* Fly to selected port */
+function FlyToPort({ port }) {
+  const map = useMap();
+
+  useEffect(() => {
+    if (!port) return;
+
+    map.flyTo([port.lat, port.lng], 8, {
+      duration: 1.2,
+    });
+
+  }, [port, map]);
+
+  return null;
+}
+
+/* ================= COMPONENT ================= */
 
 export default function PortsPage() {
 
   const [ports, setPorts] = useState([]);
   const [search, setSearch] = useState("");
+  const [selectedPort, setSelectedPort] = useState(null);
+
+  const [sortBy, setSortBy] = useState("congestion");
+  const [sortAsc, setSortAsc] = useState(false);
+
   const [loading, setLoading] = useState(true);
 
-  const [total, setTotal] = useState(0);
-  const [page, setPage] = useState(1);
 
-  const PAGE_SIZE = 100;
+  /* ================= FETCH REAL DATA ================= */
 
-
-
-  // =====================
-  // FETCH PORTS
-  // =====================
   useEffect(() => {
-    fetchPorts();
-  }, [page, search]);
+
+    const API_BASE =
+      import.meta.env.VITE_API_BASE_URL || "http://127.0.0.1:8001";
+
+    const token =
+      localStorage.getItem("access_token") ||
+      localStorage.getItem("access");
 
 
-  const fetchPorts = async () => {
-    try {
-      setLoading(true);
+    async function loadPorts() {
 
-      const res = await portService.getDashboardPorts(page, search);
+      try {
 
-      console.log("PORT API DATA:", res);
+        const res = await fetch(
+          `${API_BASE}/api/ports/dashboard/?page=1`,
+          {
+            headers: {
+              Authorization: token ? `Bearer ${token}` : "",
+              "Content-Type": "application/json",
+            },
+          }
+        );
 
-      // Backend pagination response
-      setPorts(res.results || []);
-      setTotal(res.count || 0);
+        if (!res.ok) {
+          throw new Error("API Error");
+        }
 
-    } catch (err) {
-      console.error("Failed to load ports:", err);
-    } finally {
-      setLoading(false);
+        const data = await res.json();
+
+        console.log("PORT DASHBOARD DATA:", data);
+
+
+        if (data?.results?.length) {
+
+          const mapped = data.results
+            .filter(
+              (p) =>
+                p.latitude !== null &&
+                p.longitude !== null
+            )
+            .map((p) => ({
+
+              id: p.id,
+
+              name: p.name,
+
+              country: p.country || "",
+
+              lat: Number(p.latitude),
+              lng: Number(p.longitude),
+
+              congestion: Number(p.congestion),
+
+              vessels: Number(p.vessels),
+
+              waitHours: Number(p.avg_wait),
+
+              weather: {
+                condition: "Clear",
+                temp: 25,
+                icon: "sun",
+              },
+            }));
+
+
+          setPorts(mapped);
+        }
+
+      } catch (err) {
+
+        console.error("Ports API failed:", err);
+
+      } finally {
+
+        // 🔥 VERY IMPORTANT
+        setLoading(false);
+
+      }
+    }
+
+    loadPorts();
+
+  }, []);
+
+
+  /* ================= FILTER + SORT ================= */
+
+  const filtered = ports
+    .filter((p) =>
+      p.name.toLowerCase().includes(search.toLowerCase()) ||
+      p.country.toLowerCase().includes(search.toLowerCase())
+    )
+    .sort((a, b) => {
+
+      let val = 0;
+
+      if (sortBy === "name") {
+        val = a.name.localeCompare(b.name);
+      }
+      else if (sortBy === "vessels") {
+        val = a.vessels - b.vessels;
+      }
+      else {
+        val = a.congestion - b.congestion;
+      }
+
+      return sortAsc ? val : -val;
+    });
+
+
+  /* ================= SORT TOGGLE ================= */
+
+  const cycleSortBy = () => {
+
+    const order = ["congestion", "vessels", "name"];
+
+    const idx = order.indexOf(sortBy);
+
+    if (idx < order.length - 1) {
+
+      setSortBy(order[idx + 1]);
+
+    } else {
+
+      setSortBy(order[0]);
+      setSortAsc(!sortAsc);
+
     }
   };
 
 
-
-  // =====================
-  // STATS (FROM BACKEND DATA ONLY)
-  // =====================
-  const countrySet = new Set(
-    ports.map((p) => p.country).filter(Boolean)
-  );
-
-
-  const totalPages = Math.ceil(total / PAGE_SIZE);
-
-
+  /* ================= LOADING ================= */
 
   if (loading) {
     return <div className="ports-loading">Loading ports...</div>;
   }
 
 
+  /* ================= UI ================= */
 
   return (
     <div className="ports-page">
 
-      <h1 className="ports-title">Global Ports Overview</h1>
-
-
-      {/* SEARCH */}
-      <div className="ports-search-box">
-        <FaSearch className="ports-search-icon" />
-
-        <input
-          type="text"
-          placeholder="Search port name or country..."
-          value={search}
-
-          onChange={(e) => {
-            setSearch(e.target.value);
-            setPage(1);   // RESET PAGE ON SEARCH
-          }}
-        />
+      {/* HEADER */}
+      <div className="ports-page-header">
+        <h1 className="ports-page-title">
+          Port Authority Overview
+        </h1>
       </div>
 
 
+      <div className="ports-layout">
 
-      {/* PAGINATION */}
-      <div className="ports-pagination">
-
-        <button
-          disabled={page === 1}
-          onClick={() => setPage(page - 1)}
-        >
-          ◀ Prev
-        </button>
-
-        <span>
-          Page {page} of {totalPages || 1}
-        </span>
-
-        <button
-          disabled={page >= totalPages}
-          onClick={() => setPage(page + 1)}
-        >
-          Next ▶
-        </button>
-
-      </div>
+        {/* ========== LEFT PANEL ========== */}
+        <div className="ports-left-panel">
 
 
+          {/* TOP */}
+          <div className="ports-panel-header">
 
-      {/* CARDS */}
-      <div className="ports-cards">
+            <span className="ports-panel-title">
+              Port Authorities
+            </span>
 
-        <div className="ports-card">
-          <FaShip className="pc-icon blue" />
-          <div>
-            <h3>{total}</h3>
-            <p>Total Ports</p>
+            <button
+              className="ports-sort-btn"
+              onClick={cycleSortBy}
+            >
+              ⇅
+            </button>
+
           </div>
+
+
+          {/* SEARCH */}
+          <div className="ports-search-wrap">
+
+            <input
+              className="ports-search-input"
+              type="text"
+              placeholder="Find port..."
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+            />
+
+          </div>
+
+
+          {/* CARDS */}
+          <div className="ports-card-list">
+
+            {filtered.map((port) => {
+
+              const level =
+                getCongestionLevel(port.congestion);
+
+              const selected =
+                selectedPort?.id === port.id;
+
+              return (
+
+                <div
+                  key={port.id}
+                  className={`port-card ${
+                    selected ? "port-card--selected" : ""
+                  }`}
+                  onClick={() => setSelectedPort(port)}
+                >
+
+
+                  {/* TOP */}
+                  <div className="port-card-top">
+
+                    <div className="port-card-name-wrap">
+
+                      <span className="port-card-name">
+                        {port.name}
+                      </span>
+
+                      <span className="port-card-code">
+                        {port.country}
+                      </span>
+
+                    </div>
+
+                    <span
+                      className={`port-badge port-badge--${level.toLowerCase()}`}
+                    >
+                      {level}
+                    </span>
+
+                  </div>
+
+
+                  {/* STATS */}
+                  <div className="port-card-stats">
+
+                    <div className="port-stat">
+                      <span>ANCHORAGE</span>
+                      <strong>{port.vessels}</strong>
+                    </div>
+
+                    <div className="port-stat">
+                      <span>AVG WAIT</span>
+                      <strong>{port.waitHours}h</strong>
+                    </div>
+
+                  </div>
+
+
+                  {/* WEATHER */}
+                  <div className="port-card-weather">
+                    ☀ Clear | {port.weather.temp}°C
+                  </div>
+
+                </div>
+              );
+            })}
+
+          </div>
+
         </div>
 
-        <div className="ports-card">
-          <FaClock className="pc-icon yellow" />
-          <div>
-            <h3>—</h3>
-            <p>Avg Wait Time</p>
-          </div>
-        </div>
 
-        <div className="ports-card">
-          <FaGlobe className="pc-icon green" />
-          <div>
-            <h3>{countrySet.size}</h3>
-            <p>Coverage</p>
-          </div>
-        </div>
+        {/* ========== RIGHT PANEL (MAP) ========== */}
+        <div className="ports-right-panel">
 
-      </div>
+          <MapContainer
+            className="ports-map"
+            center={[20, 60]}
+            zoom={3}
+            scrollWheelZoom
+          >
+
+            <TileLayer
+              url="https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png"
+              maxZoom={19}
+            />
 
 
+            <FitBounds ports={filtered} />
 
-      {/* TABLE */}
-      <div className="ports-table-section">
-
-        <h2>Port Statistics</h2>
-
-        <table className="ports-table">
-
-          <thead>
-            <tr>
-              <th>Port Name</th>
-              <th>Location</th>
-              <th>Country</th>
-              <th>Congestion</th>
-              <th>Avg Wait (hrs)</th>
-              <th>Arrivals</th>
-              <th>Departures</th>
-              <th>Last Update</th>
-            </tr>
-          </thead>
+            <FlyToPort port={selectedPort} />
 
 
-          <tbody>
+            {filtered.map((port) => (
 
-            {ports.map((port) => (
+              <Marker
+                key={port.id}
+                position={[port.lat, port.lng]}
+                icon={createMarkerIcon(
+                  getMarkerColor(port.congestion)
+                )}
+                eventHandlers={{
+                  click: () => setSelectedPort(port),
+                }}
+              >
 
-              <tr key={port.id}>
+                <Popup maxWidth={180}>
 
-                <td>{port.name}</td>
+                  <strong>{port.name}</strong>
 
-                <td>
-                  <FaMapMarkerAlt className="loc-icon" />
-                  {port.location || "—"}
-                </td>
+                  <br />
 
-                <td>{port.country || "—"}</td>
+                  {port.country}
 
-                <td>
-                  <span
-                    className={`cong-tag ${
-                      port.congestion > 70
-                        ? "high"
-                        : port.congestion > 40
-                        ? "medium"
-                        : "low"
-                    }`}
-                  >
-                    {port.congestion}%
-                  </span>
-                </td>
+                  <br />
 
-                <td>{port.avg_wait_time}</td>
+                  {port.vessels} vessels · {port.waitHours}h wait
 
-                <td>{port.arrivals}</td>
+                </Popup>
 
-                <td>{port.departures}</td>
-
-                <td>
-                  {port.last_update
-                    ? new Date(port.last_update).toLocaleString()
-                    : "—"}
-                </td>
-
-              </tr>
+              </Marker>
 
             ))}
 
-          </tbody>
+          </MapContainer>
 
-        </table>
+
+          {/* LEGEND */}
+          <div className="ports-legend">
+
+            <span className="ports-legend-title">
+              CONGESTION INDEX
+            </span>
+
+            <div className="ports-legend-items">
+
+              <div>
+                <span style={{ color: "#e8445a" }}>●</span> High
+              </div>
+
+              <div>
+                <span style={{ color: "#f0a629" }}>●</span> Moderate
+              </div>
+
+              <div>
+                <span style={{ color: "#3ecf8e" }}>●</span> Low
+              </div>
+
+            </div>
+
+          </div>
+
+        </div>
 
       </div>
 

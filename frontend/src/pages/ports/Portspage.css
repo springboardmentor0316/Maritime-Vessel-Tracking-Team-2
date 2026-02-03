@@ -1,153 +1,342 @@
-/* PAGE BASE */
+/* ═══════════════════════════════════════════════════════════
+   PORTS PAGE – Dark Maritime Dashboard  (matches prototype)
+   ═══════════════════════════════════════════════════════════ */
+
+/* ── page shell ── */
 .ports-page {
-  background: #0a0e1a;
-  min-height: 100vh;
-  padding: 24px;
-  color: #f1f5f9;
-}
-
-.ports-title {
-  font-size: 28px;
-  font-weight: 700;
-  margin-bottom: 24px;
-}
-
-/* SEARCH BAR */
-.ports-search-box {
-  position: relative;
-  margin-bottom: 24px;
-  max-width: 420px;
-}
-
-.ports-search-box input {
-  width: 100%;
-  padding: 12px 16px 12px 46px;
-  background: #1f2937;
-  border: 1px solid #374151;
-  border-radius: 10px;
-  color: #e5e7eb;
-  font-size: 14px;
-}
-
-.ports-search-box input:focus {
-  outline: none;
-  border-color: #4f46e5;
-}
-
-.ports-search-icon {
-  position: absolute;
-  left: 14px;
-  top: 50%;
-  transform: translateY(-50%);
-  color: #6b7280;
-  font-size: 16px;
-}
-
-/* TOP CARDS */
-.ports-cards {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 18px;
-  margin-bottom: 36px;
-}
-
-.ports-card {
-  background: linear-gradient(135deg, #1e3a5f 0%, #152844 100%);
-  border: 1px solid #2d4a6f;
-  padding: 20px;
-  border-radius: 12px;
   display: flex;
-  align-items: center;
-  gap: 16px;
-}
-
-.pc-icon {
-  font-size: 32px;
-}
-
-.pc-icon.blue { color: #3b82f6; }
-.pc-icon.yellow { color: #facc15; }
-.pc-icon.green { color: #10b981; }
-
-/* TABLE SECTION */
-.ports-table-section h2 {
-  margin-bottom: 12px;
-}
-
-/* TABLE */
-.ports-table {
-  width: 100%;
-  border-collapse: collapse;
-  background: #0f172a;
-  border-radius: 12px;
+  flex-direction: column;
+  height: 100%;                        /* fill the main-content area */
+  background: #0d1520;
+  color: #c8d6e5;
+  font-family: 'Segoe UI', system-ui, sans-serif;
   overflow: hidden;
 }
 
-.ports-table th {
-  background: #1e293b;
-  padding: 14px 18px;
-  font-size: 14px;
+/* ── top header row ── */
+.ports-page-header {
+  padding: 18px 28px 10px;
+  flex-shrink: 0;
+}
+.ports-page-title {
+  margin: 0;
+  font-size: 22px;
   font-weight: 600;
-  text-align: left;
+  color: #eef2f7;
+  letter-spacing: 0.3px;
 }
 
-.ports-table td {
-  padding: 14px 18px;
-  border-bottom: 1px solid #1e293b;
-  font-size: 14px;
-  color: #e2e8f0;
-}
-
-.ports-table tr:hover {
-  background: #152036;
-}
-
-/* Congestion Colors */
-.cong-tag {
-  padding: 4px 10px;
-  border-radius: 6px;
-  font-weight: 600;
-}
-
-.cong-tag.high {
-  background: rgba(239, 68, 68, 0.15);
-  color: #ef4444;
-}
-
-.cong-tag.medium {
-  background: rgba(245, 158, 11, 0.15);
-  color: #f59e0b;
-}
-
-.cong-tag.low {
-  background: rgba(16, 185, 129, 0.15);
-  color: #10b981;
-}
-
-.loc-icon {
-  font-size: 13px;
-  margin-right: 6px;
-  color: #38bdf8;
-}
-.ports-pagination {
+/* ── two-column layout ── */
+.ports-layout {
   display: flex;
-  justify-content: center;
-  align-items: center;
-  gap: 20px;
-
-  margin: 20px 0;
+  flex: 1;
+  min-height: 0;                       /* allow inner scroll */
+  gap: 0;
 }
 
-.ports-pagination button {
-  padding: 6px 14px;
-  border-radius: 6px;
-  background: #2563eb;
-  color: white;
+/* ═══ LEFT PANEL ═══════════════════════════════════════════ */
+.ports-left-panel {
+  width: 380px;
+  min-width: 320px;
+  display: flex;
+  flex-direction: column;
+  background: #111e2b;
+  border-right: 1px solid #1e2f3f;
+  overflow: hidden;
+}
+
+/* panel header row  */
+.ports-panel-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 20px 4px;
+}
+.ports-panel-title {
+  font-size: 15px;
+  font-weight: 600;
+  color: #dde5ef;
+  letter-spacing: 0.2px;
+}
+.ports-sort-btn {
+  background: none;
   border: none;
   cursor: pointer;
+  padding: 4px;
+  border-radius: 4px;
+  transition: background 0.2s;
+}
+.ports-sort-btn:hover { background: #1e2f3f; }
+
+/* search bar */
+.ports-search-wrap {
+  margin: 10px 18px;
+  position: relative;
+}
+.ports-search-icon {
+  position: absolute;
+  left: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  pointer-events: none;
+}
+.ports-search-input {
+  width: 100%;
+  box-sizing: border-box;
+  background: #162230;
+  border: 1px solid #263545;
+  border-radius: 6px;
+  padding: 9px 14px 9px 34px;
+  font-size: 13px;
+  color: #c8d6e5;
+  outline: none;
+  transition: border-color 0.2s;
+}
+.ports-search-input::placeholder { color: #546e7a; }
+.ports-search-input:focus        { border-color: #3b8dd4; }
+
+/* scrollable card list */
+.ports-card-list {
+  flex: 1;
+  overflow-y: auto;
+  padding: 6px 16px 16px;
+}
+.ports-card-list::-webkit-scrollbar        { width: 6px; }
+.ports-card-list::-webkit-scrollbar-track  { background: transparent; }
+.ports-card-list::-webkit-scrollbar-thumb  { background: #2a3f52; border-radius: 3px; }
+
+/* ── single port card ── */
+.port-card {
+  background: #162230;
+  border: 1px solid #1e2f3f;
+  border-radius: 10px;
+  margin-bottom: 10px;
+  padding: 14px 16px 10px;
+  cursor: pointer;
+  transition: border-color 0.2s, background 0.2s;
+}
+.port-card:hover              { border-color: #2d5a8a; background: #1a2a3a; }
+.port-card--selected          { border-color: #3b8dd4; background: #1a2a3a; }
+
+/* card top row: icon | name + code | badge */
+.port-card-top {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 11px;
+}
+.port-card-icon {
+  flex-shrink: 0;
+  width: 32px;
+  height: 32px;
+  background: #1e2f3f;
+  border-radius: 7px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.port-card-name-wrap {
+  flex: 1;
+  min-width: 0;
+}
+.port-card-name {
+  display: block;
+  font-size: 15px;
+  font-weight: 600;
+  color: #eef2f7;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.port-card-code {
+  display: block;
+  font-size: 11px;
+  color: #6a8599;
+  margin-top: 1px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
 }
 
-.ports-pagination button:disabled {
-  background: #555;
-  cursor: not-allowed;
+/* congestion badges */
+.port-badge {
+  flex-shrink: 0;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.8px;
+  padding: 3px 10px;
+  border-radius: 4px;
+  text-transform: uppercase;
+}
+.port-badge--high     { background: #e8445a22; color: #e8445a; border: 1px solid #e8445a44; }
+.port-badge--moderate { background: #f0a62922; color: #f0a629; border: 1px solid #f0a62944; }
+.port-badge--low      { background: #3ecf8e22; color: #3ecf8e; border: 1px solid #3ecf8e44; }
+
+/* anchorage / avg-wait stats */
+.port-card-stats {
+  display: flex;
+  gap: 24px;
+  margin-bottom: 10px;
+}
+.port-stat {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+.port-stat-label {
+  font-size: 9px;
+  font-weight: 600;
+  color: #546e7a;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+}
+.port-stat-value {
+  font-size: 13px;
+  font-weight: 600;
+  color: #c8d6e5;
+}
+.port-stat-value--high { color: #e8445a; }
+.port-stat-value--med  { color: #f0a629; }
+
+/* weather footer */
+.port-card-weather {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  padding-top: 8px;
+  border-top: 1px solid #1e2f3f;
+  font-size: 12px;
+  color: #7a9bb5;
+}
+.port-weather-text { flex: 1; }
+.port-weather-sep  { color: #354d62; }
+.port-weather-temp { font-weight: 600; color: #a0bdd4; }
+
+/* ═══ RIGHT PANEL (MAP) ═══════════════════════════════════ */
+.ports-right-panel {
+  flex: 1;
+  position: relative;
+  min-width: 0;
+}
+
+/* Leaflet map container */
+.ports-map {
+  width: 100%;
+  height: 100%;
+  border-radius: 0;
+}
+
+/* ── override Leaflet chrome to match dark theme ── */
+.ports-map .leaflet-control-zoom {
+  background: #1a2735;
+  border: 1px solid #2d4a63 !important;
+  border-radius: 6px;
+  box-shadow: 0 2px 8px #00000044;
+}
+.ports-map .leaflet-control-zoom a {
+  color: #8899aa;
+  height: 28px;
+  line-height: 28px;
+  border-bottom: 1px solid #2d4a63;
+}
+.ports-map .leaflet-control-zoom a:last-child { border-bottom: none; }
+.ports-map .leaflet-control-zoom a:hover      { background: #243542; color: #fff; }
+
+.ports-map .leaflet-control-attribution {
+  background: rgba(13, 21, 32, 0.7) !important;
+  color: #5a7080 !important;
+  font-size: 10px;
+}
+.ports-map .leaflet-control-attribution a { color: #6a9cc4; }
+
+/* ── custom dot markers ── */
+.custom-marker {
+  background: none;
+  border: none;
+}
+.marker-dot {
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  border: 2px solid rgba(255,255,255,0.25);
+  transition: transform 0.15s;
+}
+.custom-marker:hover .marker-dot {
+  transform: scale(1.35);
+}
+
+/* ── popup ── */
+.ports-map-popup .leaflet-popup-content-wrapper {
+  background: #162230;
+  border: 1px solid #2d4a63;
+  border-radius: 8px;
+  box-shadow: 0 4px 16px #00000066;
+  color: #c8d6e5;
+  padding: 0 !important;
+}
+.ports-map-popup .leaflet-popup-content {
+  margin: 10px 14px;
+  font-size: 13px;
+}
+.ports-map-popup .leaflet-popup-tip-wrapper { display: none; }
+.ports-map-popup .leaflet-popup-close-button {
+  color: #8899aa !important;
+  top: 6px !important;
+  right: 8px !important;
+  font-size: 16px !important;
+}
+.ports-map-popup .leaflet-popup-close-button:hover { color: #fff !important; }
+
+.popup-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 5px;
+}
+.popup-header strong { color: #eef2f7; font-size: 14px; }
+.popup-body         { color: #7a9bb5; font-size: 12px; line-height: 1.7; }
+
+/* ── CONGESTION LEGEND (bottom-right overlay) ── */
+.ports-legend {
+  position: absolute;
+  bottom: 28px;
+  right: 24px;
+  z-index: 1000;
+  background: rgba(18, 30, 43, 0.88);
+  backdrop-filter: blur(6px);
+  border: 1px solid #2d4a63;
+  border-radius: 8px;
+  padding: 10px 16px;
+  box-shadow: 0 4px 12px #00000044;
+}
+.ports-legend-title {
+  display: block;
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 1.2px;
+  color: #6a8599;
+  margin-bottom: 6px;
+  text-transform: uppercase;
+}
+.ports-legend-items {
+  display: flex;
+  gap: 16px;
+}
+.ports-legend-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  color: #c8d6e5;
+}
+.ports-legend-dot {
+  width: 11px;
+  height: 11px;
+  border-radius: 50%;
+  display: inline-block;
+}
+
+/* ═══ RESPONSIVE ════════════════════════════════════════════ */
+@media (max-width: 900px) {
+  .ports-layout     { flex-direction: column; }
+  .ports-left-panel { width: 100%; min-width: 0; max-height: 45vh; }
 }

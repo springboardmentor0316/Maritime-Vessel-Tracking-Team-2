@@ -109,8 +109,8 @@ class Vessel(models.Model):
 class VesselPosition(models.Model):
     """Historical positions for route tracking and replay"""
     vessel = models.ForeignKey(Vessel, on_delete=models.CASCADE, related_name='positions')
-    latitude = models.FloatField()
-    longitude = models.FloatField()
+    latitude = models.FloatField(db_index=True)
+    longitude = models.FloatField(db_index=True)
     speed = models.FloatField(null=True, blank=True, help_text="Speed in knots")
     course = models.DecimalField(max_digits=5, decimal_places=2, null=True, blank=True, help_text="Course in degrees")
     heading = models.IntegerField(null=True, blank=True, help_text="Heading in degrees")

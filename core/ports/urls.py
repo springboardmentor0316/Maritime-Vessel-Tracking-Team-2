@@ -1,10 +1,9 @@
 from django.urls import path
-from .views import PortListView,  DashboardView
+from .views import DashboardView
 
 urlpatterns = [
 
-    path("ports/", PortListView.as_view()),
+    # Main dashboard endpoint
+    path("dashboard/", DashboardView.as_view(), name="ports-dashboard"),
 
-    path("dashboard/", DashboardView.as_view()),  
 ]
-
