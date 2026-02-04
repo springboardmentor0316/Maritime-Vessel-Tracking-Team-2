@@ -137,3 +137,34 @@
 .btn-danger:hover {
   background: #dc2626;
 }
+/* Fix full-width Back to Vessels button ONLY in Not Found section */
+.error-message .btn-primary {
+  width: fit-content !important;
+  max-width: fit-content !important;
+  display: inline-flex !important;
+  align-items: center;
+  justify-content: center;
+
+  padding: 6px 14px !important;
+  font-size: 13px !important;
+  height: 32px !important;
+  border-radius: 6px !important;
+
+  background: #1a1f4d !important;
+  border: 1px solid #2d3458 !important;
+  color: #e2e8f0 !important;
+}
+
+/* Reduce icon size */
+.error-message .btn-primary svg {
+  font-size: 14px !important;
+  margin-right: 6px;
+}
+
+/* Center the button and text */
+.error-message {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+}

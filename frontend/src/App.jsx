@@ -80,6 +80,9 @@ function App() {
               {/* Events */}
               <Route path="events" element={<EventsPage />} />
 
+              {/* Profile */}
+              <Route path="profile" element={<ProfilePage />} />
+
               {/* Placeholder Pages */}
               <Route path="voyages" element={<div className="page-placeholder">Voyages (Coming Soon)</div>} />
 

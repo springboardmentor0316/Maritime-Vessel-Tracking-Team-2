@@ -1,12 +1,207 @@
-.vessel-form-page {
+/* ------------------------- */
+/* PAGE CONTAINER */
+/* ------------------------- */
+.vessel-edit-page {
   padding: 24px;
-  max-width: 1200px;
-  margin: 0 auto;
+  background: #0a0e27;
+  min-height: 100vh;
 }
 
-.form-container {
-  background: white;
-  border-radius: 8px;
-  padding: 32px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+/* ------------------------- */
+/* HEADER + BACK BUTTON */
+/* ------------------------- */
+.edit-header {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;   /* centers title perfectly */
+  margin-bottom: 32px;
+}
+
+/* Back button (fixed left) */
+.btn-back {
+  position: absolute;
+  left: 0;
+
+  padding: 5px 12px;
+  font-size: 12.5px;
+  height: 30px;
+  min-width: 65px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  background: #1a1f4d;
+  border: 1px solid #2d3458;
+  color: #e2e8f0;
+
+  border-radius: 6px;
+  cursor: pointer;
+  transition: 0.2s ease;
+}
+
+.btn-back svg {
+  font-size: 13px !important;
+  margin-right: 6px;
+}
+
+.btn-back:hover {
+  background: #2d3458;
+  border-color: #3b82f6;
+}
+
+/* Title (centered perfectly, no shifting) */
+.edit-header h1 {
+  margin: 0;
+  font-size: 28px;
+  font-weight: 600;
+  color: #e2e8f0;
+  text-align: center;
+  width: 100%;
+}
+
+/* ------------------------- */
+/* FORM LAYOUT */
+/* ------------------------- */
+.vessel-form {
+  width: 100%;
+  max-width: 1500px;  /* adjust as per your preference */
+  margin: 0 auto;     /* keep centered */
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+
+/* ------------------------- */
+/* FORM CARDS */
+/* ------------------------- */
+.form-card {
+  background: #0f1433;
+  border: 1px solid #1a1f4d;
+  border-radius: 12px;
+  padding: 24px;
+}
+
+.form-card h3 {
+  margin: 0 0 20px 0;
+  font-size: 18px;
+  font-weight: 600;
+  color: #e2e8f0;
+  border-bottom: 2px solid #1a1f4d;
+  padding-bottom: 12px;
+}
+
+/* ------------------------- */
+/* GRID + INPUTS */
+/* ------------------------- */
+.form-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 20px;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.form-group label {
+  font-size: 13px;
+  font-weight: 600;
+  color: #94a3b8;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.required {
+  color: #ef4444;
+}
+
+.form-group input,
+.form-group select {
+  padding: 10px 12px;
+  background: #1a1f4d;
+  border: 1px solid #2d3458;
+  border-radius: 6px;
+  font-size: 14px;
+  color: #e2e8f0;
+}
+
+.form-group input:focus,
+.form-group select:focus {
+  outline: none;
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+.form-group input:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  background: #0f1433;
+}
+
+.form-group input::placeholder {
+  color: #64748b;
+}
+
+.form-help {
+  font-size: 12px;
+  color: #64748b;
+  font-style: italic;
+}
+
+/* ------------------------- */
+/* ACTION BUTTONS */
+/* ------------------------- */
+.form-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+  padding-top: 20px;
+}
+
+/* Default button style (matches back button) */
+.btn {
+  padding: 6px 14px;
+  height: 32px;
+  font-size: 13px;
+
+  border-radius: 6px;
+  border: 1px solid #2d3458;
+  background: #1a1f4d;
+  color: #e2e8f0;
+
+  cursor: pointer;
+  transition: 0.2s ease;
+}
+
+.btn:hover:not(:disabled) {
+  background: #2d3458;
+  border-color: #3b82f6;
+}
+
+.btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* Save & Cancel buttons — equal small size */
+.form-actions .btn {
+  min-width: 110px;
+  max-width: 110px;
+  padding: 6px 10px;
+  text-align: center;
+}
+
+/* Save button - blue border */
+.btn-primary {
+  border-color: #3b82f6 !important;
+}
+
+.btn-primary:hover:not(:disabled) {
+  background: #2d3458 !important;
+  border-color: #60a5fa !important;
 }

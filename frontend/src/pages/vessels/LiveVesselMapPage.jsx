@@ -1,18 +1,12 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { MapContainer, TileLayer, Marker, Popup, Circle } from 'react-leaflet';
+import { MapContainer, TileLayer, Marker, Popup, Circle, useMap } from 'react-leaflet';
 import L from 'leaflet';
 import vesselService from '../../services/vesselService';
 import { useToast } from '../../context/ToastContext';
 import 'leaflet/dist/leaflet.css';
 import './LiveVesselMapPage.css';
 
-import { 
-  FaSearch, 
-  FaShieldAlt, 
-  FaCloud, 
-  FaEdit, 
-  FaExclamationTriangle
-} from "react-icons/fa";
+import { FaSearch, FaExclamationTriangle } from "react-icons/fa";
 
 /* --------------------------------------
    CUSTOM VESSEL ICON
@@ -47,6 +41,31 @@ const createVesselIcon = (status) => {
 };
 
 /* --------------------------------------
+   ZOOM CONTROLS (Ports Style)
+--------------------------------------- */
+function ZoomControls() {
+  const map = useMap();
+
+  return (
+    <div className="live-zoom-controls">
+      <button
+        className="zoom-btn"
+        onClick={() => map.setZoom(map.getZoom() + 1)}
+      >
+        +
+      </button>
+
+      <button
+        className="zoom-btn"
+        onClick={() => map.setZoom(map.getZoom() - 1)}
+      >
+        −
+      </button>
+    </div>
+  );
+}
+
+/* --------------------------------------
    MAIN COMPONENT
 --------------------------------------- */
 const LiveVesselMapPage = () => {
@@ -56,97 +75,54 @@ const LiveVesselMapPage = () => {
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
 
-  // MAP REF
   const mapRef = useRef(null);
 
-  // LIVE ZOOM %
-  const [zoomLevel, setZoomLevel] = useState(6);
-
-  // Correct zoom listener
-  useEffect(() => {
-    const map = mapRef.current;
-    if (!map) return;
-
-    const updateZoom = () => {
-      const currentZoom = map.getZoom();
-      setZoomLevel(currentZoom);
-    };
-
-    map.on("zoomend", updateZoom);
-
-    // Set initial zoom correctly
-    setZoomLevel(map.getZoom());
-
-    return () => map.off("zoomend", updateZoom);
-
-  }, []); // Must be empty array
-
-  /* FETCH VESSELS */
+  /* FETCH LIVE VESSELS */
   useEffect(() => {
     fetchVessels();
   }, []);
 
   const fetchVessels = async () => {
-  try {
+    try {
+      const res = await vesselService.getLiveVessels(1);
+      const list = res?.results || res || [];
 
-    const res = await vesselService.getLiveVessels(1);
+      const mapped = list
+        .filter(v => v.latitude && v.longitude)
+        .map(v => ({
+          id: v.id,
+          name: v.name || "Unknown Vessel",
+          mmsi: v.mmsi || "",
+          imo_number: v.imo_number || "",
+          latitude: Number(v.latitude),
+          longitude: Number(v.longitude),
+          status: v.status || "active",
+          speed: Number(v.speed) || 0,
+          vessel_type: v.vessel_type || "Unknown",
+        }));
 
-    console.log("RAW VESSEL API:", res);
+      setVessels(mapped);
+      setLoading(false);
 
-    // Handle DRF pagination
-    const list = res?.results || res || [];
-
-    const mapped = list
-      .filter(v => v.latitude && v.longitude)
-      .map(v => ({
-
-        id: v.id,
-
-        name: v.name || "Unknown Vessel",
-
-        mmsi: v.mmsi || "",
-        imo_number: v.imo_number || "",
-
-        latitude: Number(v.latitude),
-        longitude: Number(v.longitude),
-
-        status: v.status || "active",
-
-        speed: Number(v.speed) || 0,
-
-        vessel_type: v.vessel_type || "Unknown",
-
-      }));
-
-    console.log("MAPPED VESSELS:", mapped);
-
-    setVessels(mapped);
-
-    setLoading(false);
-
-  } catch (err) {
-
-    console.error("Live vessel fetch error:", err);
-
-    toast.error("Failed to load live vessel data");
-
-    setLoading(false);
-  }
-};
+    } catch (err) {
+      console.error("Live vessel fetch error:", err);
+      toast.error("Failed to load live vessel data");
+      setLoading(false);
+    }
+  };
 
   /* SEARCH FILTER */
   const filteredVessels = vessels.filter((v) => {
-  if (!searchTerm) return true;
+    if (!searchTerm) return true;
 
-  const s = searchTerm.toLowerCase();
+    const s = searchTerm.toLowerCase();
 
-  return (
-    v.name?.toLowerCase().includes(s) ||
-    String(v.mmsi || "").toLowerCase().includes(s) ||
-    String(v.imo_number || "").toLowerCase().includes(s)
-  );
-});
-
+    return (
+      v.name?.toLowerCase().includes(s) ||
+      String(v.mmsi || "").toLowerCase().includes(s) ||
+      String(v.imo_number || "").toLowerCase().includes(s)
+    );
+  });
 
   /* TEMP ALERT LOGIC */
   const vesselsWithAlerts = filteredVessels.map((v, i) => ({
@@ -186,164 +162,103 @@ const LiveVesselMapPage = () => {
         </div>
       </div>
 
-      {/* ACTION BAR */}
-      <div className="action-bar">
-        <div className="action-buttons">
-          <button className="action-btn"><FaShieldAlt /></button>
-          <button className="action-btn"><FaCloud /></button>
-
-          <button className="action-btn primary" onClick={fetchVessels}>
-            <FaEdit />
-            <span>Update Position</span>
-          </button>
-        </div>
-      </div>
-
       {/* MAP */}
       <div className="map-wrapper">
 
-        <MapContainer
-          center={[1.3521, 103.8198]}
-          zoom={6}
-          zoomControl={false}
-          style={{ height: "100%", width: "100%" }}
-          whenCreated={(map) => {
-            mapRef.current = map;
-            setZoomLevel(map.getZoom());
-          }}
-        >
-          <TileLayer
-            attribution="&copy; OpenStreetMap"
-            url="https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png"
-          />
+        <div className="map-container-box">
 
-          {/* VESSELS */}
-          {vesselsWithAlerts.map((v) =>
-            v.latitude && v.longitude ? (
-              <React.Fragment key={v.id}>
-
-                {v.hasAlert && (
-                  <>
-                    <Circle
-                      center={[+v.latitude, +v.longitude]}
-                      radius={80000}
-                      pathOptions={{
-                        color: "#ef4444",
-                        fillOpacity: 0.07,
-                        dashArray: "10, 10",
-                      }}
-                    />
-                    <Circle
-                      center={[+v.latitude, +v.longitude]}
-                      radius={15000}
-                      pathOptions={{
-                        color: "#ef4444",
-                        fillOpacity: 0.9,
-                      }}
-                    />
-                  </>
-                )}
-
-                <Marker
-                  position={[+v.latitude, +v.longitude]}
-                  icon={createVesselIcon(v.hasAlert ? "alert" : v.status)}
-                >
-                  <Popup>
-                    <div className="vessel-popup-content">
-                      <h4>{v.name || "Unknown"}</h4>
-                      <p><strong>MMSI:</strong> {v.mmsi}</p>
-                      <p><strong>Type:</strong> {v.vessel_type}</p>
-                      <p><strong>Status:</strong> {v.status}</p>
-
-                      {v.hasAlert && (
-                        <p>
-                          <FaExclamationTriangle color="#ef4444" /> <strong>ALERT</strong>
-                        </p>
-                      )}
-
-                      <p><strong>Speed:</strong> {v.speed || "N/A"} kn</p>
-                      <p><strong>Position:</strong> {v.latitude}, {v.longitude}</p>
-                    </div>
-                  </Popup>
-                </Marker>
-
-              </React.Fragment>
-            ) : null
-          )}
-
-        </MapContainer>
-
-        {/* ⭐ TOP-LEFT ZOOM BAR (FINAL WORKING VERSION) */}
-        <div className="zoom-bar">
-
-          {/* – BUTTON */}
-          <button 
-            className="zoom-btn-small"
-            onClick={() => {
-              if (mapRef.current) {
-                mapRef.current.setZoom(mapRef.current.getZoom() - 1);
-              }
-            }}
+          <MapContainer
+            center={[1.3521, 103.8198]}
+            zoom={6}
+            zoomControl={false}
+            style={{ height: "100%", width: "100%" }}
+            whenCreated={(map) => (mapRef.current = map)}
           >
-            −
-          </button>
+            <ZoomControls />
 
-          {/* + BUTTON */}
-          <button 
-            className="zoom-btn-small"
-            onClick={() => {
-              if (mapRef.current) {
-                mapRef.current.setZoom(mapRef.current.getZoom() + 1);
-              }
-            }}
-          >
-            +
-          </button>
+            <TileLayer
+              attribution="&copy; OpenStreetMap"
+              url="https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png"
+            />
 
-          {/* RESET BUTTON */}
-          <button 
-            className="zoom-reset-small"
-            onClick={() => {
-              if (mapRef.current) {
-                mapRef.current.setZoom(6);
-              }
-            }}
-          >
-            Reset
-          </button>
+            {/* VESSELS */}
+            {vesselsWithAlerts.map((v) =>
+              v.latitude && v.longitude ? (
+                <React.Fragment key={v.id}>
+                  {v.hasAlert && (
+                    <>
+                      <Circle
+                        center={[+v.latitude, +v.longitude]}
+                        radius={80000}
+                        pathOptions={{
+                          color: "#ef4444",
+                          fillOpacity: 0.07,
+                          dashArray: "10, 10",
+                        }}
+                      />
+                      <Circle
+                        center={[+v.latitude, +v.longitude]}
+                        radius={15000}
+                        pathOptions={{
+                          color: "#ef4444",
+                          fillOpacity: 0.9,
+                        }}
+                      />
+                    </>
+                  )}
 
-          {/* LIVE PERCENT */}
-          <span className="zoom-percent-small">
-            {zoomLevel * 25}%
-          </span>
+                  <Marker
+                    position={[+v.latitude, +v.longitude]}
+                    icon={createVesselIcon(v.hasAlert ? "alert" : v.status)}
+                  >
+                    <Popup>
+                      <div className="vessel-popup-content">
+                        <h4>{v.name || "Unknown"}</h4>
+                        <p><strong>MMSI:</strong> {v.mmsi}</p>
+                        <p><strong>Type:</strong> {v.vessel_type}</p>
+                        <p><strong>Status:</strong> {v.status}</p>
 
-        </div>
+                        {v.hasAlert && (
+                          <p>
+                            <FaExclamationTriangle color="#ef4444" /> <strong>ALERT</strong>
+                          </p>
+                        )}
 
-        {/* LEGEND */}
-        <div className="map-legend-box">
-          <div className="legend-title">LIVE STATUS</div>
+                        <p><strong>Speed:</strong> {v.speed || "N/A"} kn</p>
+                        <p><strong>Position:</strong> {v.latitude}, {v.longitude}</p>
+                      </div>
+                    </Popup>
+                  </Marker>
+                </React.Fragment>
+              ) : null
+            )}
+          </MapContainer>
 
-          <div className="legend-items">
-            <div className="legend-item">
-              <span className="legend-indicator underway"></span>
-              <span>Underway</span>
-            </div>
-            <div className="legend-item">
-              <span className="legend-indicator restricted"></span>
-              <span>Restricted / Delayed</span>
-            </div>
-            <div className="legend-item">
-              <span className="legend-indicator alert"></span>
-              <span>Safety Alert</span>
-            </div>
-            <div className="legend-item">
-              <span className="legend-indicator moored"></span>
-              <span>Moored</span>
+          {/* LEGEND */}
+          <div className="map-legend-box">
+            <div className="legend-title">LIVE STATUS</div>
+
+            <div className="legend-items">
+              <div className="legend-item">
+                <span className="legend-indicator underway"></span>
+                <span>Underway</span>
+              </div>
+              <div className="legend-item">
+                <span className="legend-indicator restricted"></span>
+                <span>Restricted / Delayed</span>
+              </div>
+              <div className="legend-item">
+                <span className="legend-indicator alert"></span>
+                <span>Safety Alert</span>
+              </div>
+              <div className="legend-item">
+                <span className="legend-indicator moored"></span>
+                <span>Moored</span>
+              </div>
             </div>
           </div>
 
         </div>
-
       </div>
     </div>
   );

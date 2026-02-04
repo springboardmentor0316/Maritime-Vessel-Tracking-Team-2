@@ -22,42 +22,23 @@ export default function Login() {
     setLoading(true);
 
     try {
-      const res = await loginUser({
-        email,
-        password,
-        role,
-      });
+      const res = await loginUser({ email, password, role });
 
-      console.log("LOGIN SUCCESS:", res);
-
-      // Save tokens
       localStorage.setItem("access", res.access);
       localStorage.setItem("refresh", res.refresh);
-      localStorage.setItem("access_token", res.access);
-      localStorage.setItem("refresh_token", res.refresh);
       localStorage.setItem("role", role);
 
-      // ⭐ Backend is NOT returning user – so we create user manually
-      const userObject = {
-        email: email,
-        role: role,
-      };
-
-      // Save user info
+      const userObject = { email, role };
       localStorage.setItem("user", JSON.stringify(userObject));
 
-      // Update AuthContext
       authLogin(userObject);
-
       toast.success("Login successful!");
 
-      // Navigate to dashboard
       setTimeout(() => {
         navigate("/app/dashboard", { replace: true });
       }, 100);
 
     } catch (err) {
-      console.error("LOGIN ERROR:", err);
       const errorMessage = err?.detail || "Invalid credentials";
       setError(errorMessage);
       toast.error(errorMessage);
@@ -69,7 +50,6 @@ export default function Login() {
   return (
     <div className="login-container">
       <div className="overlay" />
-
       <div className="login-card">
         <div className="logo">⚓</div>
 
@@ -102,10 +82,20 @@ export default function Login() {
             disabled={loading}
           />
 
+          {/* ⭐ EXACT FORGOT PASSWORD BUTTON FROM YOUR VERSION */}
+          <button
+            type="button"
+            className="forgot-password-btn"
+            onClick={() => navigate("/forgot-password")}
+            disabled={loading}
+          >
+            Forgot Password?
+          </button>
+
           <label>Role</label>
-          <select 
-            value={role} 
-            onChange={(e) => setRole(e.target.value)} 
+          <select
+            value={role}
+            onChange={(e) => setRole(e.target.value)}
             disabled={loading}
           >
             <option>Operator - Vessel Tracking</option>
