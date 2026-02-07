@@ -6,14 +6,16 @@ import DataTable from '../../components/common/DataTable';
 import Badge from '../../components/common/Badge';
 import './VesselListPage.css';
 
-// ⭐ React Icons Added
+// ⭐ React Icons
 import { FaShip, FaPlus, FaEye, FaEdit, FaTrash } from "react-icons/fa";
 
 const VesselListPage = () => {
   const navigate = useNavigate();
   const toast = useToast();
+
   const [vessels, setVessels] = useState([]);
   const [loading, setLoading] = useState(true);
+
   const [filters, setFilters] = useState({
     search: '',
     type: 'all',
@@ -27,14 +29,16 @@ const VesselListPage = () => {
   const fetchVessels = async () => {
     try {
       setLoading(true);
+
       const params = {};
-      
+
       if (filters.search) params.search = filters.search;
       if (filters.type !== 'all') params.vessel_type = filters.type;
       if (filters.status !== 'all') params.status = filters.status;
 
       const data = await vesselService.getAllVessels(params);
-setVessels(data.results || data);
+
+      setVessels(data.results || data);
 
     } catch (error) {
       console.error('Failed to fetch vessels:', error);
@@ -74,7 +78,7 @@ setVessels(data.results || data);
       header: 'Name',
       field: 'name',
       render: (value, row) => (
-        <span 
+        <span
           className="vessel-name-link"
           onClick={() => handleViewDetails(row)}
         >
@@ -85,7 +89,10 @@ setVessels(data.results || data);
     {
       header: 'IMO',
       field: 'imo_number',
-      render: (value) => value && value.startsWith('IMO') ? value.substring(3, 12) : value,
+      render: (value) =>
+        value && value.startsWith('IMO')
+          ? value.substring(3, 12)
+          : value,
     },
     {
       header: 'MMSI',
@@ -94,23 +101,28 @@ setVessels(data.results || data);
     {
       header: 'Type',
       field: 'vessel_type',
-      render: (value) => <Badge text={value || 'Other'} type="default" />,
+      render: (value) => (
+        <Badge text={value || 'Other'} type="default" />
+      ),
     },
     {
       header: 'Status',
       field: 'status',
       render: (value) => {
         const types = {
-          'active': 'success',
-          'Moving': 'success',
-          'underway': 'primary',
-          'Anchored': 'warning',
-          'anchored': 'warning',
-          'Docked': 'info',
-          'moored': 'info',
-          'inactive': 'danger',
+          active: 'success',
+          Moving: 'success',
+          underway: 'primary',
+          Anchored: 'warning',
+          anchored: 'warning',
+          Docked: 'info',
+          moored: 'info',
+          inactive: 'danger',
         };
-        return <Badge text={value} type={types[value] || 'default'} />;
+
+        return (
+          <Badge text={value} type={types[value] || 'default'} />
+        );
       },
     },
     {
@@ -122,7 +134,10 @@ setVessels(data.results || data);
       field: 'latitude',
       render: (lat, row) => {
         if (!lat || !row.longitude) return 'N/A';
-        return `${parseFloat(lat).toFixed(2)}, ${parseFloat(row.longitude).toFixed(2)}`;
+
+        return `${parseFloat(lat).toFixed(2)}, ${parseFloat(
+          row.longitude
+        ).toFixed(2)}`;
       },
     },
     {
@@ -137,6 +152,7 @@ setVessels(data.results || data);
           >
             <FaEye />
           </button>
+
           <button
             className="btn-icon btn-edit"
             onClick={() => handleEditVessel(row)}
@@ -144,6 +160,7 @@ setVessels(data.results || data);
           >
             <FaEdit />
           </button>
+
           <button
             className="btn-icon btn-danger"
             onClick={() => handleDeleteVessel(row)}
@@ -159,7 +176,7 @@ setVessels(data.results || data);
   return (
     <div className="vessel-list-page">
 
-      {/* ⭐ UPDATED HEADER WITH CLEAR + ADD BUTTON */}
+      {/* HEADER */}
       <div className="page-header page-header-top">
         <h1>
           <FaShip style={{ marginRight: "8px" }} />
@@ -167,11 +184,14 @@ setVessels(data.results || data);
         </h1>
 
         <div className="header-actions">
-          <button className="btn btn-secondary clear-btn" onClick={fetchVessels}>
+          <button
+            className="btn btn-secondary clear-btn"
+            onClick={fetchVessels}
+          >
             Clear
           </button>
 
-          <button 
+          <button
             className="btn btn-primary add-vessel-btn"
             onClick={() => navigate('/app/vessels/new')}
           >
@@ -181,46 +201,73 @@ setVessels(data.results || data);
         </div>
       </div>
 
-      {/* FILTERS ROW (unchanged except Clear removed) */}
+      {/* FILTERS */}
       <div className="filters-container">
-        <input
-          type="text"
-          className="search-input"
-          placeholder="Search by name, IMO, or MMSI..."
-          value={filters.search}
-          onChange={handleSearchChange}
-        />
 
-        <select
-          className="filter-select"
-          value={filters.type}
-          onChange={(e) => setFilters({ ...filters, type: e.target.value })}
-        >
-          <option value="all">All Types</option>
-          <option value="Cargo">Cargo</option>
-          <option value="Tanker">Tanker</option>
-          <option value="Passenger">Passenger</option>
-          <option value="Fishing">Fishing</option>
-          <option value="Sailing">Sailing</option>
-          <option value="Tug">Tug</option>
-          <option value="Other">Other</option>
-        </select>
+        {/* Search */}
+        <div className="filter-group">
+          <label className="filter-label">Search</label>
+          <input
+            type="text"
+            className="search-input"
+            placeholder="Search by name, IMO, or MMSI..."
+            value={filters.search}
+            onChange={handleSearchChange}
+          />
+        </div>
 
-        <select
-          className="filter-select"
-          value={filters.status}
-          onChange={(e) => setFilters({ ...filters, status: e.target.value })}
-        >
-          <option value="all">All Statuses</option>
-          <option value="active">Active</option>
-          <option value="Moving">Moving</option>
-          <option value="underway">Underway</option>
-          <option value="Anchored">Anchored</option>
-          <option value="Docked">Docked</option>
-          <option value="inactive">Inactive</option>
-        </select>
+        {/* Vessel Type */}
+        <div className="filter-group">
+          <label className="filter-label">Vessel Type</label>
+
+          <select
+            className="filter-select"
+            value={filters.type}
+            onChange={(e) =>
+              setFilters({
+                ...filters,
+                type: e.target.value,
+              })
+            }
+          >
+            <option value="all">All Types</option>
+            <option value="Cargo">Cargo</option>
+            <option value="Tanker">Tanker</option>
+            <option value="Passenger">Passenger</option>
+            <option value="Fishing">Fishing</option>
+            <option value="Sailing">Sailing</option>
+            <option value="Tug">Tug</option>
+            <option value="Other">Other</option>
+          </select>
+        </div>
+
+        {/* Status */}
+        <div className="filter-group">
+          <label className="filter-label">Status</label>
+
+          <select
+            className="filter-select"
+            value={filters.status}
+            onChange={(e) =>
+              setFilters({
+                ...filters,
+                status: e.target.value,
+              })
+            }
+          >
+            <option value="all">All Statuses</option>
+            <option value="active">Active</option>
+            <option value="Moving">Moving</option>
+            <option value="underway">Underway</option>
+            <option value="Anchored">Anchored</option>
+            <option value="Docked">Docked</option>
+            <option value="inactive">Inactive</option>
+          </select>
+        </div>
+
       </div>
 
+      {/* TABLE */}
       <DataTable
         columns={columns}
         data={vessels}
@@ -228,6 +275,7 @@ setVessels(data.results || data);
         loading={loading}
         emptyMessage="No vessels found. Add a vessel or start AIS streaming."
       />
+
     </div>
   );
 };
