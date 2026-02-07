@@ -179,7 +179,7 @@ class AISStreamService:
     
     @sync_to_async
     def save_vessel_position(self, data):
-        """Save vessel position to database"""
+        """Save vessel position to database - PRESERVE EXISTING DATA"""
         mmsi = data.get("mmsi")
         
         if not mmsi:
@@ -199,33 +199,50 @@ class AISStreamService:
             nav_status_code = data.get("nav_status")
             vessel_status = self.NAV_STATUS_MAP.get(nav_status_code, "active")
             
-            # Get or create vessel
-            vessel, created = Vessel.objects.get_or_create(
-                mmsi=mmsi,
-                defaults={
-                    "name": data.get("name") or f"Vessel-{mmsi}",
-                    "imo_number": f"IMO{mmsi}",
-                    "vessel_type": vessel_type,
-                    "type": vessel_type.lower(),
-                    "flag": "Unknown",
-                    "status": vessel_status,
-                }
-            )
+            # ============ FIX: Check if vessel already exists ============
+            try:
+                vessel = Vessel.objects.get(mmsi=mmsi)
+                created = False
+                
+                # PRESERVE EXISTING DATA - Only update if we have better info
+                
+                # Only update name if AIS provides one and current is generic
+                if data.get("name") and (
+                    not vessel.name or 
+                    vessel.name.startswith("Vessel-") or 
+                    vessel.name.startswith("UNKNOWN")
+                ):
+                    vessel.name = data.get("name")
+                
+                # Only update type if current is "Other" or generic
+                if vessel_type != "Other" and (
+                    vessel.vessel_type == "Other" or 
+                    not vessel.vessel_type
+                ):
+                    vessel.vessel_type = vessel_type
+                    vessel.type = vessel_type.lower()
+                
+                # Update status from AIS navigation status (this changes frequently)
+                if nav_status_code is not None:
+                    vessel.status = vessel_status
+                
+                # DON'T touch flag - keep imported data
+                # DON'T overwrite IMO if it exists
+                
+            except Vessel.DoesNotExist:
+                # Create new vessel with AIS data
+                created = True
+                vessel = Vessel.objects.create(
+                    mmsi=mmsi,
+                    name=data.get("name") or f"Vessel-{mmsi}",
+                    imo_number=f"IMO{mmsi}",
+                    vessel_type=vessel_type,
+                    type=vessel_type.lower(),
+                    flag="Unknown",  # Only for new vessels
+                    status=vessel_status,
+                )
             
-            # Update vessel info
-            if data.get("name"):
-                vessel.name = data.get("name")
-            
-            # Update status based on nav_status
-            if nav_status_code is not None:
-                vessel.status = vessel_status
-            
-            # Update vessel type if we have a code or detected type
-            if ship_type_code or vessel_type != "Other":
-                vessel.vessel_type = vessel_type
-                vessel.type = vessel_type.lower()
-            
-            # Update position
+            # ============ ALWAYS UPDATE POSITION DATA ============
             if data.get("latitude") and data.get("longitude"):
                 vessel.latitude = data.get("latitude")
                 vessel.longitude = data.get("longitude")
@@ -253,6 +270,11 @@ class AISStreamService:
             if created:
                 print(f"✅ New vessel: {vessel.name} ({mmsi}) - Type: {vessel_type}, Status: {vessel_status}")
                 logger.info(f"✅ New vessel: {vessel.name} ({mmsi})")
+            else:
+                # Optional: print update for existing vessels (can be noisy)
+                # print(f"🔄 Updated: {vessel.name} ({mmsi}) - Status: {vessel_status}")
+                pass
             
         except Exception as e:
             print(f"❌ Error saving vessel {mmsi}: {str(e)}")
+            logger.error(f"Error saving vessel {mmsi}: {str(e)}")

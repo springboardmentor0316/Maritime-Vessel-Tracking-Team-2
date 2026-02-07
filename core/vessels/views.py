@@ -1,3 +1,4 @@
+from urllib import request
 from rest_framework import status
 from rest_framework.decorators import action
 from rest_framework.response import Response
@@ -56,7 +57,7 @@ class VesselViewSet(ModelViewSet):
         search = self.request.query_params.get("search")
 
         if vessel_type:
-            queryset = queryset.filter(vessel_type=vessel_type)  # Using your existing field
+            queryset = queryset.filter(vessel_type=vessel_type)
 
         if status_param:
             queryset = queryset.filter(status=status_param)
@@ -85,36 +86,53 @@ class VesselViewSet(ModelViewSet):
     
     @action(detail=False, methods=['get'], url_path='live-tracking', permission_classes=[IsAuthenticated])
     def live_tracking(self, request):
-        """Get live vessels with AIS tracking (updated within last N hours)"""
+        """Get live vessels with fallback"""
         hours = int(request.query_params.get('hours', 1))
         since = timezone.now() - timedelta(hours=hours)
-        
+
         vessels = Vessel.objects.filter(
             last_position_update__gte=since,
             latitude__isnull=False,
             longitude__isnull=False
         ).order_by('-last_position_update')
-        
+
+        # Fallback
+        if not vessels.exists():
+            vessels = Vessel.objects.filter(
+                latitude__isnull=False,
+                longitude__isnull=False
+            ).order_by('-last_position_update')[:2000]
+
         serializer = self.get_serializer(vessels, many=True)
+
         return Response({
             'count': vessels.count(),
             'last_updated': timezone.now(),
             'vessels': serializer.data
         })
-    
+
     @action(detail=False, methods=['get'], url_path='map-view', permission_classes=[IsAuthenticated])
     def map_view(self, request):
-        """Optimized endpoint for map display"""
+        """Optimized endpoint for map display (with fallback)"""
         hours = int(request.query_params.get('hours', 1))
         since = timezone.now() - timedelta(hours=hours)
-        
+
+        # Try fresh vessels first
         vessels = Vessel.objects.filter(
             last_position_update__gte=since,
             latitude__isnull=False,
             longitude__isnull=False
         )
-        
+
+        # Fallback: if no fresh vessels, show latest known positions
+        if not vessels.exists():
+            vessels = Vessel.objects.filter(
+                latitude__isnull=False,
+                longitude__isnull=False
+            ).order_by('-last_position_update')[:2000]
+
         serializer = self.get_serializer(vessels, many=True)
+
         return Response(serializer.data)
     
     @action(detail=True, methods=['get'], url_path='route', permission_classes=[IsAuthenticated])

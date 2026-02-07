@@ -1,25 +1,16 @@
-import apiClient from '../config/api';
+import axios from 'axios';
 
 const eventService = {
-  getAllEvents: async (params = {}) => {
-    return await apiClient.get('/api/events/', { params });
+  getAllEvents: async () => {
+    return await axios.get('/api/events/');
   },
-
-  getEventById: async (id) => {
-    return await apiClient.get('/api/events/' + id + '/');
+  createEvent: async (data) => {
+    return await axios.post('/api/events/', data);
   },
-
-  createEvent: async (eventData) => {
-    return await apiClient.post('/api/events/', eventData);
+  updateEvent: async (id, data) => {
+    return await axios.patch(`/api/events/${id}/`, data);
   },
-
-  updateEvent: async (id, eventData) => {
-    return await apiClient.put('/api/events/' + id + '/', eventData);
-  },
-
   deleteEvent: async (id) => {
-    return await apiClient.delete('/api/events/' + id + '/');
+    return await axios.delete(`/api/events/${id}/`);
   },
 };
-
-export default eventService;

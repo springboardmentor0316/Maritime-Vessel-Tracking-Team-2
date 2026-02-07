@@ -122,12 +122,42 @@ const AnalyticsPage = () => {
     <div className="analytics-page">
 
       {/* ---------------- HEADER (Cleaned) ---------------- */}
-      <div className="analytics-header">
-        <div className="header-left">
-          <h1>Operational Analytics</h1>
+      <div
+        className="analytics-header"
+        style={{
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'space-between',
+          gap: '16px',
+          width: '100%'
+        }}
+      >
+        <div className="header-left" style={{ minWidth: 0 }}>
+          <h1 style={{ margin: 0 }}>Operational Analytics</h1>
+          <p className="header-subtitle" style={{ marginTop: 4 }}>Monitor and explore fleet performance trends</p>
         </div>
-
-        {/* Search, View as Admin, Notification removed */}
+        <button
+          className="btn-create-small"
+          onClick={() => setShowAlertModal(true)}
+          style={{
+            marginLeft: 'auto',
+            display: 'inline-flex',
+            alignItems: 'center',
+            gap: '8px',
+            padding: '10px 14px',
+            whiteSpace: 'nowrap',
+            width: 'auto',
+            maxWidth: '240px',
+            background: '#10b981',
+            color: '#fff',
+            border: 'none',
+            borderRadius: 8,
+            cursor: 'pointer',
+            fontWeight: 600
+          }}
+        >
+          Quick View
+        </button>
       </div>
       {/* ------------------------------------------------- */}
 
