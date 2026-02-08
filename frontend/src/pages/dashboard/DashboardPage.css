@@ -1,6 +1,6 @@
 .maritime-dashboard {
   padding: 20px;
-  background: #0a0e27;
+  background: var(--bg-primary);;
   min-height: 100vh;
 }
 
@@ -11,6 +11,11 @@
   align-items: center;
   margin-bottom: 20px;
 }
+
+.leaflet-control-attribution {
+  display: none !important;
+}
+
 
 .dashboard-header h1 {
   margin: 0;
@@ -589,4 +594,55 @@
 
 .btn-primary:hover {
   background: #4338ca;
+}
+
+
+.zoom-btn {
+  /* ⭐ MATCHING THE RESET BUTTON HEIGHT EXACTLY */
+  width: 32px;
+  height: 32px; 
+  
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 6px;
+  color: #fff;
+  font-size: 18px;
+
+  /* ⭐ CENTERING THE + and - SYMBOLS */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  margin: 0;
+  
+  cursor: pointer;
+  transition: 0.2s;
+}
+
+.zoom-btn:hover {
+  background: rgba(255, 255, 255, 0.2);
+}
+/* RESET BUTTON */
+.reset-btn {
+  height: 30px;           /* ⭐ Must match .zoom-btn exactly to stay in one row */
+  padding: 0 14px;
+  background: rgba(37, 99, 235, 0.2);
+  border: 1px solid #3b82f6;
+  color: #fff;
+  font-size: 13px;
+  font-weight: 600;
+  border-radius: 6px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  
+  /* ⬇️ Ensures the button doesn't add its own outer spacing */
+  margin: 0;
+}
+
+.reset-btn:hover {
+  background: #3b82f6;
+  color: #fff;
 }

@@ -7,10 +7,13 @@ const Navbar = ({ onToggleSidebar }) => {
   const { user, logout } = useAuth();
   const navigate = useNavigate();
   const [dropdownOpen, setDropdownOpen] = useState(false);
+  const [showLogoutConfirm, setShowLogoutConfirm] = useState(false);
 
   const handleLogout = () => {
     logout();
     navigate('/login');
+    setShowLogoutConfirm(false);
+
   };
 
   return (
@@ -19,7 +22,10 @@ const Navbar = ({ onToggleSidebar }) => {
         <button className="navbar-toggle" onClick={onToggleSidebar}>
           ☰
         </button>
-        <div className="navbar-title">Maritime Vessel Tracking</div>
+        <div className="navbar-title">
+           <h2> Maritime Intelligence </h2>
+          <p className="navbar-subtitle">Vessel Tracking & Port Analytics</p>
+        </div>
 
       </div>
 
@@ -53,13 +59,46 @@ const Navbar = ({ onToggleSidebar }) => {
               <button onClick={() => { navigate('/app/profile'); setDropdownOpen(false); }}>
                 Profile
               </button>
-              <button onClick={handleLogout}>
+              <button onClick={() => setShowLogoutConfirm(true)}>
                 Logout
               </button>
             </div>
           )}
         </div>
       </div>
+
+      {/* ========================= */}
+      {/* LOGOUT CONFIRMATION MODAL */}
+      {/* ========================= */}
+      {showLogoutConfirm && (
+        <div className="logout-overlay">
+          <div className="logout-modal">
+
+            <h3>Are you sure you want to logout?</h3>
+
+            <div className="logout-actions">
+
+              <button
+                className="logout-yes"
+                onClick={handleLogout}
+              >
+                Yes, Logout
+              </button>
+
+              <button
+                className="logout-no"
+                onClick={() => setShowLogoutConfirm(false)}
+              >
+                No, Cancel
+              </button>
+
+            </div>
+
+          </div>
+        </div>
+      )}
+
+
     </nav>
   );
 };

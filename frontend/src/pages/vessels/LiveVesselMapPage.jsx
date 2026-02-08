@@ -45,21 +45,31 @@ const createVesselIcon = (status) => {
 --------------------------------------- */
 function ZoomControls() {
   const map = useMap();
+  const defaultZoom = 4; // default zoom level for Reset
+  const [zoomPercent, setZoomPercent] = useState(map.getZoom() * 25);
+
+  // Update zoom % whenever zoom changes
+  map.on("zoomend", () => {
+    setZoomPercent(map.getZoom() * 25);
+  });
 
   return (
-    <div className="live-zoom-controls">
-      <button
-        className="zoom-btn"
-        onClick={() => map.setZoom(map.getZoom() + 1)}
-      >
+    <div className="zoom-control-box">
+      <div className="zoom-display">{zoomPercent}%</div>
+
+      <button className="zoom-btn" onClick={() => map.zoomOut()}>
+        −
+      </button>
+
+      <button className="zoom-btn" onClick={() => map.zoomIn()}>
         +
       </button>
 
       <button
-        className="zoom-btn"
-        onClick={() => map.setZoom(map.getZoom() - 1)}
+        className="reset-btn"
+        onClick={() => map.setView(map.getCenter(), defaultZoom)}
       >
-        −
+        Reset
       </button>
     </div>
   );

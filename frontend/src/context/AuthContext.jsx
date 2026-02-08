@@ -12,27 +12,28 @@ export const AuthProvider = ({ children }) => {
   }, []);
 
   const checkAuth = () => {
-    try {
-      const token = localStorage.getItem("access");
+  try {
+    const token = localStorage.getItem("access");
+    const storedUser = localStorage.getItem("user");
 
-      if (token) {
-        const storedUser = localStorage.getItem("user");
-        if (storedUser) {
-          setUser(JSON.parse(storedUser));
-          setIsAuthenticated(true);
-        }
-      } else {
-        setUser(null);
-        setIsAuthenticated(false);
-      }
-    } catch (error) {
-      console.error("Auth check failed:", error);
+    if (token && storedUser) {
+      setUser(JSON.parse(storedUser));
+      setIsAuthenticated(true);
+    } else {
       setUser(null);
       setIsAuthenticated(false);
-    } finally {
-      setLoading(false);
     }
-  };
+
+  } catch (error) {
+    console.error("Auth check failed:", error);
+    setUser(null);
+    setIsAuthenticated(false);
+
+  } finally {
+    setLoading(false);
+  }
+};
+
 
   // FIXED LOGIN FUNCTION
   const login = (userData, tokens) => {

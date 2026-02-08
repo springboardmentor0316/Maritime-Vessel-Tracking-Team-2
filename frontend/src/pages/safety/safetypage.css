@@ -1,22 +1,27 @@
 /* -------------------------------------
-   PAGE BACKGROUND
+   SAFETY PAGE – MATCH ANALYTICS THEME
 -------------------------------------- */
+
 .safety-page {
   padding: 24px;
-  background: #0a0e1a; /* same as analytics */
+  background: var(--bg-primary);
   min-height: 100vh;
   color: #f8fafc;
+  font-family: "Inter", sans-serif;
 }
 
+/* Center Title – same as Operational Analytics */
 .safety-title {
+  text-align: center;
   font-size: 28px;
   font-weight: 700;
-  margin-bottom: 24px;
+  margin-bottom: 32px;
 }
 
 /* -------------------------------------
-   TOP CARDS (same as analytics)
+   TOP CARDS – SAME AS ANALYTICS CARDS
 -------------------------------------- */
+
 .safety-cards {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
@@ -31,10 +36,11 @@
   display: flex;
   align-items: center;
   gap: 16px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.25);
 }
 
 .safety-card-icon {
-  font-size: 28px;
+  font-size: 32px;
 }
 
 .safety-card-icon.red { color: #ef4444; }
@@ -43,31 +49,29 @@
 .safety-card-icon.green { color: #10b981; }
 
 /* -------------------------------------
-   LIVE ALERT FEED (NOW HORIZONTAL CARDS)
+   ALERT LIST – MATCH ANALYTICS STYLE
 -------------------------------------- */
+
 .alerts-section h2 {
   margin-top: 40px;
   margin-bottom: 16px;
+  font-size: 22px;
+  font-weight: 700;
 }
 
 .alerts-list {
   display: flex;
-  flex-wrap: nowrap;
-  gap: 20px;
-  overflow-x: auto;
-  padding: 4px 2px;
+  flex-direction: column;
+  gap: 16px;
 }
 
-/* Single alert card */
+/* Same card design as analytics alerts */
 .alert-item {
-  min-width: 360px;
   background: linear-gradient(135deg, #1e3a5f 0%, #152844 100%);
   border: 1px solid #2d4a6f;
   border-radius: 12px;
   padding: 20px;
-  flex-shrink: 0;
   display: flex;
-  align-items: center;
   gap: 16px;
   transition: 0.2s;
 }
@@ -77,11 +81,9 @@
 }
 
 .alert-icon {
-  font-size: 26px;
+  font-size: 28px;
+  flex-shrink: 0;
 }
-
-.alert-icon.high { color: #ef4444; }
-.alert-icon.medium { color: #f59e0b; }
 
 .alert-title {
   font-size: 16px;
@@ -94,11 +96,14 @@
 }
 
 /* -------------------------------------
-   VESSEL SAFETY TABLE (analytics style)
+   TABLE SECTION – MATCH ANALYTICS STYLE
 -------------------------------------- */
+
 .table-section h2 {
   margin-top: 40px;
   margin-bottom: 12px;
+  font-size: 22px;
+  font-weight: 700;
 }
 
 .safety-table {
@@ -111,16 +116,15 @@
 }
 
 .safety-table th {
-  padding: 14px 20px;
+  padding: 16px 20px;
   background: rgba(30, 58, 95, 0.45);
   font-size: 14px;
-  font-weight: 600;
   text-align: left;
   color: #f8fafc;
 }
 
 .safety-table td {
-  padding: 14px 20px;
+  padding: 16px 20px;
   font-size: 14px;
   color: #e2e8f0;
   border-bottom: 1px solid rgba(30, 58, 95, 0.3);
@@ -134,7 +138,7 @@
   background: rgba(30, 58, 95, 0.4);
 }
 
-/* Color statuses */
+/* Status Colors – keep same */
 .risk.high { color: #ef4444; font-weight: 600; }
 .risk.medium { color: #f59e0b; font-weight: 600; }
 .risk.low { color: #10b981; font-weight: 600; }
@@ -144,11 +148,14 @@
 .comp.compliant { color: #10b981; font-weight: 600; }
 
 /* -------------------------------------
-   WEATHER CARDS (match analytics)
+   WEATHER CARDS (Same as analytics)
 -------------------------------------- */
+
 .weather-section h2 {
   margin-top: 40px;
   margin-bottom: 12px;
+  font-size: 22px;
+  font-weight: 700;
 }
 
 .weather-cards {
@@ -166,7 +173,7 @@
 }
 
 .weather-icon {
-  font-size: 32px;
+  font-size: 36px;
   margin-bottom: 10px;
   color: #38bdf8;
 }
@@ -178,6 +185,6 @@
 }
 
 .weather-card h3 {
-  font-size: 22px;
+  font-size: 20px;
   color: #f8fafc;
 }

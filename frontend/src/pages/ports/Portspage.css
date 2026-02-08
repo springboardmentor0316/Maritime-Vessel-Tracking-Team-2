@@ -6,8 +6,8 @@
 .ports-page {
   display: flex;
   flex-direction: column;
-  height: 100%;                        /* fill the main-content area */
-  background: #0d1520;
+  height: 100vh;                        /* fill the main-content area */
+  background: var(--bg-primary);;
   color: #c8d6e5;
   font-family: 'Segoe UI', system-ui, sans-serif;
   overflow: hidden;
@@ -44,6 +44,11 @@
   border-right: 1px solid #1e2f3f;
   overflow: hidden;
 }
+
+.ports-right-panel {
+  height: 100%;
+}
+
 
 /* panel header row  */
 .ports-panel-header {
@@ -334,6 +339,17 @@
   border-radius: 50%;
   display: inline-block;
 }
+.leaflet-container {
+  height: 100% !important;
+  background: #0d1520 !important; /* Dark background instead of white */
+}
+
+
+
+.leaflet-control-zoom {
+  display: none !important;
+}
+
 
 /* ═══ RESPONSIVE ════════════════════════════════════════════ */
 @media (max-width: 900px) {

@@ -10,7 +10,7 @@
   align-items: center;
   justify-content: space-between;
   padding: 0 20px;
-  z-index: 5000; /* ensure navbar is above everything */
+  z-index: 5000;
   border-bottom: 1px solid #1e2a53;
 }
 
@@ -18,7 +18,7 @@
 .navbar-left {
   display: flex;
   align-items: center;
-  gap: 16px;
+  gap: 8px;
 }
 
 .navbar-toggle {
@@ -26,9 +26,12 @@
   background: #1e3a5f;
   border: none;
   border-radius: 8px;
-  padding: 8px 12px;
+  padding: 8px 12px; /* slightly taller */
   cursor: pointer;
   color: #fff;
+  position: relative;
+
+  top: -8px;
 }
 
 .navbar-title {
@@ -36,17 +39,34 @@
   font-weight: 600;
   color: #e2e8f0;
   white-space: nowrap;
+  margin-left: -3px;
+  padding: 8px 12px;
+}
+
+.navbar-title h2 {
+  margin: 0;
+}
+
+.navbar-subtitle {
+  font-size: 13px;
+  opacity: 0.7;
+  color: #cbd5e1;
+  margin-top: -6px;
+  margin-left: 2px;
+  font-weight: 400;
 }
 
 /* RIGHT SIDE OF NAVBAR */
 .navbar-right {
   display: flex;
   align-items: center;
+  margin-bottom: 0; /* FIX: remove downward push */
 }
 
 /* USER MENU BUTTON */
 .user-menu {
   position: relative;
+  top: -8px; /* lift slightly upward */
 }
 
 .user-menu-button {
@@ -54,7 +74,8 @@
   align-items: center;
   gap: 10px;
   background: #1e3a5f;
-  padding: 8px 12px;
+  padding: 8px 12px;  /* consistent vertical spacing */
+  height: 46px;       /* FIX: consistent height */
   border-radius: 10px;
   border: 1px solid #2d4a6f;
   cursor: pointer;
@@ -62,8 +83,8 @@
 }
 
 .user-avatar {
-  width: 42px;
-  height: 42px;
+  width: 36px;
+  height: 36px; /* FIX: match width */
   background: #3b82f6;
   border-radius: 50%;
   display: flex;
@@ -76,7 +97,6 @@
   width: 26px;
   height: 26px;
 }
-
 
 /* DROPDOWN MENU */
 .user-dropdown {
@@ -102,5 +122,63 @@
 }
 
 .user-dropdown button:hover {
-  background: rgba(255,255,255,0.1);
+  background: rgba(255, 255, 255, 0.1);
+}
+
+
+.logout-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.6);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 2000;
+}
+
+.logout-modal {
+  width: 340px;
+  background: linear-gradient(135deg, #1e3a5f, #152844);
+  padding: 24px;
+  border-radius: 12px;
+  border: 1px solid #2d4a6f;
+  box-shadow: 0 8px 25px rgba(0,0,0,0.35);
+  text-align: center;
+}
+
+.logout-modal h3 {
+  color: #fff;
+  margin-bottom: 20px;
+  font-size: 18px;
+  font-weight: 600;
+}
+
+.logout-actions {
+  display: flex;
+  gap: 12px;
+}
+
+.logout-yes {
+  flex: 1;
+  padding: 10px;
+  background: #ef4444;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 600;
+}
+
+.logout-no {
+  flex: 1;
+  padding: 10px;
+  background: #1f2937;
+  color: white;
+  border: 1px solid #374151;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 600;
 }

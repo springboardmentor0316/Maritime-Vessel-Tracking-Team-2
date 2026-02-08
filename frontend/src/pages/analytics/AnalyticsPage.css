@@ -1,17 +1,25 @@
 .analytics-page {
-  background: #0a0e1a;
+  background:var(--bg-primary);
   min-height: 100vh;
 }
 
 .analytics-header {
+  background: transparent !important;
+  padding: 0 !important;
+  border: none !important;
+
   display: flex;
-  justify-content: space-between;
+  justify-content: center;
   align-items: center;
-  padding: 16px 24px;
-  background: #111827;
-  border-bottom: 1px solid #1f2937;
-  gap: 24px;
+  text-align: center;
 }
+
+
+.analytics-header .header-left h1 {
+  width: 100%;
+  text-align: center !important;
+}
+
 
 .header-left h1 {
   margin: 0;

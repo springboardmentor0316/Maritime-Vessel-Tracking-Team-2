@@ -42,7 +42,7 @@ function App() {
             <Route path="/login" element={<Login />} />
             <Route path="/register" element={<Register />} />
             <Route path="/forgot-password" element={<ForgotPassword />} />
-            <Route path="/reset-password/:token" element={<ResetPassword />} />
+            <Route path="/reset-password" element={<ResetPassword />} />
 
             {/* ---------- PROTECTED ROUTES ---------- */}
             <Route
@@ -83,9 +83,7 @@ function App() {
               {/* Profile */}
               <Route path="profile" element={<ProfilePage />} />
 
-              {/* Placeholder Pages */}
-              <Route path="voyages" element={<div className="page-placeholder">Voyages (Coming Soon)</div>} />
-
+              
             </Route>
 
             {/* Catch-All */}

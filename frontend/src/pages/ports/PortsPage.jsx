@@ -3,6 +3,8 @@ import { MapContainer, TileLayer, Marker, Popup, useMap } from "react-leaflet";
 import L from "leaflet";
 import "leaflet/dist/leaflet.css";
 import "./PortsPage.css";
+import ZoomControls from "../../components/ZoomControls";
+
 
 /* ================= HELPERS ================= */
 
@@ -351,7 +353,9 @@ export default function PortsPage() {
             center={[20, 60]}
             zoom={3}
             scrollWheelZoom
+            zoomControl={false} 
           >
+            <ZoomControls />
 
             <TileLayer
               url="https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png"

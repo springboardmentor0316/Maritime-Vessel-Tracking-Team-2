@@ -45,12 +45,7 @@ export const NAV_ITEMS = [
     icon: <MdAnchor size={20} />,
   },
 
-  {
-    id: "voyages",
-    label: "Voyages",
-    path: "/app/voyages",
-    icon: <GiPathDistance size={20} />,
-  },
+  
 
   {
     id: "events",

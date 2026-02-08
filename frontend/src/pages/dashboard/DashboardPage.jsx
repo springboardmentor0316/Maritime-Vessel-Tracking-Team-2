@@ -4,8 +4,12 @@ import { MapContainer, TileLayer, Marker, Circle } from 'react-leaflet';
 import L from 'leaflet';
 import vesselService from '../../services/vesselService';
 import { useToast } from '../../context/ToastContext';
+import ZoomControls from "../../components/ZoomControls";
+
 import './DashboardPage.css';
 import 'leaflet/dist/leaflet.css';
+import { FiRefreshCw } from "react-icons/fi";
+
 import {
   RefreshCw,
   Settings,
@@ -148,12 +152,10 @@ const DashboardPage = () => {
 
         <div className="header-actions">
           <button className={`btn-icon ${refreshing ? 'refreshing' : ''}`} onClick={handleRefresh}>
-            <FiActivity />
+            <FiRefreshCw />
           </button>
 
-          <button className="btn-icon" onClick={() => setShowSettings(true)}>
-            <FiAlertTriangle />
-          </button>
+         
         </div>
       </div>
 
@@ -253,9 +255,12 @@ const DashboardPage = () => {
               zoom={2}
               style={{ height: "100%", width: "100%" }}
               zoomControl={false}
+              attributionControl={false}     
             >
+                <ZoomControls />
+
               <TileLayer
-                attribution="&copy; OpenStreetMap"
+                attribution=""
                 url="https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png"
               />
 

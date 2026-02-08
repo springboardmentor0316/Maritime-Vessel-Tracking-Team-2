@@ -108,3 +108,54 @@ button:hover {
   text-align: center;
   opacity: 0.7;
 }
+
+.forgot-password-link {
+  text-align: right;
+  margin-bottom: 10px;
+}
+
+.forgot-password-link a {
+  color: #4da3ff;
+  cursor: pointer;
+  font-size: 14px;
+  text-decoration: none;
+}
+
+.forgot-password-link a:hover {
+  text-decoration: underline;
+}
+
+.bottom-text {
+  text-align: center;
+  margin-top: 18px;
+  font-size: 14px;
+  opacity: 0.85;
+}
+
+.bottom-text .link {
+  color: #4da3ff;
+  cursor: pointer;
+  margin-left: 5px;
+  font-weight: 500;
+}
+
+.bottom-text .link:hover {
+  text-decoration: underline;
+}
+
+.signup-link {
+  text-align: center;
+  margin-top: 15px;
+  font-size: 14px;
+}
+
+.signup-link a {
+  color: #4da3ff;
+  cursor: pointer;
+  text-decoration: none;
+  font-weight: 500;
+}
+
+.signup-link a:hover {
+  text-decoration: underline;
+}

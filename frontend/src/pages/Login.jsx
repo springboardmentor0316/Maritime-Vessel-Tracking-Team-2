@@ -83,14 +83,13 @@ export default function Login() {
           />
 
           {/* ⭐ EXACT FORGOT PASSWORD BUTTON FROM YOUR VERSION */}
-          <button
-            type="button"
-            className="forgot-password-btn"
-            onClick={() => navigate("/forgot-password")}
-            disabled={loading}
-          >
-            Forgot Password?
-          </button>
+          
+          <div className="forgot-password-link">
+  <a onClick={() => navigate("/forgot-password")}>
+    Forgot Password?
+  </a>
+</div>
+
 
           <label>Role</label>
           <select
@@ -108,9 +107,17 @@ export default function Login() {
           </button>
         </form>
 
-        <p className="demo">
-          Demo Credentials: Any email/password combination
-        </p>
+        <div className="signup-link">
+  <p>
+    Don’t have an account?{" "}
+    <a onClick={() => navigate("/register")}>
+      Sign Up
+    </a>
+  </p>
+</div>
+
+
+
       </div>
     </div>
   );

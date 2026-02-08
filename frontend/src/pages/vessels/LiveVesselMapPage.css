@@ -2,7 +2,7 @@
 @import "leaflet/dist/leaflet.css";
 
 .live-map-page {
-  background: #0a0e1a;
+  background: var(--bg-primary);;
   height: 100vh;
   display: flex;
   flex-direction: column;
@@ -76,7 +76,6 @@
   padding: 0;
 }
 
-/* ensure map fills box */
 .map-container-box .leaflet-container {
   width: 100% !important;
   height: 100% !important;
@@ -160,83 +159,114 @@
   color: #111;
 }
 
-/* MAP CARD WRAPPER */
-.map-container-box {
-  background: #0f1433;
-  border: 1px solid #1a1f4d;
-  border-radius: 12px;
-  padding: 12px;
-  height: calc(100vh - 180px);
-  overflow: hidden;
-  position: relative;
-}
+/* ------------------------------ */
+/* 🚀 NEW COMPACT ZOOM CONTROLS   */
+/* ------------------------------ */
+/* DARK COMPACT ZOOM CONTROL */
+/* OUTER ZOOM BOX */
+/* 🚀 REFINED COMPACT ZOOM CONTROLS */
 
-/* Leaflet map rounded corners */
-.map-container-box .leaflet-container {
-  border-radius: 12px;
-}
-
-/* ZOOM BUTTON GROUP */
-.live-zoom-controls {
+/* OUTER ZOOM BOX */
+.zoom-control-box {
   position: absolute;
-  top: 22px;
-  left: 22px;
+  top: 20px;
+  left: 20px;
+  z-index: 5000;
 
   display: flex;
-  flex-direction: column;
+  align-items: center;    
   gap: 8px;
 
-  background: rgba(15, 23, 42, 0.55);
-  backdrop-filter: blur(6px);
-
-  padding: 10px 12px;
-  border-radius: 12px;
-
-  border: 1px solid rgba(255,255,255,0.08);
-
-  z-index: 9000;
+  background: rgba(10, 20, 40, 0.85);
+  padding: 6px;            /* Reduced padding for a tighter fit */
+  border-radius: 8px;      /* Slightly sharper corners to match buttons */
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  
+  /* Remove fixed height to let padding/content define the size naturally */
+  height: auto; 
 }
 
-/* ZOOM BUTTON STYLE */
-.zoom-btn {
-  width: 36px;
-  height: 32px;
+/* ZOOM TEXT */
+/* OUTER ZOOM BOX */
+.zoom-control-box {
+  position: absolute;
+  top: 20px;
+  left: 20px;
+  z-index: 5000;
 
-  font-size: 18px;
-  font-weight: 600;
+  display: flex;
+  align-items: center;    /* ⭐ Standardizes the vertical center */
+  gap: 12px;
+
+  background: rgba(10, 20, 40, 0.85);
+  padding: 6px 14px;      /* Tight padding to remove "wasted" space */
+  border-radius: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  
+  /* ⬇️ Crucial: Remove 'height' so the box wraps the content naturally */
+  height: auto !important; 
+  box-sizing: border-box;
+}
+
+/* ZOOM TEXT */
+.zoom-display {
+  font-size: 15px;
+  font-weight: 800;
   color: #fff;
+  margin: 0 !important;
+  padding: 0;
+  line-height: 1;         /* Removes invisible font spacing */
+  display: flex;
+  align-items: center;
+}
 
-  background: rgba(255,255,255,0.12);
-  border: 1px solid rgba(255,255,255,0.18);
-
+/* ZOOM BUTTONS */
+.zoom-btn {
+  /* ⭐ MATCHING THE RESET BUTTON HEIGHT EXACTLY */
+  width: 32px;
+  height: 32px; 
+  
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.15);
   border-radius: 6px;
+  color: #fff;
+  font-size: 18px;
+
+  /* ⭐ CENTERING THE + and - SYMBOLS */
   display: flex;
   align-items: center;
   justify-content: center;
-
+  padding: 0;
+  margin: 0;
+  
   cursor: pointer;
-  transition: 0.2s ease;
+  transition: 0.2s;
 }
 
 .zoom-btn:hover {
-  background: rgba(255,255,255,0.20);
+  background: rgba(255, 255, 255, 0.2);
 }
-
 /* RESET BUTTON */
-.zoom-reset {
-  margin-top: 2px;
-  padding: 5px 6px;
+.reset-btn {
+  height: 30px;           /* ⭐ Must match .zoom-btn exactly to stay in one row */
+  padding: 0 14px;
+  background: rgba(37, 99, 235, 0.2);
+  border: 1px solid #3b82f6;
+  color: #fff;
   font-size: 13px;
-  color: white;
-
-  background: rgba(255,255,255,0.10);
-  border: 1px solid rgba(255,255,255,0.18);
+  font-weight: 600;
   border-radius: 6px;
 
+  display: flex;
+  align-items: center;
+  justify-content: center;
   cursor: pointer;
-  transition: 0.2s ease;
+  
+  /* ⬇️ Ensures the button doesn't add its own outer spacing */
+  margin: 0;
 }
 
-.zoom-reset:hover {
-  background: rgba(255,255,255,0.18);
+.reset-btn:hover {
+  background: #3b82f6;
+  color: #fff;
 }
