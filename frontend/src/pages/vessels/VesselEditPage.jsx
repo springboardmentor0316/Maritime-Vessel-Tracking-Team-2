@@ -130,22 +130,33 @@ const VesselEditPage = () => {
   return (
     <div className="vessel-edit-page">
       <div className="edit-header">
-        <button className="btn-back" onClick={handleCancel}>
-          <FaArrowLeft style={{ marginRight: "6px" }} /> Back
-        </button>
+  <div className="left-section">
+    <button className="btn-back" onClick={handleCancel}>
+      <FaArrowLeft style={{ marginRight: "6px" }} /> Back
+    </button>
+  </div>
 
-        <h1>
-          {id === 'new' ? (
-            <>
-              <FaPlus style={{ marginRight: "8px" }} /> Add New Vessel
-            </>
-          ) : (
-            <>
-              <FaEdit style={{ marginRight: "8px" }} /> Edit Vessel
-            </>
-          )}
-        </h1>
-      </div>
+  <h1 className="edit-title">
+    {id === 'new' ? (
+      <>
+        <FaPlus style={{ marginRight: "8px" }} /> Add New Vessel
+      </>
+    ) : (
+      <>
+        <FaEdit style={{ marginRight: "8px" }} /> Edit Vessel
+      </>
+    )}
+  </h1>
+
+  <div className="right-section">
+    {id !== "new" && (
+      <button className="btn-delete">
+        Delete
+      </button>
+    )}
+  </div>
+</div>
+
 
       <form className="vessel-form" onSubmit={handleSubmit}>
         <div className="form-card">

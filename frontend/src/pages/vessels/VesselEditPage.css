@@ -14,13 +14,25 @@
   position: relative;
   display: flex;
   align-items: center;
-  justify-content: flex-start;
-  gap: 12px;
-  margin-bottom: 32px;
+  justify-content: space-between;
+  padding: 12px 20px;
+ 
+}
+
+.edit-title {
+  flex: 1;
+  text-align: center;
+  font-size: 26px;
+  font-weight: 700;
+  color: #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transform: translateX(-75px);
 }
 
 .btn-back {
-  padding: 5px 12px;
+  padding: 6px 14px;
   font-size: 12.5px;
   height: 30px;
   min-width: 65px;
@@ -37,6 +49,7 @@
   border-radius: 6px;
   cursor: pointer;
   transition: 0.2s;
+   margin-left: -15px;
 }
 
 .btn-back svg {
@@ -58,6 +71,40 @@
   font-weight: 600;
   color: #e2e8f0;
 }
+
+.btn-delete {
+  background: #dc2626;
+  color: white;
+  padding: 6px 16px;
+  border-radius: 6px;
+  border: none;
+  cursor: pointer;
+  font-weight: 500;
+  margin-right: 100px;
+}
+
+.btn-delete:hover {
+  background: #b91c1c;
+}
+
+/* Ensure left + right sections don't stretch awkwardly */
+.left-section,
+.right-section {
+  width: 120px; /* keeps spacing proper */
+  display: flex;
+  align-items: center;
+
+}
+
+.left-section {
+  justify-content: flex-start;
+}
+
+.right-section {
+  justify-content: flex-end;
+}
+
+
 
 /* ------------------------- */
 /* FORM LAYOUT */
