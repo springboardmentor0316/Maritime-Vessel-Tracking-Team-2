@@ -114,3 +114,29 @@ button:hover {
   color: #60a5fa;
   cursor: pointer;
 }
+
+
+.password-wrapper {
+  position: relative;
+  width: 100%;
+}
+
+.password-wrapper input {
+  width: 100%;
+  padding-right: 45px;
+}
+
+.toggle-eye {
+  position: absolute;
+  right: 14px;
+  top: 64%;                   /* Move icon slightly downward */
+  transform: translateY(-50%);
+  cursor: pointer;
+  color: #9ca3af;
+  font-size: 18px;
+  transition: color 0.2s ease;
+}
+
+.toggle-eye:hover {
+  color: #ffffff;
+}

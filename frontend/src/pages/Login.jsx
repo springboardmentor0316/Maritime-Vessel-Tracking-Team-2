@@ -4,6 +4,7 @@ import { loginUser } from "../api/auth";
 import { useNavigate } from "react-router-dom";
 import { useToast } from "../context/ToastContext";
 import { useAuth } from "../context/AuthContext";
+import { FaEye, FaEyeSlash } from "react-icons/fa";
 
 export default function Login() {
   const navigate = useNavigate();
@@ -15,6 +16,7 @@ export default function Login() {
   const [role, setRole] = useState("Operator - Vessel Tracking");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -71,16 +73,26 @@ export default function Login() {
             required
             disabled={loading}
           />
-
           <label>Password</label>
-          <input
-            type="password"
-            placeholder="Enter your password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            required
-            disabled={loading}
-          />
+<div className="password-wrapper">
+  <input
+    type={showPassword ? "text" : "password"}
+    placeholder="Enter your password"
+    value={password}
+    onChange={(e) => setPassword(e.target.value)}
+    required
+    disabled={loading}
+  />
+
+  <span
+    className="toggle-eye"
+    onClick={() => setShowPassword(!showPassword)}
+  >
+    {showPassword ? <FaEyeSlash /> : <FaEye />}
+  </span>
+</div>
+
+          
 
           {/* ⭐ EXACT FORGOT PASSWORD BUTTON FROM YOUR VERSION */}
           
