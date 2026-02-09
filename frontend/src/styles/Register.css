@@ -140,3 +140,13 @@ button:hover {
 .toggle-eye:hover {
   color: #ffffff;
 }
+
+
+.password-error {
+  color: #ff4d4d;
+  font-size: 14px;
+  margin-top: -4px;
+  margin-bottom: 10px;
+  padding-left: 2px;
+}
+

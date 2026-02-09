@@ -16,6 +16,9 @@ export default function Register() {
   const toast = useToast();
   const [showPassword, setShowPassword] = useState(false);
 const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+const [passwordError, setPasswordError] = useState("");
+
+
 
 
   const handleSubmit = async (e) => {
@@ -114,10 +117,19 @@ const [showConfirmPassword, setShowConfirmPassword] = useState(false);
     type={showConfirmPassword ? "text" : "password"}
     placeholder="Re-enter your password"
     value={confirmPassword}
-    onChange={(e) => setConfirmPassword(e.target.value)}
+    onChange={(e) => {
+      setConfirmPassword(e.target.value);
+
+      if (e.target.value !== password) {
+        setPasswordError("Passwords do not match");
+      } else {
+        setPasswordError("");
+      }
+    }}
     required
     disabled={loading}
   />
+
   <span
     className="toggle-eye"
     onClick={() => setShowConfirmPassword(!showConfirmPassword)}
@@ -125,6 +137,12 @@ const [showConfirmPassword, setShowConfirmPassword] = useState(false);
     {showConfirmPassword ? <FaEyeSlash /> : <FaEye />}
   </span>
 </div>
+{confirmPassword.length > 0 && passwordError && (
+  <p className="password-error">{passwordError}</p>
+)}
+
+
+
 
 
           <label>Role</label>
