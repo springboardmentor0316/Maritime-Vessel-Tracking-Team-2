@@ -3,6 +3,8 @@ import { useState } from "react";
 import { registerUser } from "../api/auth";
 import { useNavigate } from "react-router-dom";
 import { useToast } from "../context/ToastContext";
+import { FaEye, FaEyeSlash } from "react-icons/fa";
+
 
 export default function Register() {
   const [email, setEmail] = useState("");
@@ -12,6 +14,12 @@ export default function Register() {
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
   const toast = useToast();
+  const [showPassword, setShowPassword] = useState(false);
+const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+const [passwordError, setPasswordError] = useState("");
+
+
+
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -86,24 +94,56 @@ export default function Register() {
           />
 
           <label>Password</label>
-          <input
-            type="password"
-            placeholder="Create your password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            required
-            disabled={loading}
-          />
+<div className="password-wrapper">
+  <input
+    type={showPassword ? "text" : "password"}
+    placeholder="Create your password"
+    value={password}
+    onChange={(e) => setPassword(e.target.value)}
+    required
+    disabled={loading}
+  />
+  <span
+    className="toggle-eye"
+    onClick={() => setShowPassword(!showPassword)}
+  >
+    {showPassword ? <FaEyeSlash /> : <FaEye />}
+  </span>
+</div>
 
-          <label>Confirm Password</label>
-          <input
-            type="password"
-            placeholder="Re-enter your password"
-            value={confirmPassword}
-            onChange={(e) => setConfirmPassword(e.target.value)}
-            required
-            disabled={loading}
-          />
+<label>Confirm Password</label>
+<div className="password-wrapper">
+  <input
+    type={showConfirmPassword ? "text" : "password"}
+    placeholder="Re-enter your password"
+    value={confirmPassword}
+    onChange={(e) => {
+      setConfirmPassword(e.target.value);
+
+      if (e.target.value !== password) {
+        setPasswordError("Passwords do not match");
+      } else {
+        setPasswordError("");
+      }
+    }}
+    required
+    disabled={loading}
+  />
+
+  <span
+    className="toggle-eye"
+    onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+  >
+    {showConfirmPassword ? <FaEyeSlash /> : <FaEye />}
+  </span>
+</div>
+{confirmPassword.length > 0 && passwordError && (
+  <p className="password-error">{passwordError}</p>
+)}
+
+
+
+
 
           <label>Role</label>
           <select 

@@ -4,6 +4,7 @@ import { loginUser } from "../api/auth";
 import { useNavigate } from "react-router-dom";
 import { useToast } from "../context/ToastContext";
 import { useAuth } from "../context/AuthContext";
+import { FaEye, FaEyeSlash } from "react-icons/fa";
 
 export default function Login() {
   const navigate = useNavigate();
@@ -15,6 +16,9 @@ export default function Login() {
   const [role, setRole] = useState("Operator - Vessel Tracking");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
+  const [passwordError, setPasswordError] = useState("");
+
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -39,12 +43,22 @@ export default function Login() {
       }, 100);
 
     } catch (err) {
-      const errorMessage = err?.detail || "Invalid credentials";
-      setError(errorMessage);
-      toast.error(errorMessage);
-    } finally {
-      setLoading(false);
-    }
+  console.log("LOGIN ERROR:", err); // temporary debug (you can remove later)
+
+  const errorMessage =
+    err?.detail ||
+    err?.error ||
+    err?.message ||
+    err?.non_field_errors?.[0] ||
+    "Invalid email or password";
+
+  setError(errorMessage);
+  setPasswordError(errorMessage);  // show inline error
+  
+} finally {
+  setLoading(false);
+}
+
   };
 
   return (
@@ -71,16 +85,49 @@ export default function Login() {
             required
             disabled={loading}
           />
-
           <label>Password</label>
-          <input
-            type="password"
-            placeholder="Enter your password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            required
-            disabled={loading}
-          />
+<div className="password-wrapper">
+  <input
+    type={showPassword ? "text" : "password"}
+    placeholder="Enter your password"
+    value={password}
+    onChange={(e) => {
+      const value = e.target.value;
+      setPassword(value);
+
+      // Clear backend error when typing
+      if (passwordError === "Invalid email or password") {
+        setPasswordError("");
+        setError("");
+      }
+
+      // Show error when empty
+      if (value.trim().length === 0) {
+        setPasswordError("Password cannot be empty");
+      } else {
+        // Clear only empty error
+        if (passwordError !== "Invalid email or password") {
+          setPasswordError("");
+        }
+      }
+    }}
+    disabled={loading}
+  />
+
+  <span
+    className="toggle-eye"
+    onClick={() => setShowPassword(!showPassword)}
+  >
+    {showPassword ? <FaEyeSlash /> : <FaEye />}
+  </span>
+</div>
+
+{passwordError && (
+  <p className="password-error">{passwordError}</p>
+)}
+
+
+          
 
           {/* ⭐ EXACT FORGOT PASSWORD BUTTON FROM YOUR VERSION */}
           

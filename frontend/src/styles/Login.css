@@ -159,3 +159,38 @@ button:hover {
 .signup-link a:hover {
   text-decoration: underline;
 }
+
+/* ==== PASSWORD FIELD WITH EYE ICON ==== */
+.password-wrapper {
+  position: relative;
+  width: 100%;
+}
+
+.password-wrapper input {
+  width: 100%;
+  padding-right: 45px;   /* space for eye icon */
+  box-sizing: border-box;
+}
+
+.toggle-eye {
+  position: absolute;
+  right: 14px;
+  top: 64%;
+  transform: translateY(-50%);
+  cursor: pointer;
+  color: #9ca3af;
+  font-size: 18px;
+  transition: color 0.2s ease;
+}
+
+.toggle-eye:hover {
+  color: #ffffff;
+}
+
+.password-error {
+  color: #ff4d4d;
+  font-size: 14px;
+  margin-top: -4px;
+  margin-bottom: 10px;
+  padding-left: 2px;
+}
