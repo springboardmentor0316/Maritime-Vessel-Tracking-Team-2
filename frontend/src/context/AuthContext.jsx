@@ -1,4 +1,5 @@
 import React, { createContext, useState, useContext, useEffect } from "react";
+import { jwtDecode } from "jwt-decode";
 
 const AuthContext = createContext(null);
 
@@ -12,39 +13,48 @@ export const AuthProvider = ({ children }) => {
   }, []);
 
   const checkAuth = () => {
-  try {
-    const token = localStorage.getItem("access");
-    const storedUser = localStorage.getItem("user");
+    try {
+      const token = localStorage.getItem("access");
 
-    if (token && storedUser) {
-      setUser(JSON.parse(storedUser));
-      setIsAuthenticated(true);
-    } else {
+      if (token) {
+        const decoded = jwtDecode(token);
+
+        setUser({
+          email: decoded.email,
+          role: decoded.role,
+        });
+
+        setIsAuthenticated(true);
+      } else {
+        setUser(null);
+        setIsAuthenticated(false);
+      }
+    } catch (error) {
+      console.error("Auth check failed:", error);
       setUser(null);
       setIsAuthenticated(false);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // 🔥 FIXED LOGIN FUNCTION
+  const login = (tokens) => {
+    if (!tokens?.access) {
+      console.error("Invalid login response: no access token");
+      return;
     }
 
-  } catch (error) {
-    console.error("Auth check failed:", error);
-    setUser(null);
-    setIsAuthenticated(false);
+    localStorage.setItem("access", tokens.access);
+    localStorage.setItem("refresh", tokens.refresh);
 
-  } finally {
-    setLoading(false);
-  }
-};
+    const decoded = jwtDecode(tokens.access);
 
+    setUser({
+      email: decoded.email,
+      role: decoded.role,
+    });
 
-  // FIXED LOGIN FUNCTION
-  const login = (userData, tokens) => {
-    // Save tokens
-    if (tokens?.access) localStorage.setItem("access", tokens.access);
-    if (tokens?.refresh) localStorage.setItem("refresh", tokens.refresh);
-
-    // Save user data (email + role)
-    localStorage.setItem("user", JSON.stringify(userData));
-
-    setUser(userData);
     setIsAuthenticated(true);
   };
 

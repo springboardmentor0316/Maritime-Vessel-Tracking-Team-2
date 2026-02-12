@@ -45,46 +45,89 @@ function App() {
             <Route path="/reset-password" element={<ResetPassword />} />
 
             {/* ---------- PROTECTED ROUTES ---------- */}
-            <Route
-              path="/app"
-              element={
-                <ProtectedRoute>
-                  <AppLayout />
-                </ProtectedRoute>
-              }
-            >
-              {/* Default redirect */}
-              <Route index element={<Navigate to="/app/dashboard" replace />} />
+            {/* ---------- PROTECTED ROUTES ---------- */}
+<Route
+  path="/app"
+  element={
+    <ProtectedRoute>
+      <AppLayout />
+    </ProtectedRoute>
+  }
+>
+  {/* Default redirect */}
+  <Route index element={<Navigate to="/app/dashboard" replace />} />
 
-              {/* Dashboard */}
-              <Route path="dashboard" element={<DashboardPage />} />
+  {/* ================= DASHBOARD ================= */}
+  <Route path="dashboard" element={<DashboardPage />} />
 
-              {/* ---------- VESSELS ---------- */}
-              <Route path="vessels">
-                <Route index element={<VesselListPage />} />
-                <Route path="live" element={<LiveVesselMapPage />} />
-                <Route path="new" element={<VesselEditPage />} />
-                <Route path=":id" element={<VesselDetailPage />} />
-                <Route path=":id/edit" element={<VesselEditPage />} />
-              </Route>
+  {/* ================= VESSELS ================= */}
+  <Route path="vessels">
+    {/* View list - all roles */}
+    <Route index element={<VesselListPage />} />
 
-              {/* Analytics */}
-              <Route path="analytics" element={<AnalyticsPage />} />
+    {/* Live map - all roles */}
+    <Route path="live" element={<LiveVesselMapPage />} />
 
-              {/* Ports (⭐ Newly Added) */}
-              <Route path="ports" element={<PortsPage />} />
+    {/* Create vessel - ADMIN ONLY */}
+    <Route
+      path="new"
+      element={
+        <ProtectedRoute allowedRoles={["admin"]}>
+          <VesselEditPage />
+        </ProtectedRoute>
+      }
+    />
 
-              {/* Safety */}
-              <Route path="safety" element={<SafetyPage />} />
+    {/* View vessel details - all roles */}
+    <Route path=":id" element={<VesselDetailPage />} />
 
-              {/* Events */}
-              <Route path="events" element={<EventsPage />} />
+    {/* Edit vessel - ADMIN ONLY */}
+    <Route
+      path=":id/edit"
+      element={
+        <ProtectedRoute allowedRoles={["admin"]}>
+          <VesselEditPage />
+        </ProtectedRoute>
+      }
+    />
+  </Route>
 
-              {/* Profile */}
-              <Route path="profile" element={<ProfilePage />} />
+  {/* ================= ANALYTICS ================= */}
+  <Route
+    path="analytics"
+    element={
+      <ProtectedRoute allowedRoles={["admin", "analyst"]}>
+        <AnalyticsPage />
+      </ProtectedRoute>
+    }
+  />
 
-              
-            </Route>
+  {/* ================= PORTS ================= */}
+  <Route
+    path="ports"
+    element={
+      <ProtectedRoute allowedRoles={["admin"]}>
+        <PortsPage />
+      </ProtectedRoute>
+    }
+  />
+
+  {/* ================= SAFETY ================= */}
+  <Route
+    path="safety"
+    element={
+      <ProtectedRoute allowedRoles={["admin", "operator"]}>
+        <SafetyPage />
+      </ProtectedRoute>
+    }
+  />
+
+  {/* ================= EVENTS ================= */}
+  <Route path="events" element={<EventsPage />} />
+
+  {/* ================= PROFILE ================= */}
+  <Route path="profile" element={<ProfilePage />} />
+</Route>
 
             {/* Catch-All */}
             <Route path="*" element={<Navigate to="/" replace />} />

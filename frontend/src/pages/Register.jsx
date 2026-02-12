@@ -10,7 +10,7 @@ export default function Register() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
-  const [role, setRole] = useState("Operator");
+  const [role, setRole] = useState("operator");
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
   const toast = useToast();
@@ -146,15 +146,15 @@ const [passwordError, setPasswordError] = useState("");
 
 
           <label>Role</label>
-          <select 
-            value={role} 
-            onChange={(e) => setRole(e.target.value)}
-            disabled={loading}
-          >
-            <option>Operator</option>
-            <option>Analyst</option>
-            <option>Admin</option>
-          </select>
+<select
+  value={role}
+  onChange={(e) => setRole(e.target.value)}
+  disabled={loading}
+>
+  <option value="operator">Operator</option>
+  <option value="analyst">Analyst</option>
+</select>
+
 
           <button type="submit" disabled={loading}>
             {loading ? "Creating Account..." : "Create Account"}

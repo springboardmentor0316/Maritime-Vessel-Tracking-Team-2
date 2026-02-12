@@ -13,12 +13,10 @@ export default function Login() {
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [role, setRole] = useState("Operator - Vessel Tracking");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [passwordError, setPasswordError] = useState("");
-
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -26,39 +24,32 @@ export default function Login() {
     setLoading(true);
 
     try {
-      const res = await loginUser({ email, password, role });
+      // 🔥 Call Django SimpleJWT login API
+      const res = await loginUser({ email, password });
 
-      localStorage.setItem("access", res.access);
-      localStorage.setItem("refresh", res.refresh);
-      localStorage.setItem("role", role);
+      // 🔥 Pass tokens to AuthContext
+      authLogin(res);
 
-      const userObject = { email, role };
-      localStorage.setItem("user", JSON.stringify(userObject));
-
-      authLogin(userObject);
       toast.success("Login successful!");
 
-      setTimeout(() => {
-        navigate("/app/dashboard", { replace: true });
-      }, 100);
+      navigate("/app/dashboard", { replace: true });
 
     } catch (err) {
-  console.log("LOGIN ERROR:", err); // temporary debug (you can remove later)
+      console.log("LOGIN ERROR:", err);
 
-  const errorMessage =
-    err?.detail ||
-    err?.error ||
-    err?.message ||
-    err?.non_field_errors?.[0] ||
-    "Invalid email or password";
+      const errorMessage =
+        err?.detail ||
+        err?.error ||
+        err?.message ||
+        err?.non_field_errors?.[0] ||
+        "Invalid email or password";
 
-  setError(errorMessage);
-  setPasswordError(errorMessage);  // show inline error
-  
-} finally {
-  setLoading(false);
-}
+      setError(errorMessage);
+      setPasswordError(errorMessage);
 
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -68,14 +59,17 @@ export default function Login() {
         <div className="logo">⚓</div>
 
         <h1>Maritime Intelligence</h1>
-        <p className="subtitle">Vessel Tracking & Port Analytics Platform</p>
+        <p className="subtitle">
+          Vessel Tracking & Port Analytics Platform
+        </p>
 
         <h2>Sign In</h2>
-        <p className="desc">Access your maritime intelligence dashboard</p>
-
-        {error && <p className="error">{error}</p>}
+        <p className="desc">
+          Access your maritime intelligence dashboard
+        </p>
 
         <form onSubmit={handleSubmit}>
+          {/* EMAIL */}
           <label>Email</label>
           <input
             type="email"
@@ -85,86 +79,69 @@ export default function Login() {
             required
             disabled={loading}
           />
+
+          {/* PASSWORD */}
           <label>Password</label>
-<div className="password-wrapper">
-  <input
-    type={showPassword ? "text" : "password"}
-    placeholder="Enter your password"
-    value={password}
-    onChange={(e) => {
-      const value = e.target.value;
-      setPassword(value);
+          <div className="password-wrapper">
+            <input
+              type={showPassword ? "text" : "password"}
+              placeholder="Enter your password"
+              value={password}
+              onChange={(e) => {
+                const value = e.target.value;
+                setPassword(value);
 
-      // Clear backend error when typing
-      if (passwordError === "Invalid email or password") {
-        setPasswordError("");
-        setError("");
-      }
+                if (passwordError) {
+                  setPasswordError("");
+                  setError("");
+                }
 
-      // Show error when empty
-      if (value.trim().length === 0) {
-        setPasswordError("Password cannot be empty");
-      } else {
-        // Clear only empty error
-        if (passwordError !== "Invalid email or password") {
-          setPasswordError("");
-        }
-      }
-    }}
-    disabled={loading}
-  />
+                if (value.trim().length === 0) {
+                  setPasswordError("Password cannot be empty");
+                }
+              }}
+              required
+              disabled={loading}
+            />
 
-  <span
-    className="toggle-eye"
-    onClick={() => setShowPassword(!showPassword)}
-  >
-    {showPassword ? <FaEyeSlash /> : <FaEye />}
-  </span>
-</div>
+            <span
+              className="toggle-eye"
+              onClick={() => setShowPassword(!showPassword)}
+            >
+              {showPassword ? <FaEyeSlash /> : <FaEye />}
+            </span>
+          </div>
 
-{passwordError && (
-  <p className="password-error">{passwordError}</p>
-)}
+          {passwordError && (
+            <p className="password-error">{passwordError}</p>
+          )}
 
-
-          
-
-          {/* ⭐ EXACT FORGOT PASSWORD BUTTON FROM YOUR VERSION */}
-          
+          {/* FORGOT PASSWORD */}
           <div className="forgot-password-link">
-  <a onClick={() => navigate("/forgot-password")}>
-    Forgot Password?
-  </a>
-</div>
+            <a onClick={() => navigate("/forgot-password")}>
+              Forgot Password?
+            </a>
+          </div>
 
-
-          <label>Role</label>
-          <select
-            value={role}
-            onChange={(e) => setRole(e.target.value)}
+          {/* LOGIN BUTTON */}
+          <button
+            type="submit"
+            className="login-btn"
             disabled={loading}
           >
-            <option>Operator - Vessel Tracking</option>
-            <option>Analyst - Port Analytics</option>
-            <option>Admin - System Control</option>
-          </select>
-
-          <button type="submit" className="login-btn" disabled={loading}>
             {loading ? "Signing in..." : "Sign In"}
           </button>
         </form>
 
+        {/* SIGN UP */}
         <div className="signup-link">
-  <p>
-    Don’t have an account?{" "}
-    <a onClick={() => navigate("/register")}>
-      Sign Up
-    </a>
-  </p>
-</div>
-
-
-
+          <p>
+            Don’t have an account?{" "}
+            <a onClick={() => navigate("/register")}>
+              Sign Up
+            </a>
+          </p>
+        </div>
       </div>
     </div>
   );
