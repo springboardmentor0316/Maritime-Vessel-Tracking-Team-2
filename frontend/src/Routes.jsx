@@ -3,6 +3,8 @@ import { Routes, Route, Navigate } from 'react-router-dom';
 import { useAuth } from './context/AuthContext';
 import AppLayout from './components/Layout/AppLayout';
 import Loading from './components/common/Loading';
+import ProtectedRoute from './components/common/ProtectedRoute';
+
 
 // Vessel Pages
 import VesselListPage from './pages/vessels/VesselListPage';
@@ -16,20 +18,6 @@ import DashboardPage from './pages/dashboard/DashboardPage';
 // Profile
 import ProfilePage from './pages/profile/ProfilePage';
 
-// Protected Route Component
-const ProtectedRoute = ({ children }) => {
-  const { isAuthenticated, loading } = useAuth();
-
-  if (loading) {
-    return <Loading />;
-  }
-
-  if (!isAuthenticated) {
-    return <Navigate to="/login" replace />;
-  }
-
-  return children;
-};
 
 // Public Route Component (redirect if authenticated)
 const PublicRoute = ({ children }) => {
@@ -67,17 +55,54 @@ const AppRoutes = () => {
         <Route index element={<Navigate to="/dashboard" replace />} />
         
         {/* Dashboard */}
-        <Route path="dashboard" element={<DashboardPage />} />
+        <Route path="dashboard" element={
+          <ProtectedRoute allowedRoles={["admin","operator","analyst"]}>
+            <DashboardPage />
+          </ProtectedRoute>
+        } />
         
         {/* Vessels */}
-        <Route path="vessels">
-          <Route index element={<VesselListPage />} />
-          <Route path="live" element={<LiveVesselMapPage />} />
-          <Route path="new" element={<VesselFormPage />} />
-          <Route path=":id" element={<VesselDetailPage />} />
-          <Route path=":id/edit" element={<VesselFormPage />} />
-        </Route>
-        
+{/* Vessels - LIST (GET allowed for all roles) */}
+<Route
+  path="vessels"
+  element={
+    <ProtectedRoute allowedRoles={["admin", "operator", "analyst"]}>
+      <VesselListPage />
+    </ProtectedRoute>
+  }
+/>
+
+{/* Vessel Details - GET allowed for all */}
+<Route
+  path="vessels/:id"
+  element={
+    <ProtectedRoute allowedRoles={["admin", "operator", "analyst"]}>
+      <VesselDetailPage />
+    </ProtectedRoute>
+  }
+/>
+
+{/* Create Vessel - POST (Admin + Operator only) */}
+<Route
+  path="vessels/new"
+  element={
+    <ProtectedRoute allowedRoles={["admin", "operator"]}>
+      <VesselFormPage />
+    </ProtectedRoute>
+  }
+/>
+
+{/* Edit Vessel - DELETE / PUT (Admin only) */}
+<Route
+  path="vessels/:id/edit"
+  element={
+    <ProtectedRoute allowedRoles={["admin"]}>
+      <VesselFormPage />
+    </ProtectedRoute>
+  }
+/>
+
+
         {/* Ports - Implement similarly */}
         <Route path="ports">
           <Route index element={<div>Port List Page</div>} />
@@ -102,10 +127,18 @@ const AppRoutes = () => {
         </Route>
         
         {/* Safety */}
-        <Route path="safety" element={<div>Safety Overlays Page</div>} />
+        <Route path="safety" element={
+          <ProtectedRoute allowedRoles={["admin","analyst"]}>
+            <div>Safety Overlays Page</div>
+          </ProtectedRoute>
+        } />
         
         {/* Analytics */}
-        <Route path="analytics" element={<div>Analytics Page</div>} />
+        <Route path="analytics" element={
+          <ProtectedRoute allowedRoles={["admin"]}>
+            <div>Analytics Page</div>
+          </ProtectedRoute>
+        } />
         
         {/* Profile */}
         <Route path="profile" element={<ProfilePage />} />

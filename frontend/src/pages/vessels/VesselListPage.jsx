@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import vesselService from '../../services/vesselService';
 import { useToast } from '../../context/ToastContext';
+import { useAuth } from '../../context/AuthContext';   // ✅ ADDED
 import DataTable from '../../components/common/DataTable';
 import Badge from '../../components/common/Badge';
 import './VesselListPage.css';
@@ -12,6 +13,11 @@ import { FaShip, FaPlus, FaEye, FaEdit, FaTrash } from "react-icons/fa";
 const VesselListPage = () => {
   const navigate = useNavigate();
   const toast = useToast();
+  const { user } = useAuth();   // ✅ ADDED
+
+  const isAdmin = user?.role === "admin";
+  const isOperator = user?.role === "operator";
+  const isAnalyst = user?.role === "analyst";
 
   const [vessels, setVessels] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -37,7 +43,6 @@ const VesselListPage = () => {
       if (filters.status !== 'all') params.status = filters.status;
 
       const data = await vesselService.getAllVessels(params);
-
       setVessels(data.results || data);
 
     } catch (error) {
@@ -134,10 +139,7 @@ const VesselListPage = () => {
       field: 'latitude',
       render: (lat, row) => {
         if (!lat || !row.longitude) return 'N/A';
-
-        return `${parseFloat(lat).toFixed(2)}, ${parseFloat(
-          row.longitude
-        ).toFixed(2)}`;
+        return `${parseFloat(lat).toFixed(2)}, ${parseFloat(row.longitude).toFixed(2)}`;
       },
     },
     {
@@ -145,6 +147,8 @@ const VesselListPage = () => {
       field: 'id',
       render: (id, row) => (
         <div className="action-buttons">
+
+          {/* View → Everyone */}
           <button
             className="btn-icon btn-view"
             onClick={() => handleViewDetails(row)}
@@ -153,21 +157,28 @@ const VesselListPage = () => {
             <FaEye />
           </button>
 
-          <button
-            className="btn-icon btn-edit"
-            onClick={() => handleEditVessel(row)}
-            title="Edit"
-          >
-            <FaEdit />
-          </button>
+          {/* Edit → Admin + Operator */}
+          {(isAdmin || isOperator) && (
+            <button
+              className="btn-icon btn-edit"
+              onClick={() => handleEditVessel(row)}
+              title="Edit"
+            >
+              <FaEdit />
+            </button>
+          )}
 
-          <button
-            className="btn-icon btn-danger"
-            onClick={() => handleDeleteVessel(row)}
-            title="Delete"
-          >
-            <FaTrash />
-          </button>
+          {/* Delete → Admin Only */}
+          {isAdmin && (
+            <button
+              className="btn-icon btn-danger"
+              onClick={() => handleDeleteVessel(row)}
+              title="Delete"
+            >
+              <FaTrash />
+            </button>
+          )}
+
         </div>
       ),
     },
@@ -176,7 +187,6 @@ const VesselListPage = () => {
   return (
     <div className="vessel-list-page">
 
-      {/* HEADER */}
       <div className="page-header page-header-top">
         <h1>
           <FaShip style={{ marginRight: "8px" }} />
@@ -191,20 +201,20 @@ const VesselListPage = () => {
             Clear
           </button>
 
-          <button
-            className="btn btn-primary add-vessel-btn"
-            onClick={() => navigate('/app/vessels/new')}
-          >
-            <FaPlus style={{ marginRight: "6px" }} />
-            Add Vessel
-          </button>
+          {/* Add Vessel → Admin + Operator Only */}
+          {(isAdmin || isOperator) && (
+            <button
+              className="btn btn-primary add-vessel-btn"
+              onClick={() => navigate('/app/vessels/new')}
+            >
+              <FaPlus style={{ marginRight: "6px" }} />
+              Add Vessel
+            </button>
+          )}
         </div>
       </div>
 
-      {/* FILTERS */}
       <div className="filters-container">
-
-        {/* Search */}
         <div className="filter-group">
           <label className="filter-label">Search</label>
           <input
@@ -216,18 +226,13 @@ const VesselListPage = () => {
           />
         </div>
 
-        {/* Vessel Type */}
         <div className="filter-group">
           <label className="filter-label">Vessel Type</label>
-
           <select
             className="filter-select"
             value={filters.type}
             onChange={(e) =>
-              setFilters({
-                ...filters,
-                type: e.target.value,
-              })
+              setFilters({ ...filters, type: e.target.value })
             }
           >
             <option value="all">All Types</option>
@@ -241,18 +246,13 @@ const VesselListPage = () => {
           </select>
         </div>
 
-        {/* Status */}
         <div className="filter-group">
           <label className="filter-label">Status</label>
-
           <select
             className="filter-select"
             value={filters.status}
             onChange={(e) =>
-              setFilters({
-                ...filters,
-                status: e.target.value,
-              })
+              setFilters({ ...filters, status: e.target.value })
             }
           >
             <option value="all">All Statuses</option>
@@ -264,10 +264,8 @@ const VesselListPage = () => {
             <option value="inactive">Inactive</option>
           </select>
         </div>
-
       </div>
 
-      {/* TABLE */}
       <DataTable
         columns={columns}
         data={vessels}

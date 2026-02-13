@@ -6,6 +6,9 @@ import Loading from '../../components/common/Loading';
 import Badge from '../../components/common/Badge';
 import './VesselDetailPage.css';
 
+
+import { useAuth } from '../../context/AuthContext';
+
 // ⭐ React Icons
 import { FaShip, FaEdit, FaTrash, FaArrowLeft } from "react-icons/fa";
 
@@ -13,6 +16,12 @@ const VesselDetailPage = () => {
   const { id } = useParams();
   const navigate = useNavigate();
   const toast = useToast();
+  const { user } = useAuth();
+
+  const isAdmin = user?.role === "admin";
+  const isOperator = user?.role === "operator";
+  const isAnalyst = user?.role === "analyst";
+
   const [vessel, setVessel] = useState(null);
   const [loading, setLoading] = useState(true);
 
@@ -94,14 +103,21 @@ const VesselDetailPage = () => {
         </h1>
 
         <div className="header-actions">
-          <button className="btn btn-secondary" onClick={handleEdit}>
-            <FaEdit style={{ marginRight: "5px" }} /> Edit
-          </button>
 
-          <button className="btn btn-danger" onClick={handleDelete}>
-            <FaTrash style={{ marginRight: "5px" }} /> Delete
-          </button>
-        </div>
+          {(isAdmin || isOperator) && (
+            <button className="btn btn-secondary" onClick={handleEdit}>
+              <FaEdit style={{ marginRight: "5px" }} /> Edit
+            </button>
+          )}
+
+          {isAdmin && (
+            <button className="btn btn-danger" onClick={handleDelete}>
+              <FaTrash style={{ marginRight: "5px" }} /> Delete
+            </button>
+          )}
+
+</div>
+
       </div>
 
       <div className="detail-content">
