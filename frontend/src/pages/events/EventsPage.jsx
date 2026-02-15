@@ -352,7 +352,8 @@ const isAnalyst = user?.role === "analyst";
               <th>Timestamp</th>
               <th>Details</th>
               <th>Severity</th>
-             {!isAnalyst && <th>Actions</th>}
+             {(isAdmin || isOperator) && <th>Actions</th>}
+
 
             </tr>
           </thead>
@@ -379,12 +380,30 @@ const isAnalyst = user?.role === "analyst";
                   </td>
                   <td className="details-cell">{event.details}</td>
                   <td>
-                    <span className={`severity-badge ${getSeverityClass(event.severity)}`}>
-                      {event.severity}
-                    </span>
-                  </td>
-                  {!isAnalyst && (
-  <td className="actions-cell">
+  <span
+    style={{
+      padding: "6px 12px",
+      borderRadius: "9999px",
+      fontSize: "12px",
+      fontWeight: "700",
+      textTransform: "uppercase",
+      color: "white",
+      backgroundColor:
+        event.severity === "HIGH"
+          ? "#ef4444"
+          : event.severity === "MEDIUM"
+          ? "#f59e0b"
+          : "#10b981",
+    }}
+  >
+    {event.severity}
+  </span>
+</td>
+
+               {(isAdmin || isOperator) && (
+                <td className="actions-cell">
+  {/* Edit - Admin & Operator */}
+  {(isAdmin || isOperator) && (
     <button
       className="btn-icon-action btn-edit"
       onClick={() => handleEdit(event)}
@@ -392,7 +411,10 @@ const isAnalyst = user?.role === "analyst";
     >
       <FiEdit2 />
     </button>
+  )}
 
+  {/* Delete - Admin Only */}
+  {isAdmin && (
     <button
       className="btn-icon-action btn-delete"
       onClick={() => handleDelete(event.id)}
@@ -400,7 +422,10 @@ const isAnalyst = user?.role === "analyst";
     >
       <FiTrash2 />
     </button>
-  </td>
+  )}
+</td>
+
+  
 )}
 
                 </tr>

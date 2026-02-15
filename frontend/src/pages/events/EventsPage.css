@@ -353,7 +353,8 @@
 
 .events-table th:nth-child(6),
 .events-table td:nth-child(6) {
-  width: auto;   /* Details (flexible column) */
+  width: auto; 
+  padding-left: 2rem;   /* Details (flexible column) */
 }
 
 .events-table th:nth-child(7),
@@ -368,7 +369,9 @@
   text-align: center;
 }
 
-
+.events-table th:nth-child(6) {
+  text-indent: 2.5rem;   /* moves only the heading text */
+}
 .details-cell {
   white-space: nowrap;
   overflow: hidden;
