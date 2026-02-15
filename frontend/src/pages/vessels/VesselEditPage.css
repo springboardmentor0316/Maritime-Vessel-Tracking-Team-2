@@ -80,7 +80,8 @@
   border: none;
   cursor: pointer;
   font-weight: 500;
-  margin-right: 100px;
+   margin-right: -40px;  
+ 
 }
 
 .btn-delete:hover {
@@ -102,6 +103,7 @@
 
 .right-section {
   justify-content: flex-end;
+  padding-right: 30px; 
 }
 
 

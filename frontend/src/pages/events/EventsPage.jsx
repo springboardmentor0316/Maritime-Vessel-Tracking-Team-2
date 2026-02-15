@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useToast } from '../../context/ToastContext';
+import { useAuth } from "../../context/AuthContext";
+
 import './EventsPage.css';
 import {
   FiPlus,
@@ -79,6 +81,11 @@ const eventService = {
 const EventsPage = () => {
   const navigate = useNavigate();
   const toast = useToast();
+  const { user } = useAuth();
+
+const isAdmin = user?.role === "admin";
+const isOperator = user?.role === "operator";
+const isAnalyst = user?.role === "analyst";
 
   const [events, setEvents] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -242,22 +249,25 @@ const EventsPage = () => {
           <h1 style={{ margin: 0 }}>Vessel Events History</h1>
           <p className="header-subtitle" style={{ marginTop: 4 }}>Monitor and manage vessel events and incidents</p>
         </div>
-        <button
-          className="btn-create-small"
-          onClick={handleCreate}
-          style={{
-            marginLeft: 'auto',
-            display: 'inline-flex',
-            alignItems: 'center',
-            gap: '8px',
-            padding: '10px 14px',
-            whiteSpace: 'nowrap',
-            width: 'auto',
-            maxWidth: '240px'
-          }}
-        >
-          <FiPlus size={16} /> Create Event
-        </button>
+        {!isAnalyst && (
+  <button
+    className="btn-create-small"
+    onClick={handleCreate}
+    style={{
+      marginLeft: 'auto',
+      display: 'inline-flex',
+      alignItems: 'center',
+      gap: '8px',
+      padding: '10px 14px',
+      whiteSpace: 'nowrap',
+      width: 'auto',
+      maxWidth: '240px'
+    }}
+  >
+    <FiPlus size={16} /> Create Event
+  </button>
+)}
+
       </div>
 
       {/* Filters */}
@@ -342,13 +352,15 @@ const EventsPage = () => {
               <th>Timestamp</th>
               <th>Details</th>
               <th>Severity</th>
-              <th>Actions</th>
+             {!isAnalyst && <th>Actions</th>}
+
             </tr>
           </thead>
           <tbody>
             {filteredEvents.length === 0 ? (
               <tr>
-                <td colSpan="8" className="no-data">
+                <td colSpan={isAnalyst ? 7 : 8} className="no-data">
+
                   No events found
                 </td>
               </tr>
@@ -371,22 +383,26 @@ const EventsPage = () => {
                       {event.severity}
                     </span>
                   </td>
-                  <td className="actions-cell">
-                    <button
-                      className="btn-icon-action btn-edit"
-                      onClick={() => handleEdit(event)}
-                      title="Edit"
-                    >
-                      <FiEdit2 />
-                    </button>
-                    <button
-                      className="btn-icon-action btn-delete"
-                      onClick={() => handleDelete(event.id)}
-                      title="Delete"
-                    >
-                      <FiTrash2 />
-                    </button>
-                  </td>
+                  {!isAnalyst && (
+  <td className="actions-cell">
+    <button
+      className="btn-icon-action btn-edit"
+      onClick={() => handleEdit(event)}
+      title="Edit"
+    >
+      <FiEdit2 />
+    </button>
+
+    <button
+      className="btn-icon-action btn-delete"
+      onClick={() => handleDelete(event.id)}
+      title="Delete"
+    >
+      <FiTrash2 />
+    </button>
+  </td>
+)}
+
                 </tr>
               ))
             )}

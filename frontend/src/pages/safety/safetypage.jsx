@@ -12,9 +12,7 @@ import {
 import "./SafetyPage.css";
 
 export default function SafetyPage() {
-  // -------------------------
-  // STATIC DATA
-  // -------------------------
+
   const [statistics] = useState({
     activeAlerts: 3,
     weatherWarnings: 4,
@@ -41,7 +39,7 @@ export default function SafetyPage() {
       id: 3,
       vessel: "Blue Pearl",
       type: "AIS Signal Lost",
-      severity: "high",
+      severity: "low",
       time: "30 mins ago",
     },
   ]);
@@ -72,12 +70,19 @@ export default function SafetyPage() {
 
   return (
     <div className="safety-page">
-      <h1 className="safety-title">Safety Monitoring Dashboard</h1>
 
-      {/* TOP CARDS */}
+      {/* HEADER */}
+      <div className="page-header">
+        <h1>Safety Monitoring Dashboard</h1>
+        <p className="page-subtitle">
+          Monitor vessel risks, alerts and compliance
+        </p>
+      </div>
+
+      {/* STAT CARDS */}
       <div className="safety-cards">
         <div className="safety-card">
-          <FaBell className="safety-card-icon red" />
+          <FaBell className="stat-icon red" />
           <div>
             <h3>{statistics.activeAlerts}</h3>
             <p>Active Alerts</p>
@@ -85,7 +90,7 @@ export default function SafetyPage() {
         </div>
 
         <div className="safety-card">
-          <FaCloud className="safety-card-icon yellow" />
+          <FaCloud className="stat-icon yellow" />
           <div>
             <h3>{statistics.weatherWarnings}</h3>
             <p>Weather Warnings</p>
@@ -93,7 +98,7 @@ export default function SafetyPage() {
         </div>
 
         <div className="safety-card">
-          <FaShieldAlt className="safety-card-icon orange" />
+          <FaShieldAlt className="stat-icon orange" />
           <div>
             <h3>{statistics.restrictedZones}</h3>
             <p>Restricted Zones</p>
@@ -101,7 +106,7 @@ export default function SafetyPage() {
         </div>
 
         <div className="safety-card">
-          <FaShip className="safety-card-icon green" />
+          <FaShip className="stat-icon green" />
           <div>
             <h3>{statistics.safeVessels}</h3>
             <p>Safe Vessels</p>
@@ -109,59 +114,64 @@ export default function SafetyPage() {
         </div>
       </div>
 
-      {/* LIVE ALERT FEED */}
+      {/* ALERT CARDS */}
       <div className="alerts-section">
-        <h2>Live Safety Alerts</h2>
+        <h2>Recent Safety Alerts</h2>
 
-        <div className="alerts-list">
+        <div className="alerts-grid">
           {alerts.map((alert) => (
-            <div key={alert.id} className="alert-item">
-              <FaExclamationTriangle
-                className={`alert-icon ${alert.severity}`}
-              />
-              <div>
-                <p className="alert-title">{alert.type}</p>
-                <p className="alert-description">
-                  Vessel: <strong>{alert.vessel}</strong>
-                </p>
-                <span className="alert-time">{alert.time}</span>
+            <div key={alert.id} className={`alert-card ${alert.severity}`}>
+              <FaExclamationTriangle className="alert-icon" />
+
+              <div className="alert-content">
+                <h4>{alert.type}</h4>
+                <p>Vessel: {alert.vessel}</p>
+                <span>{alert.time}</span>
+              </div>
+
+              <div className={`severity-badge ${alert.severity}`}>
+                {alert.severity.toUpperCase()}
               </div>
             </div>
           ))}
         </div>
       </div>
 
-      {/* VESSEL SAFETY TABLE */}
+      {/* TABLE */}
       <div className="table-section">
         <h2>Vessel Safety Status</h2>
 
-        <table className="safety-table">
-          <thead>
-            <tr>
-              <th>Vessel</th>
-              <th>MMSI</th>
-              <th>Risk Level</th>
-              <th>Compliance</th>
-              <th>Last Alert</th>
-            </tr>
-          </thead>
-          <tbody>
-            {vesselSafety.map((v, index) => (
-              <tr key={index}>
-                <td>{v.vessel}</td>
-                <td>{v.mmsi}</td>
-                <td className={`risk ${v.risk.toLowerCase()}`}>{v.risk}</td>
-                <td className={`comp ${v.compliance.toLowerCase()}`}>
-                  {v.compliance}
-                </td>
-                <td>{v.lastAlert}</td>
+        <div className="table-container">
+          <table className="safety-table">
+            <thead>
+              <tr>
+                <th>Vessel</th>
+                <th>MMSI</th>
+                <th>Risk Level</th>
+                <th>Compliance</th>
+                <th>Last Alert</th>
               </tr>
-            ))}
-          </tbody>
-        </table>
+            </thead>
+            <tbody>
+              {vesselSafety.map((v, index) => (
+                <tr key={index}>
+                  <td>{v.vessel}</td>
+                  <td>{v.mmsi}</td>
+                  <td className={`risk ${v.risk.toLowerCase()}`}>
+                    {v.risk}
+                  </td>
+                  <td className={`comp ${v.compliance.toLowerCase()}`}>
+                    {v.compliance}
+                  </td>
+                  <td>{v.lastAlert}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
       </div>
 
-      {/* WEATHER / SEA CONDITIONS */}
+      {/* WEATHER SECTION */}
       <div className="weather-section">
         <h2>Sea & Weather Conditions</h2>
 
@@ -185,6 +195,7 @@ export default function SafetyPage() {
           </div>
         </div>
       </div>
+
     </div>
   );
 }

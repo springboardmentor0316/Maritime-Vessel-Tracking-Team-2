@@ -9,6 +9,8 @@
   align-items: center;
   gap: 20px;
   margin-bottom: 32px;
+  padding-left: 24px;
+
 }
 
 .btn-back {
@@ -20,6 +22,8 @@
   font-size: 14px;
   cursor: pointer;
   transition: all 0.2s;
+  margin-right: 80px;
+
 }
 
 .btn-back:hover {
@@ -37,6 +41,7 @@
 
 .header-actions {
   display: flex;
+  align-items: center;   /* ADD THIS LINE */
   gap: 12px;
 }
 
@@ -99,14 +104,20 @@
 }
 
 .btn {
-  padding: 10px 20px;
-  border: none;
+  padding: 6px 14px;      /* smaller padding */
+  height: 32px;           /* fixed height */
   border-radius: 6px;
-  font-size: 14px;
+  font-size: 13px;
   font-weight: 500;
   cursor: pointer;
   transition: all 0.2s;
+
+  display: inline-flex;   /* IMPORTANT */
+  align-items: center;    /* center icon + text vertically */
+  justify-content: center;
+  gap: 6px;               /* space between icon & text */
 }
+
 
 .btn-primary {
   background: #3b82f6;

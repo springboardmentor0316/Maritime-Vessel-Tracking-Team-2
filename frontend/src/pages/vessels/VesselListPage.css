@@ -1,11 +1,17 @@
+/* ============================= */
 /* PAGE BASE */
+/* ============================= */
+
 .vessel-list-page {
   padding: 24px;
   background: #0a0e27;
   min-height: 100vh;
 }
 
+/* ============================= */
 /* HEADER */
+/* ============================= */
+
 .page-header,
 .page-header-top {
   display: flex;
@@ -21,15 +27,18 @@
   color: #e2e8f0;
 }
 
-/* TOP-RIGHT BUTTONS (Clear + Add Vessel) */
+/* ============================= */
+/* HEADER ACTIONS */
+/* ============================= */
+
 .header-actions {
   display: flex;
   align-items: center;
   gap: 10px;
 }
 
-/* CLEAR BUTTON (Top Right) */
-/* CLEAR BUTTON — NOW BLUE LIKE ADD VESSEL */
+/* CLEAR BUTTON */
+
 .clear-btn {
   padding: 6px 12px !important;
   font-size: 13px;
@@ -38,22 +47,22 @@
   display: flex;
   justify-content: center;
   align-items: center;
-  background: #3b82f6;        /* Blue */
-  color: white;               /* White text */
-  border: none;               /* Clean border */
+  background: #3b82f6;
+  color: white;
+  border: none;
   border-radius: 6px;
   cursor: pointer;
-  transition: all 0.2s;
+  transition: all 0.2s ease;
 }
 
 .clear-btn:hover {
-  background: #2563eb;        /* Darker blue hover */
+  background: #2563eb;
   transform: translateY(-1px);
   box-shadow: 0 4px 10px rgba(59, 130, 246, 0.4);
 }
 
-
 /* ADD VESSEL BUTTON */
+
 .add-vessel-btn {
   padding: 6px 12px !important;
   font-size: 13px;
@@ -70,7 +79,10 @@
   font-size: 13px;
 }
 
-/* FILTERS ROW */
+/* ============================= */
+/* FILTERS */
+/* ============================= */
+
 .filters-container {
   display: flex;
   align-items: center;
@@ -79,9 +91,61 @@
   flex-wrap: nowrap;
 }
 
+.filter-group {
+  display: flex;
+  flex-direction: column;
+}
+
+.filter-label {
+  font-size: 12px;
+  color: #94a3b8;
+  margin-bottom: 4px;
+}
+
 /* SEARCH INPUT */
+
+
+
+
+
+.filter-group-wrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.filter-label-top {
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: #60a5fa;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.filter-select-compact {
+  padding: 0.625rem 0.875rem;
+  background: rgba(30, 41, 59, 0.5);
+  border: 1px solid rgba(148, 163, 184, 0.1);
+  border-radius: 0.375rem;
+  color: #f1f5f9;
+  font-size: 0.875rem;
+  cursor: pointer;
+  transition: all 0.3s;
+  min-width: 150px;
+}
+
+.filter-select-compact:focus {
+  outline: none;
+  border-color: #3b82f6;
+  background: rgba(30, 41, 59, 0.8);
+}
+
+.filter-select-compact option {
+  background: #1e293b;
+  color: #f1f5f9;
+}
+
 .search-input {
-  flex: 1;
   min-width: 220px;
   max-width: 380px;
   height: 32px;
@@ -90,7 +154,9 @@
   border: 1px solid #2d3458;
   border-radius: 6px;
   font-size: 13px;
-  color: #e2e8f0;
+  color: #ffffff;
+  outline: none;
+  transition: all 0.2s ease;
 }
 
 .search-input::placeholder {
@@ -98,35 +164,57 @@
 }
 
 .search-input:focus {
-  outline: none;
   border-color: #3b82f6;
-  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+  box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.2);
 }
 
+/* ============================= */
 /* FILTER SELECTS */
+/* ============================= */
+
 .filter-select {
   min-width: 120px;
   height: 32px;
-  padding: 6px 10px;
+  padding: 6px 30px 6px 10px;
   background: #1a1f4d;
   border: 1px solid #2d3458;
   border-radius: 6px;
   font-size: 13px;
-  color: #e2e8f0;
+  color: #ffffff !important;
   cursor: pointer;
+  outline: none;
+  transition: all 0.2s ease;
+
+  /* Fix browser default styling */
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+
+  /* Custom dropdown arrow */
+  background-image: url("data:image/svg+xml;utf8,<svg fill='white' height='20' viewBox='0 0 24 24' width='20' xmlns='http://www.w3.org/2000/svg'><path d='M7 10l5 5 5-5z'/></svg>");
+  background-repeat: no-repeat;
+  background-position: right 8px center;
+  background-size: 14px;
 }
 
 .filter-select:focus {
-  outline: none;
   border-color: #3b82f6;
+  box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.2);
 }
 
+.filter-select option {
+  color: #000000;
+}
+
+/* ============================= */
 /* VESSEL NAME LINK */
+/* ============================= */
+
 .vessel-name-link {
   color: #3b82f6;
   cursor: pointer;
   font-weight: 500;
-  transition: color 0.2s;
+  transition: color 0.2s ease;
 }
 
 .vessel-name-link:hover {
@@ -134,7 +222,10 @@
   text-decoration: underline;
 }
 
+/* ============================= */
 /* ACTION BUTTONS */
+/* ============================= */
+
 .action-buttons {
   display: flex;
   gap: 8px;
@@ -147,12 +238,12 @@
   font-size: 16px;
   padding: 6px 10px;
   border-radius: 6px;
-  transition: all 0.2s;
+  transition: all 0.2s ease;
+  color: #ffffff;
 }
 
 .btn-icon:hover {
   background: #2d3458;
-  border-color: #3b82f6;
   transform: translateY(-1px);
 }
 
@@ -168,7 +259,10 @@
   border-color: #ef4444;
 }
 
-/* BUTTON DEFAULTS */
+/* ============================= */
+/* GENERIC BUTTON STYLES */
+/* ============================= */
+
 .btn {
   padding: 10px 20px;
   border: none;
@@ -176,7 +270,7 @@
   font-size: 14px;
   font-weight: 500;
   cursor: pointer;
-  transition: all 0.2s;
+  transition: all 0.2s ease;
 }
 
 .btn-primary {

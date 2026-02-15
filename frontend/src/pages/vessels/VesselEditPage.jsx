@@ -28,12 +28,13 @@ const VesselEditPage = () => {
   });
 
   useEffect(() => {
-    if (id !== 'new') {
-      fetchVesselDetails();
-    } else {
-      setLoading(false);
-    }
-  }, [id]);
+  if (id) {
+    fetchVesselDetails();
+  } else {
+    setLoading(false);
+  }
+}, [id]);
+
 
   const fetchVesselDetails = async () => {
     try {
@@ -98,13 +99,14 @@ const VesselEditPage = () => {
       if (formData.longitude) vesselData.longitude = parseFloat(formData.longitude);
       if (formData.speed) vesselData.speed = parseFloat(formData.speed);
 
-      if (id === 'new') {
-        await vesselService.createVessel(vesselData);
-        toast.success('Vessel created successfully');
-      } else {
-        await vesselService.updateVessel(id, vesselData);
-        toast.success('Vessel updated successfully');
-      }
+      if (!id) {
+  await vesselService.createVessel(vesselData);
+  toast.success('Vessel created successfully');
+} else {
+  await vesselService.updateVessel(id, vesselData);
+  toast.success('Vessel updated successfully');
+}
+
 
       navigate('/app/vessels');
     } catch (error) {
@@ -120,7 +122,8 @@ const VesselEditPage = () => {
   };
 
   const handleCancel = () => {
-    navigate(id === 'new' ? '/app/vessels' : `/app/vessels/${id}`);
+    navigate(id ? `/app/vessels/${id}` : '/app/vessels');
+
   };
 
   if (loading) {
@@ -180,14 +183,15 @@ const VesselEditPage = () => {
             <div className="form-group">
               <label htmlFor="imo_number">IMO Number</label>
               <input
-                type="text"
-                id="imo_number"
-                name="imo_number"
-                value={formData.imo_number}
-                onChange={handleChange}
-                disabled={id !== 'new'}
-                placeholder="IMO1234567"
-              />
+  type="text"
+  id="imo_number"
+  name="imo_number"
+  value={formData.imo_number}
+  onChange={handleChange}
+  disabled={!!id}
+  placeholder="IMO1234567"
+/>
+
               {id !== 'new' && (
                 <small className="form-help">IMO cannot be changed after creation</small>
               )}
@@ -203,7 +207,8 @@ const VesselEditPage = () => {
                 name="mmsi"
                 value={formData.mmsi}
                 onChange={handleChange}
-                disabled={id !== 'new'}
+                disabled={!!id}
+
                 required={id === 'new'}
                 placeholder="123456789"
               />

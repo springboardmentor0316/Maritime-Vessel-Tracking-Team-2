@@ -2,6 +2,8 @@ import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { AuthProvider } from "./context/AuthContext";
 import { ToastProvider } from "./context/ToastContext";
 import Toast from "./components/common/Toast";
+import { useAuth } from "./context/AuthContext";
+
 
 // Public Pages
 import Home from "./pages/Home";
@@ -13,6 +15,8 @@ import ResetPassword from "./pages/ResetPassword";
 // Layout & ProtectedRoute
 import AppLayout from "./components/Layout/AppLayout";
 import ProtectedRoute from "./components/common/ProtectedRoute";
+import RoleProtectedRoute from "./components/common/RoleProtectedRoute";
+
 
 // App Pages
 import DashboardPage from "./pages/dashboard/DashboardPage";
@@ -28,7 +32,11 @@ import SafetyPage from "./pages/safety/safetypage";
 import EventsPage from "./pages/events/EventsPage";
 import PortsPage from "./pages/ports/PortsPage";
 
+
+
 function App() {
+ 
+
   return (
     <BrowserRouter>
       <AuthProvider>
@@ -69,7 +77,16 @@ function App() {
               </Route>
 
               {/* Analytics */}
-              <Route path="analytics" element={<AnalyticsPage />} />
+              <Route
+  path="analytics"
+  element={
+    <RoleProtectedRoute allowedRoles={["admin", "analyst"]}>
+      <AnalyticsPage />
+    </RoleProtectedRoute>
+  }
+/>
+
+
 
               {/* Ports (⭐ Newly Added) */}
               <Route path="ports" element={<PortsPage />} />

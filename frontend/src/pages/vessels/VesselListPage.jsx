@@ -78,6 +78,13 @@ const VesselListPage = () => {
     }
   };
 
+  const handleClearFilters = () => {
+  setFilters({
+    search: '',
+    type: 'all',
+    status: 'all',
+  });
+};
   const columns = [
     {
       header: 'Name',
@@ -196,7 +203,7 @@ const VesselListPage = () => {
         <div className="header-actions">
           <button
             className="btn btn-secondary clear-btn"
-            onClick={fetchVessels}
+            onClick={handleClearFilters}
           >
             Clear
           </button>
@@ -215,55 +222,58 @@ const VesselListPage = () => {
       </div>
 
       <div className="filters-container">
-        <div className="filter-group">
-          <label className="filter-label">Search</label>
-          <input
-            type="text"
-            className="search-input"
-            placeholder="Search by name, IMO, or MMSI..."
-            value={filters.search}
-            onChange={handleSearchChange}
-          />
-        </div>
+        <div className="filter-group-wrapper">
+  <label className="filter-label-top">Search</label>
+  <input
+    type="text"
+    className="filter-select-compact"
+    placeholder="Search by name, IMO "
+    value={filters.search}
+    onChange={handleSearchChange}
+  />
+</div>
 
-        <div className="filter-group">
-          <label className="filter-label">Vessel Type</label>
-          <select
-            className="filter-select"
-            value={filters.type}
-            onChange={(e) =>
-              setFilters({ ...filters, type: e.target.value })
-            }
-          >
-            <option value="all">All Types</option>
-            <option value="Cargo">Cargo</option>
-            <option value="Tanker">Tanker</option>
-            <option value="Passenger">Passenger</option>
-            <option value="Fishing">Fishing</option>
-            <option value="Sailing">Sailing</option>
-            <option value="Tug">Tug</option>
-            <option value="Other">Other</option>
-          </select>
-        </div>
 
-        <div className="filter-group">
-          <label className="filter-label">Status</label>
-          <select
-            className="filter-select"
-            value={filters.status}
-            onChange={(e) =>
-              setFilters({ ...filters, status: e.target.value })
-            }
-          >
-            <option value="all">All Statuses</option>
-            <option value="active">Active</option>
-            <option value="Moving">Moving</option>
-            <option value="underway">Underway</option>
-            <option value="Anchored">Anchored</option>
-            <option value="Docked">Docked</option>
-            <option value="inactive">Inactive</option>
-          </select>
-        </div>
+        <div className="filter-group-wrapper">
+  <label className="filter-label-top">Vessel Type</label>
+  <select
+    className="filter-select-compact"
+    value={filters.type}
+    onChange={(e) =>
+      setFilters({ ...filters, type: e.target.value })
+    }
+  >
+    <option value="all">All Types</option>
+    <option value="Cargo">Cargo</option>
+    <option value="Tanker">Tanker</option>
+    <option value="Passenger">Passenger</option>
+    <option value="Fishing">Fishing</option>
+    <option value="Sailing">Sailing</option>
+    <option value="Tug">Tug</option>
+    <option value="Other">Other</option>
+  </select>
+</div>
+
+
+        <div className="filter-group-wrapper">
+  <label className="filter-label-top">Status</label>
+  <select
+    className="filter-select-compact"
+    value={filters.status}
+    onChange={(e) =>
+      setFilters({ ...filters, status: e.target.value })
+    }
+  >
+    <option value="all">All Statuses</option>
+    <option value="active">Active</option>
+    <option value="Moving">Moving</option>
+    <option value="underway">Underway</option>
+    <option value="Anchored">Anchored</option>
+    <option value="Docked">Docked</option>
+    <option value="inactive">Inactive</option>
+  </select>
+</div>
+
       </div>
 
       <DataTable

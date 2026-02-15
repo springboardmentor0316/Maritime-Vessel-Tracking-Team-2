@@ -312,11 +312,69 @@
 .events-table {
   width: 100%;
   border-collapse: collapse;
+   table-layout: fixed;
 }
 
 .events-table thead {
   background: rgba(15, 23, 42, 0.8);
 }
+
+.events-table th:last-child,
+.events-table td:last-child {
+  width: 120px;
+  min-width: 120px;
+  text-align: center;
+}
+
+.events-table th:nth-child(1),
+.events-table td:nth-child(1) {
+  width: 60px;   /* ID */
+}
+
+.events-table th:nth-child(2),
+.events-table td:nth-child(2) {
+  width: 160px;  /* Vessel */
+}
+
+.events-table th:nth-child(3),
+.events-table td:nth-child(3) {
+  width: 160px;  /* Event Type */
+}
+
+.events-table th:nth-child(4),
+.events-table td:nth-child(4) {
+  width: 180px;  /* Location */
+}
+
+.events-table th:nth-child(5),
+.events-table td:nth-child(5) {
+  width: 190px;  /* Timestamp */
+}
+
+.events-table th:nth-child(6),
+.events-table td:nth-child(6) {
+  width: auto;   /* Details (flexible column) */
+}
+
+.events-table th:nth-child(7),
+.events-table td:nth-child(7) {
+  width: 120px;  /* Severity */
+  text-align: center;
+}
+
+.events-table th:nth-child(8),
+.events-table td:nth-child(8) {
+  width: 120px;  /* Actions */
+  text-align: center;
+}
+
+
+.details-cell {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
 
 .events-table th {
   padding: 1rem;
@@ -403,7 +461,10 @@
 /* Actions */
 .actions-cell {
   display: flex;
-  gap: 0.5rem;
+   justify-content: center;
+  align-items: center;
+  
+  gap: 10px;
 }
 
 .btn-icon-action {
@@ -417,6 +478,8 @@
   display: flex;
   align-items: center;
   justify-content: center;
+   width: 36px;
+  height: 36px;
 }
 
 .btn-icon-action:hover {
