@@ -20,8 +20,9 @@ if not exist .env (
         echo.
         pause
     ) else (
-        echo [ERROR] .env.example not found! Cannot continue.
-        exit /b 1
+        echo [WARNING] .env.example not found. Creating blank .env and continuing...
+        type nul > .env
+        echo [SUCCESS] Created blank .env
     )
 )
 

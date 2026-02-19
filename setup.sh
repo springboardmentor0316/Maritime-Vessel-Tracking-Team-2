@@ -29,8 +29,9 @@ if [ ! -f .env ]; then
         echo ""
         read -p "Press Enter after you've updated .env with your API keys..."
     else
-        echo -e "${RED}❌ .env.example not found! Cannot continue.${NC}"
-        exit 1
+        echo -e "${YELLOW}⚠️  .env.example not found. Creating blank .env and continuing...${NC}"
+        touch .env
+        echo -e "${GREEN}✅ Created blank .env${NC}"
     fi
 fi
 
