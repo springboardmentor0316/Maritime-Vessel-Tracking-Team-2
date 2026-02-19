@@ -1,13 +1,19 @@
 from rest_framework.permissions import BasePermission, SAFE_METHODS
 
+ADMIN_EMAIL = "admin@gmail.com"
+
+
+def is_admin_email(user):
+    return (
+        user
+        and user.is_authenticated
+        and (user.email or "").strip().lower() == ADMIN_EMAIL
+    )
+
 
 class IsAdmin(BasePermission):
     def has_permission(self, request, view):
-        return (
-            request.user
-            and request.user.is_authenticated
-            and request.user.groups.filter(name="Admin").exists()
-        )
+        return is_admin_email(request.user)
 
 
 class IsOperator(BasePermission):
@@ -35,8 +41,4 @@ class AdminOrReadOnly(BasePermission):
                 request.user
                 and request.user.is_authenticated
             )
-        return (
-            request.user
-            and request.user.is_authenticated
-            and request.user.groups.filter(name="Admin").exists()
-        )
+        return is_admin_email(request.user)

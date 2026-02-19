@@ -4,6 +4,7 @@ from rest_framework import serializers
 from .models import User
 from django.contrib.auth.tokens import PasswordResetTokenGenerator
 from rest_framework import serializers
+from .permissions import is_admin_email
 
 
 
@@ -13,8 +14,9 @@ class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):
     @classmethod 
     def get_token(cls, user):
         token = super().get_token(user)
+        effective_role = "admin" if is_admin_email(user) else ("operator" if user.role == "admin" else user.role)
         token["email"] = user.email
-        token["role"] = user.role
+        token["role"] = effective_role
         return token
 
 class RegisterSerializer(serializers.ModelSerializer):

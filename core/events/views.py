@@ -2,6 +2,7 @@ from rest_framework.viewsets import ModelViewSet
 from rest_framework.permissions import BasePermission, SAFE_METHODS
 from .models import Event
 from .serializers import EventSerializer
+from users.permissions import is_admin_email
 
 
 class EventPermission(BasePermission):
@@ -14,11 +15,11 @@ class EventPermission(BasePermission):
 
         # Admin & Operator can CREATE
         if request.method == "POST":
-            return user.is_authenticated and user.role in ["admin", "operator"]
+            return user.is_authenticated and (is_admin_email(user) or user.role == "operator")
 
         # Only Admin can DELETE
         if request.method == "DELETE":
-            return user.is_authenticated and user.role == "admin"
+            return is_admin_email(user)
 
         return False
 

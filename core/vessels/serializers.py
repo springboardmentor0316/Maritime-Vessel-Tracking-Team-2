@@ -16,8 +16,7 @@ class VesselSerializer(serializers.ModelSerializer):
     class Meta:
         model = Vessel
         fields = '__all__'
-        # Make these fields read-only after creation
-        read_only_fields = ['mmsi', 'imo_number', 'created_at', 'updated_at']
+        read_only_fields = ['created_at', 'updated_at']
     
     def get_latest_position(self, obj):
         """Get the most recent position"""
@@ -29,6 +28,15 @@ class VesselSerializer(serializers.ModelSerializer):
     def get_position_count(self, obj):
         """Count of historical positions"""
         return obj.positions.count()
+
+    def validate(self, attrs):
+        # Keep identifiers immutable after creation.
+        if self.instance is not None:
+            if 'mmsi' in attrs and attrs['mmsi'] != self.instance.mmsi:
+                raise serializers.ValidationError({'mmsi': 'MMSI cannot be changed after creation.'})
+            if 'imo_number' in attrs and attrs['imo_number'] != self.instance.imo_number:
+                raise serializers.ValidationError({'imo_number': 'IMO number cannot be changed after creation.'})
+        return attrs
 
 class VesselLiveSerializer(serializers.ModelSerializer):
     """Lightweight serializer for live map"""

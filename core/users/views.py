@@ -9,6 +9,7 @@ from .serializers import (
     ForgotPasswordSerializer,
     ResetPasswordSerializer
 )
+from .permissions import is_admin_email
 
 from django.contrib.auth import get_user_model
 from django.contrib.auth.tokens import PasswordResetTokenGenerator
@@ -24,10 +25,11 @@ class MeView(APIView):
 
     def get(self, request):
         user = request.user
+        effective_role = "admin" if is_admin_email(user) else ("operator" if user.role == "admin" else user.role)
         return Response({
             "id": user.id,
             "email": user.email,
-            "role": user.role,
+            "role": effective_role,
         })
 
 

@@ -10,6 +10,7 @@ import { FaArrowLeft, FaPlus, FaEdit } from "react-icons/fa";
 
 const VesselEditPage = () => {
   const { id } = useParams();
+  const isCreateMode = !id;
   const navigate = useNavigate();
   const toast = useToast();
   const [loading, setLoading] = useState(true);
@@ -77,7 +78,7 @@ const VesselEditPage = () => {
         return;
       }
 
-      if (!formData.mmsi && id === 'new') {
+      if (!formData.mmsi && isCreateMode) {
         toast.error('MMSI is required for new vessels');
         setSaving(false);
         return;
@@ -90,7 +91,7 @@ const VesselEditPage = () => {
         status: formData.status,
       };
 
-      if (id === 'new') {
+      if (isCreateMode) {
         vesselData.mmsi = formData.mmsi;
         vesselData.imo_number = formData.imo_number || `IMO${formData.mmsi}`;
       }
@@ -99,7 +100,7 @@ const VesselEditPage = () => {
       if (formData.longitude) vesselData.longitude = parseFloat(formData.longitude);
       if (formData.speed) vesselData.speed = parseFloat(formData.speed);
 
-      if (!id) {
+      if (isCreateMode) {
   await vesselService.createVessel(vesselData);
   toast.success('Vessel created successfully');
 } else {
@@ -122,7 +123,7 @@ const VesselEditPage = () => {
   };
 
   const handleCancel = () => {
-    navigate(id ? `/app/vessels/${id}` : '/app/vessels');
+    navigate(isCreateMode ? '/app/vessels' : `/app/vessels/${id}`);
 
   };
 
@@ -140,7 +141,7 @@ const VesselEditPage = () => {
   </div>
 
   <h1 className="edit-title">
-    {id === 'new' ? (
+    {isCreateMode ? (
       <>
         <FaPlus style={{ marginRight: "8px" }} /> Add New Vessel
       </>
@@ -152,7 +153,7 @@ const VesselEditPage = () => {
   </h1>
 
   <div className="right-section">
-    {id !== "new" && (
+    {!isCreateMode && (
       <button className="btn-delete">
         Delete
       </button>
@@ -188,18 +189,18 @@ const VesselEditPage = () => {
   name="imo_number"
   value={formData.imo_number}
   onChange={handleChange}
-  disabled={!!id}
+  disabled={!isCreateMode}
   placeholder="IMO1234567"
 />
 
-              {id !== 'new' && (
+              {!isCreateMode && (
                 <small className="form-help">IMO cannot be changed after creation</small>
               )}
             </div>
 
             <div className="form-group">
               <label htmlFor="mmsi">
-                MMSI {id === 'new' && <span className="required">*</span>}
+                MMSI {isCreateMode && <span className="required">*</span>}
               </label>
               <input
                 type="text"
@@ -207,12 +208,12 @@ const VesselEditPage = () => {
                 name="mmsi"
                 value={formData.mmsi}
                 onChange={handleChange}
-                disabled={!!id}
+                disabled={!isCreateMode}
 
-                required={id === 'new'}
+                required={isCreateMode}
                 placeholder="123456789"
               />
-              {id !== 'new' && (
+              {!isCreateMode && (
                 <small className="form-help">MMSI cannot be changed after creation</small>
               )}
             </div>
@@ -331,7 +332,7 @@ const VesselEditPage = () => {
             className="btn btn-primary"
             disabled={saving}
           >
-            {saving ? 'Saving...' : id === 'new' ? 'Create Vessel' : 'Save Changes'}
+            {saving ? 'Saving...' : isCreateMode ? 'Create Vessel' : 'Save Changes'}
           </button>
         </div>
       </form>

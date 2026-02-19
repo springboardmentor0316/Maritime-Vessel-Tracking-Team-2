@@ -42,7 +42,7 @@ const [passwordError, setPasswordError] = useState("");
       const payload = {
         email,
         password,
-        role: role.toLowerCase(), // "operator", "analyst", "admin"
+        role: role.toLowerCase(), // "operator" or "analyst"
       };
 
       const res = await registerUser(payload);
@@ -153,7 +153,6 @@ const [passwordError, setPasswordError] = useState("");
           >
             <option>Operator</option>
             <option>Analyst</option>
-            <option>Admin</option>
           </select>
 
           <button type="submit" disabled={loading}>

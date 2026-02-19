@@ -11,6 +11,7 @@ from datetime import timedelta
 from drf_spectacular.utils import extend_schema
 
 from .models import Vessel, VesselPosition
+from users.permissions import is_admin_email
 from .serializers import (
     VesselSerializer,
     VesselLiveSerializer,
@@ -31,13 +32,13 @@ class VesselPermission(BasePermission):
             return user and user.is_authenticated
 
         if request.method == "POST":
-            return user.is_authenticated and user.role in ["admin", "operator"]
+            return user.is_authenticated and (is_admin_email(user) or user.role == "operator")
 
         if request.method in ["PUT", "PATCH"]:  
-            return user.is_authenticated and user.role in ["admin", "operator"]
+            return user.is_authenticated and (is_admin_email(user) or user.role == "operator")
 
         if request.method == "DELETE":
-            return user.is_authenticated and user.role == "admin"
+            return is_admin_email(user)
 
         return False
 
