@@ -43,30 +43,33 @@ import {
 // Vessel Marker Icon
 const createVesselIcon = (status) => {
   const colors = {
-    'underway': '#10b981',
-    'active': '#10b981',
-    'anchored': '#f59e0b',
-    'moored': '#64748b',
-    'inactive': '#64748b',
-    'alert': '#ef4444',
+    'underway': '#2bfecf',
+    'active': '#2bfecf',
+    'anchored': '#ffb020',
+    'moored': '#90a4c8',
+    'inactive': '#7d8fb5',
+    'alert': '#ff4d7a',
   };
 
-  const color = colors[status?.toLowerCase()] || '#10b981';
+  const color = colors[status?.toLowerCase()] || '#2bfecf';
 
   return L.divIcon({
     className: 'custom-vessel-marker',
     html: `
-      <svg width="32" height="40" viewBox="0 0 32 40" fill="none">
-        <path d="M16 0C9.37258 0 4 5.37258 4 12C4 21 16 40 16 40C16 40 28 21 28 12C28 5.37258 22.6274 0 16 0Z" 
-              fill="${color}" 
-              stroke="#fff" 
-              stroke-width="2"/>
-        <circle cx="16" cy="12" r="5" fill="#fff"/>
+      <svg width="34" height="38" viewBox="0 0 34 38" fill="none">
+        <g>
+          <path d="M17 3.5L23.8 15.6L17 27.7L10.2 15.6L17 3.5Z"
+                stroke="${color}" stroke-width="2.4" fill="rgba(16,20,28,0.18)" stroke-linejoin="round"/>
+          <path d="M17 9.5L20 15.6L17 21.7L14 15.6L17 9.5Z"
+                stroke="${color}" stroke-width="1.8" fill="none" stroke-linejoin="round"/>
+          <line x1="17" y1="27.7" x2="17" y2="33.5" stroke="${color}" stroke-width="2" stroke-linecap="round"/>
+          <rect x="13.2" y="33.5" width="7.6" height="2.6" rx="1.3" stroke="${color}" stroke-width="1.8" fill="none"/>
+        </g>
       </svg>
     `,
-    iconSize: [32, 40],
-    iconAnchor: [16, 40],
-    popupAnchor: [0, -40],
+    iconSize: [34, 38],
+    iconAnchor: [17, 34],
+    popupAnchor: [0, -34],
   });
 };
 
