@@ -21,7 +21,7 @@ print("📂 USING DATABASE:", settings.DATABASES["default"]["NAME"])
 
 # ================== CONFIG ==================
 
-API_KEY = "90b78ef6944162a438de72cd9edbb3ec550fb250"
+API_KEY = os.getenv("AIS_STREAM_API_KEY", "")
 
 WS_URL = "wss://stream.aisstream.io/v0/stream"
 BBOX = [

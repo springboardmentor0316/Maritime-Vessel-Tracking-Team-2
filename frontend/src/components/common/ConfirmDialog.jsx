@@ -18,6 +18,7 @@ const ConfirmDialog = ({
       onClose={onClose}
       title={title}
       size="small"
+      className="confirm-dialog-modal"
       footer={
         <div className="confirm-dialog-actions">
           <button className="btn btn-secondary" onClick={onClose}>

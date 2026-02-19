@@ -4,6 +4,7 @@ import vesselService from '../../services/vesselService';
 import { useToast } from '../../context/ToastContext';
 import Loading from '../../components/common/Loading';
 import Badge from '../../components/common/Badge';
+import ConfirmDialog from '../../components/common/ConfirmDialog';
 import './VesselDetailPage.css';
 
 
@@ -24,6 +25,7 @@ const VesselDetailPage = () => {
 
   const [vessel, setVessel] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
 
   useEffect(() => {
     fetchVesselDetails();
@@ -49,9 +51,11 @@ const VesselDetailPage = () => {
     navigate(`/app/vessels/${id}/edit`);
   };
 
-  const handleDelete = async () => {
-    if (!window.confirm(`Delete vessel "${vessel.name}"?`)) return;
+  const handleDelete = () => {
+    setShowDeleteConfirm(true);
+  };
 
+  const confirmDelete = async () => {
     try {
       await vesselService.deleteVessel(id);
       toast.success('Vessel deleted successfully');
@@ -111,7 +115,7 @@ const VesselDetailPage = () => {
           )}
 
           {isAdmin && (
-            <button className="btn btn-danger" onClick={handleDelete}>
+            <button className="btn btn-delete" onClick={handleDelete}>
               <FaTrash style={{ marginRight: "5px" }} /> Delete
             </button>
           )}
@@ -245,6 +249,17 @@ const VesselDetailPage = () => {
           </div>
         )}
       </div>
+
+      <ConfirmDialog
+        isOpen={showDeleteConfirm}
+        onClose={() => setShowDeleteConfirm(false)}
+        onConfirm={confirmDelete}
+        title="Delete Vessel"
+        message={`Delete vessel "${vessel.name}"? This action cannot be undone.`}
+        confirmText="Delete"
+        cancelText="Cancel"
+        type="danger"
+      />
     </div>
   );
 };

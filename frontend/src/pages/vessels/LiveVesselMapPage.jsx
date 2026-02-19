@@ -180,15 +180,22 @@ const LiveVesselMapPage = () => {
           <MapContainer
             center={[1.3521, 103.8198]}
             zoom={6}
+            minZoom={2}
             zoomControl={false}
             style={{ height: "100%", width: "100%" }}
             whenCreated={(map) => (mapRef.current = map)}
+            worldCopyJump={false}
+            maxBounds={[[-85, -180], [85, 180]]}
+            maxBoundsViscosity={1.0}
+            inertia={false}
           >
             <ZoomControls />
 
             <TileLayer
               attribution="&copy; OpenStreetMap"
               url="https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png"
+              noWrap={true}
+              bounds={[[-85, -180], [85, 180]]}
             />
 
             {/* VESSELS */}
@@ -221,21 +228,22 @@ const LiveVesselMapPage = () => {
                     position={[+v.latitude, +v.longitude]}
                     icon={createVesselIcon(v.hasAlert ? "alert" : v.status)}
                   >
-                    <Popup>
+                    <Popup className="vessel-map-popup" maxWidth={220}>
                       <div className="vessel-popup-content">
-                        <h4>{v.name || "Unknown"}</h4>
-                        <p><strong>MMSI:</strong> {v.mmsi}</p>
-                        <p><strong>Type:</strong> {v.vessel_type}</p>
-                        <p><strong>Status:</strong> {v.status}</p>
-
-                        {v.hasAlert && (
-                          <p>
-                            <FaExclamationTriangle color="#ef4444" /> <strong>ALERT</strong>
-                          </p>
-                        )}
-
-                        <p><strong>Speed:</strong> {v.speed || "N/A"} kn</p>
-                        <p><strong>Position:</strong> {v.latitude}, {v.longitude}</p>
+                        <strong className="vessel-popup-title">{v.name || "Unknown Vessel"}</strong>
+                        <div className="vessel-popup-body">
+                          <div>MMSI: {v.mmsi || "N/A"}</div>
+                          <div>IMO: {v.imo_number || "N/A"}</div>
+                          <div>Status: {v.status || "N/A"}</div>
+                          <div>Type: {v.vessel_type || "N/A"}</div>
+                          <div>Speed: {v.speed || "N/A"} kn</div>
+                          <div>Position: {v.latitude}, {v.longitude}</div>
+                          {v.hasAlert && (
+                            <div className="vessel-alert-row">
+                              <FaExclamationTriangle color="#ef4444" /> ALERT
+                            </div>
+                          )}
+                        </div>
                       </div>
                     </Popup>
                   </Marker>

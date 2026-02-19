@@ -27,6 +27,7 @@ if not exist .env (
 
 echo.
 echo Step 1: Installing Python dependencies...
+pushd core
 pip install -r requirements.txt
 
 echo.
@@ -42,13 +43,13 @@ python manage.py createsuperuser
 echo.
 echo Step 4: Importing initial data...
 
-if exist "core\data" (
+if exist "data" (
     echo   Importing ports...
     python manage.py import_ports 2>nul || echo   Port import skipped
     
     echo   Importing vessels...
-    python manage.py import_vessels 2>nul || echo   Vessel import skipped
-    
+    python manage.py sync_vessels --mode import --file data\vessels.csv --enrich --enrich-limit 10000 2>nul || echo   Vessel import skipped
+
     echo   Importing routes...
     python manage.py import_routes 2>nul || echo   Route import skipped
 ) else (
@@ -58,6 +59,7 @@ if exist "core\data" (
 echo.
 echo Step 5: Collecting static files...
 python manage.py collectstatic --noinput
+popd
 
 echo.
 echo [SUCCESS] Backend setup complete!
@@ -89,14 +91,12 @@ echo.
 echo To start the application:
 echo.
 echo Backend:
+echo   cd core
 echo   python manage.py runserver
 echo.
 echo Frontend:
 echo   cd frontend
 echo   npm run dev
-echo.
-echo AIS Stream (optional):
-echo   python manage.py stream_ais
 echo.
 echo Admin Panel: http://localhost:8001/admin
 echo Frontend: http://localhost:5173

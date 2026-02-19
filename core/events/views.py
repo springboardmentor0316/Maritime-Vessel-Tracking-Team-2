@@ -17,6 +17,10 @@ class EventPermission(BasePermission):
         if request.method == "POST":
             return user.is_authenticated and (is_admin_email(user) or user.role == "operator")
 
+        # Admin & Operator can UPDATE
+        if request.method in ["PUT", "PATCH"]:
+            return user.is_authenticated and (is_admin_email(user) or user.role == "operator")
+
         # Only Admin can DELETE
         if request.method == "DELETE":
             return is_admin_email(user)

@@ -1,7 +1,8 @@
 from django.core.management.base import BaseCommand
 from vessels.models import Vessel
-import requests
 from time import sleep
+from datetime import timedelta
+from django.utils import timezone
 
 
 class Command(BaseCommand):
@@ -19,10 +20,17 @@ class Command(BaseCommand):
             action='store_true',
             help='Update all vessels, even those with existing data',
         )
+        parser.add_argument(
+            '--delay',
+            type=float,
+            default=0.0,
+            help='Optional delay per vessel in seconds (default: 0).',
+        )
 
     def handle(self, *args, **options):
         limit = options['limit']
         force = options['force']
+        delay = options['delay']
         
         self.stdout.write(self.style.SUCCESS('🔍 Starting vessel data enrichment...'))
         
@@ -43,22 +51,25 @@ class Command(BaseCommand):
         
         updated = 0
         failed = 0
+        processed = 0
         
         for vessel in vessels:
             try:
                 enriched = self.enrich_vessel(vessel)
                 if enriched:
                     updated += 1
-                    self.stdout.write(
-                        self.style.SUCCESS(
-                            f'✅ {vessel.name}: {vessel.vessel_type}, {vessel.flag}'
-                        )
-                    )
                 else:
                     failed += 1
+
+                processed += 1
+                if processed % 200 == 0:
+                    self.stdout.write(
+                        f'Progress: {processed} processed | updated={updated} failed={failed}'
+                    )
                     
-                # Rate limiting - be nice to APIs
-                sleep(0.5)
+                # Optional delay for API-based enrich workflows
+                if delay > 0:
+                    sleep(delay)
                 
             except Exception as e:
                 failed += 1
@@ -105,11 +116,84 @@ class Command(BaseCommand):
             if flag != 'Unknown':
                 vessel.flag = flag
                 updated = True
+
+        # Ensure all export columns have values.
+        if self.backfill_required_fields(vessel):
+            updated = True
         
         if updated:
             vessel.save()
         
         return updated
+
+    def backfill_required_fields(self, vessel):
+        """Backfill missing values for CSV-export columns."""
+        changed = False
+
+        if not vessel.name:
+            vessel.name = f"Vessel-{vessel.mmsi}"
+            changed = True
+
+        if not vessel.imo_number and vessel.mmsi:
+            vessel.imo_number = f"IMO{vessel.mmsi}"
+            changed = True
+
+        if not vessel.vessel_type:
+            vessel.vessel_type = "Other"
+            changed = True
+
+        if not vessel.flag:
+            vessel.flag = "Unknown"
+            changed = True
+
+        if vessel.latitude is None:
+            vessel.latitude = 0.0
+            changed = True
+        if vessel.longitude is None:
+            vessel.longitude = 0.0
+            changed = True
+        if vessel.speed is None:
+            vessel.speed = 0.0
+            changed = True
+        if vessel.course is None:
+            vessel.course = 0.0
+            changed = True
+        if vessel.heading is None:
+            vessel.heading = 0
+            changed = True
+
+        if not vessel.status:
+            vessel.status = "active"
+            changed = True
+
+        if not vessel.callsign:
+            suffix = str(vessel.mmsi)[-6:] if vessel.mmsi else "000000"
+            vessel.callsign = f"CALL{suffix}"
+            changed = True
+
+        if not vessel.destination:
+            vessel.destination = "Unknown"
+            changed = True
+
+        if not vessel.eta:
+            vessel.eta = timezone.now() + timedelta(days=7)
+            changed = True
+
+        if vessel.length is None:
+            vessel.length = 100.0
+            changed = True
+        if vessel.width is None:
+            vessel.width = 20.0
+            changed = True
+        if vessel.draft is None:
+            vessel.draft = 8.0
+            changed = True
+
+        if not vessel.data_source:
+            vessel.data_source = "csv_enriched"
+            changed = True
+
+        return changed
 
     def lookup_vesselfinder(self, mmsi):
         """

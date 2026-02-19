@@ -223,40 +223,123 @@
 }
 
 /* ============================= */
+/* TABLE ALIGNMENT FIXES */
+/* ============================= */
+
+.vessel-list-page .data-table th,
+.vessel-list-page .data-table td {
+  vertical-align: middle;
+}
+
+.vessel-list-page .data-table th:nth-child(8),
+.vessel-list-page .data-table td:nth-child(8) {
+  white-space: nowrap;
+  overflow: visible;
+}
+
+.vessel-list-page .data-table th:nth-child(1),
+.vessel-list-page .data-table td:nth-child(1) {
+  width: 20%;
+}
+
+.vessel-list-page .data-table th:nth-child(2),
+.vessel-list-page .data-table td:nth-child(2) {
+  width: 10%;
+}
+
+.vessel-list-page .data-table th:nth-child(3),
+.vessel-list-page .data-table td:nth-child(3) {
+  width: 10%;
+}
+
+.vessel-list-page .data-table th:nth-child(4),
+.vessel-list-page .data-table td:nth-child(4) {
+  width: 10%;
+}
+
+.vessel-list-page .data-table th:nth-child(5),
+.vessel-list-page .data-table td:nth-child(5) {
+  width: 10%;
+}
+
+.vessel-list-page .data-table th:nth-child(6),
+.vessel-list-page .data-table td:nth-child(6) {
+  width: 6%;
+}
+
+.vessel-list-page .data-table th:nth-child(7),
+.vessel-list-page .data-table td:nth-child(7) {
+  width: 14%;
+}
+
+.vessel-list-page .data-table th:last-child,
+.vessel-list-page .data-table td:last-child {
+  width: 20%;
+  min-width: 0;
+  padding-left: 10px;
+  padding-right: 8px;
+}
+
+.vessel-list-page .data-table-container {
+  overflow: hidden;
+}
+
+.vessel-list-page .data-table {
+  min-width: 0;
+}
+
+/* ============================= */
 /* ACTION BUTTONS */
 /* ============================= */
 
-.action-buttons {
+.vessel-list-page .action-buttons {
   display: flex;
-  gap: 8px;
+  gap: 5px;
+  justify-content: flex-start;
+  align-items: center;
+  margin-left: -4px;
 }
 
-.btn-icon {
-  background: #1a1f4d;
-  border: 1px solid #2d3458;
+.vessel-list-page .btn-icon {
+  background: rgba(15, 23, 42, 0.78);
+  border: 1px solid #334155;
   cursor: pointer;
-  font-size: 16px;
-  padding: 6px 10px;
-  border-radius: 6px;
+  font-size: 14px;
+  width: 44px;
+  height: 32px;
+  padding: 0;
+  border-radius: 8px;
   transition: all 0.2s ease;
-  color: #ffffff;
+  color: #dbeafe;
+  line-height: 1;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
 }
 
-.btn-icon:hover {
-  background: #2d3458;
+.vessel-list-page .btn-icon:hover {
+  background: rgba(30, 41, 59, 0.95);
   transform: translateY(-1px);
 }
 
-.btn-icon.btn-view:hover {
+.vessel-list-page .btn-icon.btn-view {
   border-color: #3b82f6;
 }
 
-.btn-icon.btn-edit:hover {
+.vessel-list-page .btn-icon.btn-edit {
   border-color: #10b981;
 }
 
-.btn-icon.btn-danger:hover {
+.vessel-list-page .btn-icon.btn-delete {
   border-color: #ef4444;
+  background: rgba(15, 23, 42, 0.78);
+  color: #dbeafe;
+}
+
+.vessel-list-page .btn-icon.btn-view:hover,
+.vessel-list-page .btn-icon.btn-edit:hover,
+.vessel-list-page .btn-icon.btn-delete:hover {
+  box-shadow: 0 0 0 1px rgba(148, 163, 184, 0.08);
 }
 
 /* ============================= */

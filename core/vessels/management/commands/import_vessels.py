@@ -16,8 +16,8 @@ class Command(BaseCommand):
         parser.add_argument(
             '--file',
             type=str,
-            default='core/data/vessels.csv',
-            help='Path to vessels CSV file',
+            default='data/vessels.csv',
+            help='Path to vessels CSV file (default: data/vessels.csv)',
         )
         parser.add_argument(
             '--clear',
@@ -27,6 +27,16 @@ class Command(BaseCommand):
 
     def handle(self, *args, **options):
         file_path = options['file']
+        if not os.path.exists(file_path):
+            fallback_paths = [
+                '../vessels.csv',
+                'core/data/vessels.csv',
+                'data/vessels.csv',
+            ]
+            for fallback in fallback_paths:
+                if os.path.exists(fallback):
+                    file_path = fallback
+                    break
         
         if not os.path.exists(file_path):
             self.stdout.write(
@@ -109,9 +119,10 @@ class Command(BaseCommand):
                             vessel_data['width'] = float(row['width'])
                         except (ValueError, TypeError):
                             pass
-                    if row.get('draught'):
+                    draft_value = row.get('draft') or row.get('draught')
+                    if draft_value:
                         try:
-                            vessel_data['draught'] = float(row['draught'])
+                            vessel_data['draft'] = float(draft_value)
                         except (ValueError, TypeError):
                             pass
                     

@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { MapContainer, TileLayer, Marker, Circle } from 'react-leaflet';
+import { MapContainer, TileLayer, Marker, Circle, Popup } from 'react-leaflet';
 import L from 'leaflet';
 import vesselService from '../../services/vesselService';
 import { useToast } from '../../context/ToastContext';
@@ -76,6 +76,7 @@ const DashboardPage = () => {
 
   const [stats, setStats] = useState({
     total_vessels: 0,
+    total_ports: 0,
     active_1h: 0,
     active_24h: 0,
     by_status: {},
@@ -179,7 +180,7 @@ const DashboardPage = () => {
           </div>
           <div className="stat-content">
             <div className="stat-label">Ports Monitored</div>
-            <div className="stat-value">156</div>
+            <div className="stat-value">{stats.total_ports || 0}</div>
             <div className="stat-change neutral">Global coverage</div>
           </div>
         </div>
@@ -253,15 +254,22 @@ const DashboardPage = () => {
             <MapContainer
               center={[1.3521, 103.8198]}
               zoom={2}
+              minZoom={2}
               style={{ height: "100%", width: "100%" }}
               zoomControl={false}
-              attributionControl={false}     
+              attributionControl={false}
+              worldCopyJump={false}
+              maxBounds={[[-85, -180], [85, 180]]}
+              maxBoundsViscosity={1.0}
+              inertia={false}
             >
                 <ZoomControls />
 
               <TileLayer
                 attribution=""
                 url="https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png"
+                noWrap={true}
+                bounds={[[-85, -180], [85, 180]]}
               />
 
               {vesselsWithAlerts.map((v) =>
@@ -270,10 +278,47 @@ const DashboardPage = () => {
                     key={v.id}
                     position={[parseFloat(v.latitude), parseFloat(v.longitude)]}
                     icon={createVesselIcon(v.hasAlert ? "alert" : v.status)}
-                  />
+                  >
+                    <Popup className="vessel-map-popup" maxWidth={220}>
+                      <div className="vessel-popup-content">
+                        <strong className="vessel-popup-title">{v.name || "Unknown Vessel"}</strong>
+                        <div className="vessel-popup-body">
+                          <div>MMSI: {v.mmsi || "N/A"}</div>
+                          <div>IMO: {v.imo_number || "N/A"}</div>
+                          <div>Status: {v.status || "N/A"}</div>
+                          <div>Type: {v.vessel_type || "N/A"}</div>
+                          <div>
+                            Position: {v.latitude ?? "N/A"}, {v.longitude ?? "N/A"}
+                          </div>
+                        </div>
+                      </div>
+                    </Popup>
+                  </Marker>
                 ) : null
               )}
             </MapContainer>
+
+            <div className="map-legend">
+              <div className="legend-title">VESSEL STATUS</div>
+              <div className="legend-items">
+                <div className="legend-item">
+                  <span className="legend-dot" style={{ backgroundColor: "#10b981" }}></span>
+                  Underway / Active
+                </div>
+                <div className="legend-item">
+                  <span className="legend-dot" style={{ backgroundColor: "#f59e0b" }}></span>
+                  Anchored
+                </div>
+                <div className="legend-item">
+                  <span className="legend-dot" style={{ backgroundColor: "#64748b" }}></span>
+                  Moored / Inactive
+                </div>
+                <div className="legend-item">
+                  <span className="legend-dot" style={{ backgroundColor: "#ef4444" }}></span>
+                  Alert
+                </div>
+              </div>
+            </div>
           </div>
 
         </div>

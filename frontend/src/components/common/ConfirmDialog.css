@@ -1,7 +1,7 @@
 .confirm-dialog-message {
   margin: 0;
   font-size: 14px;
-  color: #666;
+  color: #cbd5e1;
   line-height: 1.6;
 }
 
@@ -13,4 +13,60 @@
 
 .confirm-dialog-actions .btn {
   flex: 1;
+  height: 36px;
+  border-radius: 8px;
+  border: 1px solid transparent;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.confirm-dialog-modal {
+  background: linear-gradient(180deg, #111a45 0%, #0b1338 100%);
+  border: 1px solid #1e3a8a;
+  box-shadow: 0 20px 50px rgba(2, 8, 23, 0.65);
+}
+
+.confirm-dialog-modal .modal-header {
+  border-bottom: 1px solid #1e3a8a;
+}
+
+.confirm-dialog-modal .modal-header h2 {
+  color: #e2e8f0;
+  font-size: 18px;
+}
+
+.confirm-dialog-modal .modal-close {
+  color: #93c5fd;
+}
+
+.confirm-dialog-modal .modal-close:hover {
+  background: rgba(30, 58, 138, 0.35);
+}
+
+.confirm-dialog-modal .modal-footer {
+  border-top: 1px solid #1e3a8a;
+}
+
+.confirm-dialog-actions .btn-secondary {
+  background: #111a45;
+  color: #e2e8f0;
+  border-color: #334155;
+}
+
+.confirm-dialog-actions .btn-secondary:hover {
+  border-color: #3b82f6;
+  background: #1a245e;
+}
+
+.confirm-dialog-actions .btn-danger {
+  background: linear-gradient(180deg, #ef4444 0%, #dc2626 100%);
+  color: #ffffff;
+  border-color: #b91c1c;
+}
+
+.confirm-dialog-actions .btn-danger:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 10px 20px rgba(239, 68, 68, 0.28);
 }

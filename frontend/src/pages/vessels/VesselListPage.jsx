@@ -5,6 +5,7 @@ import { useToast } from '../../context/ToastContext';
 import { useAuth } from '../../context/AuthContext';   // ✅ ADDED
 import DataTable from '../../components/common/DataTable';
 import Badge from '../../components/common/Badge';
+import ConfirmDialog from '../../components/common/ConfirmDialog';
 import './VesselListPage.css';
 
 // ⭐ React Icons
@@ -21,6 +22,8 @@ const VesselListPage = () => {
 
   const [vessels, setVessels] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+  const [pendingDeleteVessel, setPendingDeleteVessel] = useState(null);
 
   const [filters, setFilters] = useState({
     search: '',
@@ -65,12 +68,18 @@ const VesselListPage = () => {
     navigate(`/app/vessels/${vessel.id}/edit`);
   };
 
-  const handleDeleteVessel = async (vessel) => {
-    if (!window.confirm(`Delete vessel "${vessel.name}"?`)) return;
+  const handleDeleteVessel = (vessel) => {
+    setPendingDeleteVessel(vessel);
+    setShowDeleteConfirm(true);
+  };
 
+  const confirmDeleteVessel = async () => {
+    if (!pendingDeleteVessel) return;
     try {
-      await vesselService.deleteVessel(vessel.id);
+      await vesselService.deleteVessel(pendingDeleteVessel.id);
       toast.success('Vessel deleted successfully');
+      setShowDeleteConfirm(false);
+      setPendingDeleteVessel(null);
       fetchVessels();
     } catch (error) {
       console.error('Failed to delete vessel:', error);
@@ -92,7 +101,10 @@ const VesselListPage = () => {
       render: (value, row) => (
         <span
           className="vessel-name-link"
-          onClick={() => handleViewDetails(row)}
+          onClick={(e) => {
+            e.stopPropagation();
+            handleViewDetails(row);
+          }}
         >
           {value || 'Unknown'}
         </span>
@@ -158,7 +170,10 @@ const VesselListPage = () => {
           {/* View → Everyone */}
           <button
             className="btn-icon btn-view"
-            onClick={() => handleViewDetails(row)}
+            onClick={(e) => {
+              e.stopPropagation();
+              handleViewDetails(row);
+            }}
             title="View Details"
           >
             <FaEye />
@@ -168,7 +183,10 @@ const VesselListPage = () => {
           {(isAdmin || isOperator) && (
             <button
               className="btn-icon btn-edit"
-              onClick={() => handleEditVessel(row)}
+              onClick={(e) => {
+                e.stopPropagation();
+                handleEditVessel(row);
+              }}
               title="Edit"
             >
               <FaEdit />
@@ -178,8 +196,11 @@ const VesselListPage = () => {
           {/* Delete → Admin Only */}
           {isAdmin && (
             <button
-              className="btn-icon btn-danger"
-              onClick={() => handleDeleteVessel(row)}
+              className="btn-icon btn-delete"
+              onClick={(e) => {
+                e.stopPropagation();
+                handleDeleteVessel(row);
+              }}
               title="Delete"
             >
               <FaTrash />
@@ -282,6 +303,20 @@ const VesselListPage = () => {
         onRowClick={handleViewDetails}
         loading={loading}
         emptyMessage="No vessels found. Add a vessel or start AIS streaming."
+      />
+
+      <ConfirmDialog
+        isOpen={showDeleteConfirm}
+        onClose={() => {
+          setShowDeleteConfirm(false);
+          setPendingDeleteVessel(null);
+        }}
+        onConfirm={confirmDeleteVessel}
+        title="Delete Vessel"
+        message={`Delete vessel "${pendingDeleteVessel?.name || ''}"? This action cannot be undone.`}
+        confirmText="Delete"
+        cancelText="Cancel"
+        type="danger"
       />
 
     </div>

@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
 import { useToast } from '../../context/ToastContext';
 import { useAuth } from "../../context/AuthContext";
+import eventService from '../../services/eventService';
+import vesselService from '../../services/vesselService';
 
 import './EventsPage.css';
 import {
@@ -19,75 +20,16 @@ import {
   FiSave,
 } from 'react-icons/fi';
 
-// Mock service - replace with your actual API service
-const eventService = {
-  getAllEvents: async () => {
-    // Replace with actual API call
-    return {
-      data: [
-        {
-          id: 1,
-          vessel_name: 'Sea Spirit',
-          event_type: 'Entering Port',
-          location: 'Port of Singapore',
-          timestamp: '2026-01-31T14:20:00Z',
-          details: 'Vessel approaching from the east at slow speed.',
-          severity: 'HIGH',
-        },
-        {
-          id: 2,
-          vessel_name: 'Ocean Breeze',
-          event_type: 'Weather Alert',
-          location: 'Malacca Strait',
-          timestamp: '2026-01-31T13:50:00Z',
-          details: 'Heavy rainfall and turbulence detected.',
-          severity: 'MEDIUM',
-        },
-        {
-          id: 3,
-          vessel_name: 'Marine Ace',
-          event_type: 'Cargo Loading',
-          location: 'Port Klang',
-          timestamp: '2026-01-31T11:30:00Z',
-          details: 'Container loading in progress.',
-          severity: 'LOW',
-        },
-        {
-          id: 4,
-          vessel_name: 'Blue Pearl',
-          event_type: 'AIS Signal Lost',
-          location: 'South China Sea',
-          timestamp: '2026-01-31T10:10:00Z',
-          details: 'Communication interrupted for 4 minutes.',
-          severity: 'HIGH',
-        },
-      ],
-    };
-  },
-  createEvent: async (data) => {
-    console.log('Creating event:', data);
-    return { data: { id: Date.now(), ...data } };
-  },
-  updateEvent: async (id, data) => {
-    console.log('Updating event:', id, data);
-    return { data: { id, ...data } };
-  },
-  deleteEvent: async (id) => {
-    console.log('Deleting event:', id);
-    return { data: { success: true } };
-  },
-};
-
 const EventsPage = () => {
-  const navigate = useNavigate();
   const toast = useToast();
   const { user } = useAuth();
 
-const isAdmin = user?.role === "admin";
+  const isAdmin = user?.role === "admin";
 const isOperator = user?.role === "operator";
 const isAnalyst = user?.role === "analyst";
 
   const [events, setEvents] = useState([]);
+  const [vessels, setVessels] = useState([]);
   const [loading, setLoading] = useState(true);
   const [showModal, setShowModal] = useState(false);
   const [editingEvent, setEditingEvent] = useState(null);
@@ -96,37 +38,60 @@ const isAnalyst = user?.role === "analyst";
   const [filterType, setFilterType] = useState('ALL');
 
   const [formData, setFormData] = useState({
-    vessel_name: '',
+    vessel: '',
     event_type: '',
     location: '',
-    timestamp: '',
     details: '',
     severity: 'MEDIUM',
   });
 
   const eventTypes = [
-    'Entering Port',
-    'Leaving Port',
-    'Weather Alert',
-    'Cargo Loading',
-    'Cargo Unloading',
-    'AIS Signal Lost',
-    'Engine Failure',
-    'Collision Warning',
-    'Piracy Alert',
-    'Medical Emergency',
-    'Other',
+    'Arrival',
+    'Departure',
+    'Incident',
+    'Alert',
   ];
 
   useEffect(() => {
     fetchEvents();
+    fetchVessels();
   }, []);
+
+  const parseDescription = (description = '') => {
+    const match = description.match(/^\[Location:\s*(.*?)\]\s*(.*)$/s);
+    if (!match) return { location: '', details: description };
+    return { location: match[1] || '', details: match[2] || '' };
+  };
+
+  const buildDescription = (location = '', details = '') => {
+    const cleanLocation = location.trim();
+    const cleanDetails = details.trim();
+    if (cleanLocation && cleanDetails) return `[Location: ${cleanLocation}] ${cleanDetails}`;
+    if (cleanLocation) return `[Location: ${cleanLocation}]`;
+    return cleanDetails;
+  };
+
+  const normalizeEvent = (event) => {
+    const { location, details } = parseDescription(event.description || '');
+    return {
+      ...event,
+      location,
+      details,
+      severity: (event.severity || 'Medium').toUpperCase(),
+    };
+  };
+
+  const toApiSeverity = (severity) => {
+    if (!severity) return 'Medium';
+    return severity[0] + severity.slice(1).toLowerCase();
+  };
 
   const fetchEvents = async () => {
     try {
       setLoading(true);
-      const response = await eventService.getAllEvents();
-      setEvents(response.data || []);
+      const data = await eventService.getAllEvents();
+      const list = data?.results || data || [];
+      setEvents(list.map(normalizeEvent));
     } catch (error) {
       toast.error('Failed to load events');
       console.error(error);
@@ -135,13 +100,21 @@ const isAnalyst = user?.role === "analyst";
     }
   };
 
+  const fetchVessels = async () => {
+    try {
+      const data = await vesselService.getAllVessels({ page_size: 1000 });
+      setVessels(data?.results || data || []);
+    } catch (error) {
+      console.error('Failed to load vessels for event form:', error);
+    }
+  };
+
   const handleCreate = () => {
     setEditingEvent(null);
     setFormData({
-      vessel_name: '',
-      event_type: '',
+      vessel: '',
+      event_type: 'Incident',
       location: '',
-      timestamp: new Date().toISOString().slice(0, 16),
       details: '',
       severity: 'MEDIUM',
     });
@@ -151,10 +124,9 @@ const isAnalyst = user?.role === "analyst";
   const handleEdit = (event) => {
     setEditingEvent(event);
     setFormData({
-      vessel_name: event.vessel_name,
+      vessel: event.vessel ? String(event.vessel) : '',
       event_type: event.event_type,
       location: event.location,
-      timestamp: new Date(event.timestamp).toISOString().slice(0, 16),
       details: event.details,
       severity: event.severity,
     });
@@ -180,15 +152,21 @@ const isAnalyst = user?.role === "analyst";
     e.preventDefault();
 
     try {
+      const payload = {
+        vessel: Number(formData.vessel),
+        event_type: formData.event_type,
+        severity: toApiSeverity(formData.severity),
+        description: buildDescription(formData.location, formData.details),
+      };
+
       if (editingEvent) {
-        const response = await eventService.updateEvent(editingEvent.id, formData);
-        setEvents(events.map((e) => (e.id === editingEvent.id ? response.data : e)));
+        await eventService.updateEvent(editingEvent.id, payload);
         toast.success('Event updated successfully');
       } else {
-        const response = await eventService.createEvent(formData);
-        setEvents([response.data, ...events]);
+        await eventService.createEvent(payload);
         toast.success('Event created successfully');
       }
+      await fetchEvents();
       setShowModal(false);
     } catch (error) {
       toast.error('Failed to save event');
@@ -198,9 +176,9 @@ const isAnalyst = user?.role === "analyst";
 
   const filteredEvents = events.filter((event) => {
     const matchesSearch =
-      event.vessel_name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      event.event_type.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      event.location.toLowerCase().includes(searchTerm.toLowerCase());
+      (event.vessel_name || '').toLowerCase().includes(searchTerm.toLowerCase()) ||
+      (event.event_type || '').toLowerCase().includes(searchTerm.toLowerCase()) ||
+      (event.location || '').toLowerCase().includes(searchTerm.toLowerCase());
 
     const matchesSeverity = filterSeverity === 'ALL' || event.severity === filterSeverity;
     const matchesType = filterType === 'ALL' || event.event_type === filterType;
@@ -469,14 +447,19 @@ const isAnalyst = user?.role === "analyst";
             <form onSubmit={handleSubmit} className="event-form">
               <div className="form-row">
                 <div className="form-group">
-                  <label>Vessel Name *</label>
-                  <input
-                    type="text"
+                  <label>Vessel *</label>
+                  <select
                     required
-                    value={formData.vessel_name}
-                    onChange={(e) => setFormData({ ...formData, vessel_name: e.target.value })}
-                    placeholder="Enter vessel name"
-                  />
+                    value={formData.vessel}
+                    onChange={(e) => setFormData({ ...formData, vessel: e.target.value })}
+                  >
+                    <option value="">Select vessel</option>
+                    {vessels.map((vessel) => (
+                      <option key={vessel.id} value={vessel.id}>
+                        {vessel.name}
+                      </option>
+                    ))}
+                  </select>
                 </div>
 
                 <div className="form-group">
@@ -505,16 +488,6 @@ const isAnalyst = user?.role === "analyst";
                     value={formData.location}
                     onChange={(e) => setFormData({ ...formData, location: e.target.value })}
                     placeholder="e.g., Port of Singapore"
-                  />
-                </div>
-
-                <div className="form-group">
-                  <label>Timestamp *</label>
-                  <input
-                    type="datetime-local"
-                    required
-                    value={formData.timestamp}
-                    onChange={(e) => setFormData({ ...formData, timestamp: e.target.value })}
                   />
                 </div>
               </div>

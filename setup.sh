@@ -36,6 +36,7 @@ fi
 
 echo ""
 echo "🔧 Step 1: Installing Python dependencies..."
+pushd core >/dev/null
 pip install -r requirements.txt
 
 echo ""
@@ -52,12 +53,12 @@ echo ""
 echo "📊 Step 4: Importing initial data..."
 
 # Check if data files exist and import them
-if [ -d "core/data" ]; then
+if [ -d "data" ]; then
     echo "  📍 Importing ports..."
     python manage.py import_ports || echo "⚠️  Port import skipped (file not found or already imported)"
     
     echo "  🚢 Importing vessels..."
-    python manage.py import_vessels || echo "⚠️  Vessel import skipped (file not found or already imported)"
+    python manage.py sync_vessels --mode import --file data/vessels.csv --enrich --enrich-limit 10000 || echo "⚠️  Vessel import skipped (file not found or already imported)"
     
     echo "  🗺️  Importing routes..."
     python manage.py import_routes || echo "⚠️  Route import skipped (file not found or already imported)"
@@ -68,6 +69,7 @@ fi
 echo ""
 echo "🎨 Step 5: Collecting static files..."
 python manage.py collectstatic --noinput
+popd >/dev/null
 
 echo ""
 echo -e "${GREEN}✅ Backend setup complete!${NC}"
@@ -103,9 +105,6 @@ echo "  python manage.py runserver"
 echo ""
 echo "Frontend:"
 echo "  cd frontend && npm run dev"
-echo ""
-echo "AIS Stream (optional):"
-echo "  python manage.py stream_ais"
 echo ""
 echo "Admin Panel: http://localhost:8001/admin"
 echo "Frontend: http://localhost:5173"

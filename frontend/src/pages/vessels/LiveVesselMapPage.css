@@ -154,9 +154,43 @@
 .legend-indicator.moored { background: #64748b; }
 
 /* POPUP */
+.vessel-map-popup .leaflet-popup-content-wrapper {
+  background: #0f1d2f;
+  border: 1px solid #2d4a6f;
+  border-radius: 10px;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.35);
+}
+
+.vessel-map-popup .leaflet-popup-content {
+  margin: 10px 12px;
+  min-width: 170px;
+}
+
+.vessel-map-popup .leaflet-popup-tip {
+  background: #0f1d2f;
+}
+
 .vessel-popup-content {
-  font-size: 14px;
-  color: #111;
+  color: #cbd5e1;
+  font-size: 12px;
+  line-height: 1.6;
+}
+
+.vessel-popup-title {
+  color: #f1f5f9;
+  font-size: 13px;
+  font-weight: 700;
+  display: block;
+  margin-bottom: 4px;
+}
+
+.vessel-alert-row {
+  margin-top: 4px;
+  color: #ef4444;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  gap: 6px;
 }
 
 /* ------------------------------ */

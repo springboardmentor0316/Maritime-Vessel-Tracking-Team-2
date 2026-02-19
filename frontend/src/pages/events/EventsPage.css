@@ -464,10 +464,11 @@
 /* Actions */
 .actions-cell {
   display: flex;
-   justify-content: center;
+  justify-content: center;
   align-items: center;
-  
   gap: 10px;
+  position: relative;
+  left: -8px;
 }
 
 .btn-icon-action {

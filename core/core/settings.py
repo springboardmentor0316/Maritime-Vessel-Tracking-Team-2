@@ -1,5 +1,6 @@
 
 from pathlib import Path
+import os
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -80,8 +81,8 @@ TEMPLATES = [
 ]
 
 WSGI_APPLICATION = "core.wsgi.application"
-# AISStream.io Configuration (FREE)
-AIS_STREAM_API_KEY = '90b78ef6944162a438de72cd9edbb3ec550fb250'
+# AISStream.io Configuration (read from environment only)
+AIS_STREAM_API_KEY = os.getenv("AIS_STREAM_API_KEY", "")
 
 # Database
 # https://docs.djangoproject.com/en/6.0/ref/settings/#databases

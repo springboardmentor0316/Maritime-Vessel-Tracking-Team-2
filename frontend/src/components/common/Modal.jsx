@@ -1,7 +1,7 @@
 import React, { useEffect } from 'react';
 import './Modal.css';
 
-const Modal = ({ isOpen, onClose, title, children, size = 'medium', footer }) => {
+const Modal = ({ isOpen, onClose, title, children, size = 'medium', footer, className = '' }) => {
   useEffect(() => {
     if (isOpen) {
       document.body.style.overflow = 'hidden';
@@ -19,7 +19,7 @@ const Modal = ({ isOpen, onClose, title, children, size = 'medium', footer }) =>
   return (
     <div className="modal-overlay" onClick={onClose}>
       <div 
-        className={`modal-content modal-${size}`}
+        className={`modal-content modal-${size} ${className}`.trim()}
         onClick={(e) => e.stopPropagation()}
       >
         <div className="modal-header">

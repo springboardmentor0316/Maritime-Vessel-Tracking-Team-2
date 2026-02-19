@@ -11,6 +11,7 @@ from datetime import timedelta
 from drf_spectacular.utils import extend_schema
 
 from .models import Vessel, VesselPosition
+from ports.models import Port
 from users.permissions import is_admin_email
 from .serializers import (
     VesselSerializer,
@@ -188,6 +189,7 @@ class VesselViewSet(ModelViewSet):
         
         return Response({
             'total_vessels': total,
+            'total_ports': Port.objects.count(),
             'active_1h': active_1h,
             'active_24h': active_24h,
             'by_status': status_counts,

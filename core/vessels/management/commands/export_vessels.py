@@ -6,6 +6,7 @@ import csv
 import os
 from django.core.management.base import BaseCommand
 from vessels.models import Vessel
+from django.utils import timezone
 
 
 class Command(BaseCommand):
@@ -19,25 +20,34 @@ class Command(BaseCommand):
             help='Maximum number of vessels to export (default: 100)',
         )
         parser.add_argument(
+            '--all',
+            action='store_true',
+            help='Export all vessels (ignores --limit).',
+        )
+        parser.add_argument(
             '--output',
             type=str,
-            default='core/data/vessels.csv',
-            help='Output file path (default: core/data/vessels.csv)',
+            default='data/vessels.csv',
+            help='Output file path (default: data/vessels.csv)',
         )
 
     def handle(self, *args, **options):
         limit = options['limit']
+        export_all = options['all']
         output_file = options['output']
         
         self.stdout.write(self.style.SUCCESS('🚢 Maritime Vessel Export Tool'))
         self.stdout.write('=' * 60)
         
         # Create data directory if needed
-        os.makedirs(os.path.dirname(output_file), exist_ok=True)
+        output_dir = os.path.dirname(output_file)
+        if output_dir:
+            os.makedirs(output_dir, exist_ok=True)
         
         # Get vessels
         self.stdout.write(f'\n📊 Checking database for vessels...')
-        vessels = Vessel.objects.all().order_by('-last_position_update')[:limit]
+        vessels_qs = Vessel.objects.all().order_by('-last_position_update')
+        vessels = vessels_qs if export_all else vessels_qs[:limit]
         
         if not vessels.exists():
             self.stdout.write(self.style.ERROR('\n❌ No vessels in database to export!'))
@@ -69,7 +79,7 @@ class Command(BaseCommand):
             'eta',
             'length',
             'width',
-            'draught',
+            'draft',
         ]
         
         # Export to CSV
@@ -81,23 +91,23 @@ class Command(BaseCommand):
             for vessel in vessels:
                 try:
                     writer.writerow({
-                        'name': vessel.name or '',
-                        'mmsi': vessel.mmsi or '',
-                        'imo_number': vessel.imo_number or '',
+                        'name': vessel.name or f'Vessel-{vessel.mmsi}',
+                        'mmsi': vessel.mmsi or '000000000',
+                        'imo_number': vessel.imo_number or f'IMO{vessel.mmsi}',
                         'vessel_type': vessel.vessel_type or 'Other',
                         'flag': vessel.flag or 'Unknown',
-                        'latitude': vessel.latitude if vessel.latitude else '',
-                        'longitude': vessel.longitude if vessel.longitude else '',
+                        'latitude': vessel.latitude if vessel.latitude is not None else 0.0,
+                        'longitude': vessel.longitude if vessel.longitude is not None else 0.0,
                         'status': vessel.status or 'active',
-                        'speed': vessel.speed if vessel.speed else '',
-                        'course': vessel.course if vessel.course else '',
-                        'heading': vessel.heading if vessel.heading else '',
-                        'callsign': getattr(vessel, 'callsign', '') or '',
-                        'destination': getattr(vessel, 'destination', '') or '',
-                        'eta': getattr(vessel, 'eta', '') or '',
-                        'length': getattr(vessel, 'length', '') if getattr(vessel, 'length', None) else '',
-                        'width': getattr(vessel, 'width', '') if getattr(vessel, 'width', None) else '',
-                        'draught': getattr(vessel, 'draught', '') if getattr(vessel, 'draught', None) else '',
+                        'speed': vessel.speed if vessel.speed is not None else 0.0,
+                        'course': vessel.course if vessel.course is not None else 0.0,
+                        'heading': vessel.heading if vessel.heading is not None else 0,
+                        'callsign': getattr(vessel, 'callsign', '') or f"CALL{str(vessel.mmsi)[-6:]}",
+                        'destination': getattr(vessel, 'destination', '') or 'Unknown',
+                        'eta': getattr(vessel, 'eta', None) or timezone.now().isoformat(),
+                        'length': getattr(vessel, 'length', None) if getattr(vessel, 'length', None) is not None else 100.0,
+                        'width': getattr(vessel, 'width', None) if getattr(vessel, 'width', None) is not None else 20.0,
+                        'draft': getattr(vessel, 'draft', None) if getattr(vessel, 'draft', None) is not None else 8.0,
                     })
                     exported_count += 1
                     
