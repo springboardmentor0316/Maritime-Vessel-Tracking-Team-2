@@ -101,6 +101,8 @@ class DashboardView(APIView):
             for v in vessels:
 
                 if (
+                    v.get("latitude") is not None and
+                    v.get("longitude") is not None and
                     lat - 0.4 <= v["latitude"] <= lat + 0.4 and
                     lng - 0.4 <= v["longitude"] <= lng + 0.4
                 ):

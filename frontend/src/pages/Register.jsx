@@ -10,7 +10,7 @@ export default function Register() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
-  const [role, setRole] = useState("Operator");
+  const [role, setRole] = useState("operator");
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
   const toast = useToast();

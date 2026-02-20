@@ -4,6 +4,8 @@ import vesselService from '../../services/vesselService';
 import { useToast } from '../../context/ToastContext';
 import Loading from '../../components/common/Loading';
 import './VesselEditPage.css';
+import { useAuth } from '../../context/AuthContext';
+
 
 // ⭐ React Icons Added
 import { FaArrowLeft, FaPlus, FaEdit } from "react-icons/fa";
@@ -13,6 +15,7 @@ const VesselEditPage = () => {
   const isCreateMode = !id;
   const navigate = useNavigate();
   const toast = useToast();
+  const { user } = useAuth();
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   
@@ -153,8 +156,8 @@ const VesselEditPage = () => {
   </h1>
 
   <div className="right-section">
-    {!isCreateMode && (
-      <button className="btn-delete">
+    {!isCreateMode && user?.role === "admin" && (
+      <button className="btn-delete" onClick={handleDelete}>
         Delete
       </button>
     )}

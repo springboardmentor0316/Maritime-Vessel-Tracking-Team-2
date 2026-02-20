@@ -26,12 +26,23 @@ class RegisterSerializer(serializers.ModelSerializer):
         model = User
         fields = ["email", "password", "role"]
 
+    # 🔥 Block admin email
+    def validate_email(self, value):
+        if value.lower() == "admin@gmail.com":
+            raise serializers.ValidationError(
+                "Admin accounts cannot be registered."
+            )
+        return value.lower()
+
     def validate_role(self, value):
-        if value not in ["operator", "analyst"]:
+        normalized = value.lower()
+
+        if normalized not in ["operator", "analyst"]:
             raise serializers.ValidationError(
                 "You cannot register as admin."
             )
-        return value
+
+        return normalized
 
     def create(self, validated_data):
         user = User.objects.create_user(
@@ -40,9 +51,26 @@ class RegisterSerializer(serializers.ModelSerializer):
             role=validated_data["role"]
         )
         return user
-    
+
 class ForgotPasswordSerializer(serializers.Serializer):
     email = serializers.EmailField()
+
+    def validate_email(self, value):
+        from .models import User
+
+        try:
+            user = User.objects.get(email=value.lower())
+        except User.DoesNotExist:
+            return value  # Don't reveal user existence
+
+        # 🚨 Block admin reset
+        if user.is_staff or user.is_superuser:
+            raise serializers.ValidationError(
+                "Admin password cannot be reset from here."
+            )
+
+        return value.lower()
+
 
 class ResetPasswordSerializer(serializers.Serializer):
     token = serializers.CharField()

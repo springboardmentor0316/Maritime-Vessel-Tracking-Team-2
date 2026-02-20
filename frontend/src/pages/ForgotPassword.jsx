@@ -16,14 +16,14 @@ export default function ForgotPassword() {
     const { uid, token } = res;
 
     if (!uid || !token) {
-      alert("Unable to reset password");
+      alert("Unable to reset password or user doesn't exist");
       return;
     }
 
     navigate(`/reset-password?uid=${uid}&token=${token}`);
   } catch (err) {
     console.error(err);
-    alert("Something went wrong");
+    alert("Admin pass cant be changed");
   }
 };
 
