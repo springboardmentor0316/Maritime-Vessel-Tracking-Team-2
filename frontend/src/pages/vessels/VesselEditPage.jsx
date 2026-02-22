@@ -5,9 +5,6 @@ import { useToast } from '../../context/ToastContext';
 import Loading from '../../components/common/Loading';
 import './VesselEditPage.css';
 import { useAuth } from '../../context/AuthContext';
-
-
-// ⭐ React Icons Added
 import { FaArrowLeft, FaPlus, FaEdit } from "react-icons/fa";
 
 const VesselEditPage = () => {
@@ -16,9 +13,10 @@ const VesselEditPage = () => {
   const navigate = useNavigate();
   const toast = useToast();
   const { user } = useAuth();
+
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
-  
+
   const [formData, setFormData] = useState({
     name: '',
     imo_number: '',
@@ -32,13 +30,12 @@ const VesselEditPage = () => {
   });
 
   useEffect(() => {
-  if (id) {
-    fetchVesselDetails();
-  } else {
-    setLoading(false);
-  }
-}, [id]);
-
+    if (id) {
+      fetchVesselDetails();
+    } else {
+      setLoading(false);
+    }
+  }, [id]);
 
   const fetchVesselDetails = async () => {
     try {
@@ -104,19 +101,18 @@ const VesselEditPage = () => {
       if (formData.speed) vesselData.speed = parseFloat(formData.speed);
 
       if (isCreateMode) {
-  await vesselService.createVessel(vesselData);
-  toast.success('Vessel created successfully');
-} else {
-  await vesselService.updateVessel(id, vesselData);
-  toast.success('Vessel updated successfully');
-}
-
+        await vesselService.createVessel(vesselData);
+        toast.success('Vessel created successfully');
+      } else {
+        await vesselService.updateVessel(id, vesselData);
+        toast.success('Vessel updated successfully');
+      }
 
       navigate('/app/vessels');
     } catch (error) {
       console.error('Save failed:', error);
-      const errorMsg = error.response?.data?.detail 
-        || error.response?.data?.message 
+      const errorMsg = error.response?.data?.detail
+        || error.response?.data?.message
         || JSON.stringify(error.response?.data)
         || 'Failed to save vessel';
       toast.error(errorMsg);
@@ -127,7 +123,20 @@ const VesselEditPage = () => {
 
   const handleCancel = () => {
     navigate(isCreateMode ? '/app/vessels' : `/app/vessels/${id}`);
+  };
 
+  // ✅ FIXED: Add missing delete function here
+  const handleDelete = async () => {
+    if (!window.confirm("Are you sure you want to delete this vessel?")) return;
+
+    try {
+      await vesselService.deleteVessel(id);
+      toast.success("Vessel deleted successfully");
+      navigate("/app/vessels");
+    } catch (error) {
+      console.error("Failed to delete vessel:", error);
+      toast.error("Failed to delete vessel");
+    }
   };
 
   if (loading) {
@@ -137,42 +146,44 @@ const VesselEditPage = () => {
   return (
     <div className="vessel-edit-page">
       <div className="edit-header">
-  <div className="left-section">
-    <button className="btn-back" onClick={handleCancel}>
-      <FaArrowLeft style={{ marginRight: "6px" }} /> Back
-    </button>
-  </div>
+        <div className="left-section">
+          <button className="btn-back" onClick={handleCancel}>
+            <FaArrowLeft style={{ marginRight: "6px" }} /> Back
+          </button>
+        </div>
 
-  <h1 className="edit-title">
-    {isCreateMode ? (
-      <>
-        <FaPlus style={{ marginRight: "8px" }} /> Add New Vessel
-      </>
-    ) : (
-      <>
-        <FaEdit style={{ marginRight: "8px" }} /> Edit Vessel
-      </>
-    )}
-  </h1>
+        <h1 className="edit-title">
+          {isCreateMode ? (
+            <>
+              <FaPlus style={{ marginRight: "8px" }} /> Add New Vessel
+            </>
+          ) : (
+            <>
+              <FaEdit style={{ marginRight: "8px" }} /> Edit Vessel
+            </>
+          )}
+        </h1>
 
-  <div className="right-section">
-    {!isCreateMode && user?.role === "admin" && (
-      <button className="btn-delete" onClick={handleDelete}>
-        Delete
-      </button>
-    )}
-  </div>
-</div>
-
+        <div className="right-section">
+          {!isCreateMode && user?.role === "admin" && (
+            <button className="btn-delete" onClick={handleDelete}>
+              Delete
+            </button>
+          )}
+        </div>
+      </div>
 
       <form className="vessel-form" onSubmit={handleSubmit}>
+        {/* Form content unchanged */}
+        {/* ---------------------- */}
+        {/* Your original form fields remain exactly the same */}
+        {/* ---------------------- */}
+
         <div className="form-card">
           <h3>Basic Information</h3>
           <div className="form-grid">
             <div className="form-group">
-              <label htmlFor="name">
-                Vessel Name <span className="required">*</span>
-              </label>
+              <label htmlFor="name">Vessel Name <span className="required">*</span></label>
               <input
                 type="text"
                 id="name"
@@ -187,24 +198,21 @@ const VesselEditPage = () => {
             <div className="form-group">
               <label htmlFor="imo_number">IMO Number</label>
               <input
-  type="text"
-  id="imo_number"
-  name="imo_number"
-  value={formData.imo_number}
-  onChange={handleChange}
-  disabled={!isCreateMode}
-  placeholder="IMO1234567"
-/>
-
+                type="text"
+                id="imo_number"
+                name="imo_number"
+                value={formData.imo_number}
+                onChange={handleChange}
+                disabled={!isCreateMode}
+                placeholder="IMO1234567"
+              />
               {!isCreateMode && (
                 <small className="form-help">IMO cannot be changed after creation</small>
               )}
             </div>
 
             <div className="form-group">
-              <label htmlFor="mmsi">
-                MMSI {isCreateMode && <span className="required">*</span>}
-              </label>
+              <label htmlFor="mmsi">MMSI {isCreateMode && <span className="required">*</span>}</label>
               <input
                 type="text"
                 id="mmsi"
@@ -212,7 +220,6 @@ const VesselEditPage = () => {
                 value={formData.mmsi}
                 onChange={handleChange}
                 disabled={!isCreateMode}
-
                 required={isCreateMode}
                 placeholder="123456789"
               />
@@ -255,9 +262,7 @@ const VesselEditPage = () => {
             </div>
 
             <div className="form-group">
-              <label htmlFor="status">
-                Status <span className="required">*</span>
-              </label>
+              <label htmlFor="status">Status <span className="required">*</span></label>
               <select
                 id="status"
                 name="status"
